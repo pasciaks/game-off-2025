@@ -7,6 +7,10 @@ This repo was started for the coming jam, particularly for use of the Issues sec
 
 # Core Idea
 
+S....... S.......
+
+This will be a ..... game that will allow players to .....   The idea of the game is ..... and will be made with .....
+
 
 # Contributions
 
