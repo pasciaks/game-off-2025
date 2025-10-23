@@ -14,8 +14,12 @@ This will be a ..... game that will allow players to .....   The idea of the gam
 
 # Contributions
 
-Clone this repo, create your own branch, and use Pull requests to submit your contributions.  Ideally, looking for assets in the form of 2d Pixel art to use as characters and .mp3 files for sound effects and music ambient music background sounds and possibly character reactions.
+Clone this repo, create your own branch, and use Pull requests to submit your contributions.  
 
+Looking for ...
+
+2d Pixel art to use as characters (.png format, transparency).
+Music files (.mp3) sound effects, ambient background music, and character reactions (cheers, sorrow, etc).
 
 # Credits
 
