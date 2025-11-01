@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Chunked Tile Grid Editor</title>
+  <style>
+    body {
+      background: #222;
+      color: #eee;
+      font-family: sans-serif;
+      margin: 0;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    canvas {
+      background: #111;
+      display: block;
+      margin: auto;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="game" width="800" height="600"></canvas>
+  <script>
+    // --- Config ---
+    const TILE_SIZE = 16;
+    const CHUNK_SIZE = 64; // tiles per chunk
+    const WORLD_SIZE = 32000; // total world dimension (for bounds)
+    const TILE_COLORS = [
+      "#000000", // 0 = empty
+      "#4CAF50", // 1 = green
+      "#2196F3", // 2 = blue
+      "#FFC107", // 3 = yellow
+      "#E91E63", // 4 = pink
+      "#9C27B0", // 5 = purple
+      "#FF5722" // 6 = orange
+    ];
+
+    // --- Chunk storage ---
+    const chunks = new Map();
+
+    function chunkKey(cx, cy) {
+      return `${cx},${cy}`;
+    }
+
+    function getChunk(cx, cy) {
+      const key = chunkKey(cx, cy);
+      if (!chunks.has(key)) {
+        chunks.set(key, new Uint8Array(CHUNK_SIZE * CHUNK_SIZE));
+      }
+      return chunks.get(key);
+    }
+
+    function setTile(col, row, value) {
+      const cx = Math.floor(col / CHUNK_SIZE);
+      const cy = Math.floor(row / CHUNK_SIZE);
+      const chunk = getChunk(cx, cy);
+      const lx = col % CHUNK_SIZE;
+      const ly = row % CHUNK_SIZE;
+      chunk[ly * CHUNK_SIZE + lx] = value;
+    }
+
+    function getTile(col, row) {
+      const cx = Math.floor(col / CHUNK_SIZE);
+      const cy = Math.floor(row / CHUNK_SIZE);
+      const key = chunkKey(cx, cy);
+      const chunk = chunks.get(key);
+      if (!chunk) return 0;
+      const lx = col % CHUNK_SIZE;
+      const ly = row % CHUNK_SIZE;
+      return chunk[ly * CHUNK_SIZE + lx];
+    }
+
+    // --- Canvas and context ---
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    let camX = 0, camY = 0;
+    const speed = 500; // pixels per second
+    let selectedTile = 1;
+
+    // --- Input ---
+    const keys = {};
+    window.addEventListener("keydown", e => keys[e.key] = true);
+    window.addEventListener("keyup", e => keys[e.key] = false);
+
+    // Mouse state
+    let mouseDown = false;
+    let mouseX = 0, mouseY = 0;
+
+    canvas.addEventListener("mousedown", e => {
+      mouseDown = true;
+      handlePaint(e);
+    });
+    window.addEventListener("mouseup", () => mouseDown = false);
+    canvas.addEventListener("mousemove", e => {
+      mouseX = e.offsetX;
+      mouseY = e.offsetY;
+      if (mouseDown) handlePaint(e);
+    });
+
+    // Number keys change tile type
+    window.addEventListener("keydown", e => {
+      const num = parseInt(e.key);
+      if (!isNaN(num) && num >= 0 && num < TILE_COLORS.length) {
+        selectedTile = num;
+      }
+    });
+
+    function handlePaint(e) {
+      const worldX = camX + e.offsetX;
+      const worldY = camY + e.offsetY;
+      const col = Math.floor(worldX / TILE_SIZE);
+      const row = Math.floor(worldY / TILE_SIZE);
+      setTile(col, row, selectedTile);
+    }
+
+    // --- Update camera ---
+    function update(dt) {
+      if (keys["ArrowUp"]) camY -= speed * dt;
+      if (keys["ArrowDown"]) camY += speed * dt;
+      if (keys["ArrowLeft"]) camX -= speed * dt;
+      if (keys["ArrowRight"]) camX += speed * dt;
+
+      camX = Math.max(0, Math.min(camX, WORLD_SIZE * TILE_SIZE - canvas.width));
+      camY = Math.max(0, Math.min(camY, WORLD_SIZE * TILE_SIZE - canvas.height));
+    }
+
+    // --- Draw tiles ---
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const startCol = Math.floor(camX / TILE_SIZE);
+      const startRow = Math.floor(camY / TILE_SIZE);
+      const endCol = startCol + Math.ceil(canvas.width / TILE_SIZE);
+      const endRow = startRow + Math.ceil(canvas.height / TILE_SIZE);
+
+      for (let row = startRow; row <= endRow; row++) {
+        for (let col = startCol; col <= endCol; col++) {
+          const tile = getTile(col, row);
+          if (tile !== 0) {
+            ctx.fillStyle = TILE_COLORS[tile];
+            ctx.fillRect(
+              (col * TILE_SIZE) - camX,
+              (row * TILE_SIZE) - camY,
+              TILE_SIZE,
+              TILE_SIZE
+            );
+          }
+        }
+      }
+
+      // Info HUD
+      ctx.fillStyle = "white";
+      ctx.font = "14px monospace";
+      ctx.fillText(`Selected tile: ${selectedTile}`, 10, 20);
+      ctx.fillText(`Chunks loaded: ${chunks.size}`, 10, 40);
+      ctx.fillText(`Arrow keys = move | 0–6 = color | Click = paint`, 10, 60);
+
+      requestAnimationFrame(draw);
+    }
+
+    // --- Game loop ---
+    let lastTime = performance.now();
+    function loop(now) {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      update(dt);
+      requestAnimationFrame(loop);
+    }
+
+    draw();
+    loop(lastTime);
+  </script>
+</body>
+
+</html>
