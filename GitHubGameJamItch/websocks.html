@@ -5,21 +5,45 @@
   <meta charset="UTF-8" />
   <title>Scrabble Scramble - GitHub Game Jam 2025</title>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    #connectscreen {
+      display: block;
+    }
+
+    #gamescreen {
+      display: none;
+    }
+
+    #debugscreen {
+      border: 2px solid gray;
+      background-color: darkgray;
+      color: black;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Scrabble Scramble - GitHub Game Jam 2025</h1>
 
-  <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
-  <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
+  <div id="connectscreen">
+    <p>Connecting...</p>
+  </div>
 
-  <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
-  <button onclick="joinRoom('room2','mary')">Join Room 2 as mary</button>
+  <div id="gamescreen">
+    <p>Playing...</p>
+  </div>
 
-  <input id="msg" placeholder="Type message" />
-  <button onclick="sendMessage()">Send</button>
+  <div id="debugscreen">
 
-  <pre id="log"></pre>
+    <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
+    <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
+    <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
+    <button onclick="joinRoom('room2','mary')">Join Room 2 as mary</button>
+    <input id="msg" placeholder="Type message" />
+    <button onclick="sendMessage()">Send</button>
+    <pre id="log"></pre>
+
+  </div>
 
   <script>
 
@@ -35,10 +59,12 @@
           socket = io("https://pasciak.com:4433", {
             transports: ["websocket"], // optional: force WebSocket only
           });
+          console.log("production - https://pasciak.com:4433");
         } catch (e) {
           socket = io("http://127.0.0.1:4433/", {
             transports: ["websocket"], // optional: force WebSocket only
           });
+          console.log("production - errored, using http://127.0.0.1:4433/");
         }
 
         break;
@@ -46,6 +72,7 @@
         socket = io("http://127.0.0.1:4433/", {
           transports: ["websocket"], // optional: force WebSocket only
         });
+        console.log("default - errored, using http://127.0.0.1:4433/");
         break;
 
     }
@@ -56,6 +83,8 @@
 
     socket.on("connect", () => {
       log("✅ Connected to server");
+      document.getElementById("gamescreen").style.display = 'block';
+      document.getElementById("connectscreen").style.display = 'none';
     });
 
     socket.on("reply", (msg) => {
@@ -95,6 +124,8 @@
     }
 
   </script>
+
+
 </body>
 
 </html>
