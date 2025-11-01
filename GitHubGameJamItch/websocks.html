@@ -3,13 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Socket.IO Test</title>
+  <title>Scrabble Scramble - GitHub Game Jam 2025</title>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 
 <body>
-  <h1>Socket.IO Test</h1>
-  <p>Updated...(this needs to be updated at https://pasciak.com/public)</p>
+  <h1>Scrabble Scramble - GitHub Game Jam 2025</h1>
 
   <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
   <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
@@ -25,6 +24,8 @@
   <script>
 
     let mode = 'production'; // production
+
+    mode = prompt("Which mode?", mode);
 
     let socket;
 
