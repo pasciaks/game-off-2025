@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Socket.IO Test</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+
+<body>
+  <h1>Socket.IO Test</h1>
+  <p>Updated...(this needs to be updated at https://pasciak.com/public)</p>
+
+  <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
+  <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
+
+  <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
+  <button onclick="joinRoom('room2','mary')">Join Room 2 as mary</button>
+
+  <input id="msg" placeholder="Type message" />
+  <button onclick="sendMessage()">Send</button>
+
+  <pre id="log"></pre>
+
+  <script>
+
+    let mode = 'production'; // production
+
+    let socket;
+
+    switch (mode) {
+      case "production":
+        try {
+          socket = io("https://pasciak.com:4433", {
+            transports: ["websocket"], // optional: force WebSocket only
+          });
+        } catch (e) {
+          socket = io("http://127.0.0.1:4433/", {
+            transports: ["websocket"], // optional: force WebSocket only
+          });
+        }
+
+        break;
+      default:
+        socket = io("http://127.0.0.1:4433/", {
+          transports: ["websocket"], // optional: force WebSocket only
+        });
+        break;
+
+    }
+
+    const log = (text) => {
+      document.getElementById("log").textContent += text + "\n";
+    };
+
+    socket.on("connect", () => {
+      log("✅ Connected to server");
+    });
+
+    socket.on("reply", (msg) => {
+      log("Server: " + msg);
+    });
+
+    socket.on("broadcast", (msg) => {
+      log("Broadcasted: " + msg);
+    });
+
+    socket.on("disconnect", () => {
+      log("❌ Disconnected");
+    });
+
+    socket.on("roomsList", (data) => {
+      log(JSON.stringify(data));
+    })
+
+    socket.on("roomUsers", (data) => {
+      log(JSON.stringify(data));
+    })
+
+    socket.on('message', (msg) => {
+      console.log(msg)
+      log(msg);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById("msg").value;
+      socket.emit("message", msg);
+      socket.emit("getRooms", { test: 'getRooms Called' });
+      log("You: " + msg);
+    }
+
+    function joinRoom(roomName, nickname) {
+      socket.emit("joinRoom", { roomName, nickname });
+    }
+
+  </script>
+</body>
+
+</html>

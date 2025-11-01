@@ -1,0 +1,13 @@
+
+
+
+remember websocks.html needs to be at
+
+  https://........com/public
+
+
+this server is running at
+
+/var/www/websocks/server.js
+
+
