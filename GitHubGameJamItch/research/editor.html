@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Chunked Tile Grid Editor</title>
+  <title>Chunked Tile Grid Editor (with Save/Load)</title>
   <style>
     body {
       background: #222;
@@ -20,38 +20,65 @@
       margin: auto;
       cursor: crosshair;
     }
+
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font: 14px monospace;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    button {
+      background: #444;
+      border: 1px solid #666;
+      color: #eee;
+      margin: 2px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #666;
+    }
   </style>
 </head>
 
 <body>
   <canvas id="game" width="800" height="600"></canvas>
+
+  <div id="hud">
+    <div>Selected Tile: <span id="tileNum">1</span></div>
+    <div>Chunks Loaded: <span id="chunkCount">0</span></div>
+    <div>
+      <button id="saveBtn">💾 Save</button>
+      <button id="loadBtn">📂 Load</button>
+      <button id="clearBtn">🗑️ Clear</button>
+    </div>
+    <div style="margin-top:4px;">
+      <p>Controls: Arrow keys</p>
+      <p>0–6 = color</p>
+    </div>
+  </div>
+
   <script>
-    // --- Config ---
     const TILE_SIZE = 16;
-    const CHUNK_SIZE = 64; // tiles per chunk
-    const WORLD_SIZE = 32000; // total world dimension (for bounds)
+    const CHUNK_SIZE = 64;
+    const WORLD_SIZE = 32000;
     const TILE_COLORS = [
-      "#000000", // 0 = empty
-      "#4CAF50", // 1 = green
-      "#2196F3", // 2 = blue
-      "#FFC107", // 3 = yellow
-      "#E91E63", // 4 = pink
-      "#9C27B0", // 5 = purple
-      "#FF5722" // 6 = orange
+      "#000000", "#4CAF50", "#2196F3",
+      "#FFC107", "#E91E63", "#9C27B0", "#FF5722"
     ];
 
-    // --- Chunk storage ---
     const chunks = new Map();
 
-    function chunkKey(cx, cy) {
-      return `${cx},${cy}`;
-    }
+    const chunkKey = (cx, cy) => `${cx},${cy}`;
 
     function getChunk(cx, cy) {
       const key = chunkKey(cx, cy);
-      if (!chunks.has(key)) {
-        chunks.set(key, new Uint8Array(CHUNK_SIZE * CHUNK_SIZE));
-      }
+      if (!chunks.has(key)) chunks.set(key, new Uint8Array(CHUNK_SIZE * CHUNK_SIZE));
       return chunks.get(key);
     }
 
@@ -67,51 +94,31 @@
     function getTile(col, row) {
       const cx = Math.floor(col / CHUNK_SIZE);
       const cy = Math.floor(row / CHUNK_SIZE);
-      const key = chunkKey(cx, cy);
-      const chunk = chunks.get(key);
+      const chunk = chunks.get(chunkKey(cx, cy));
       if (!chunk) return 0;
       const lx = col % CHUNK_SIZE;
       const ly = row % CHUNK_SIZE;
       return chunk[ly * CHUNK_SIZE + lx];
     }
 
-    // --- Canvas and context ---
+    // --- Canvas setup ---
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
-
     let camX = 0, camY = 0;
-    const speed = 500; // pixels per second
+    const speed = 500;
     let selectedTile = 1;
-
-    // --- Input ---
     const keys = {};
+
     window.addEventListener("keydown", e => keys[e.key] = true);
     window.addEventListener("keyup", e => keys[e.key] = false);
 
-    // Mouse state
+    // Mouse controls
     let mouseDown = false;
-    let mouseX = 0, mouseY = 0;
-
-    canvas.addEventListener("mousedown", e => {
-      mouseDown = true;
-      handlePaint(e);
-    });
+    canvas.addEventListener("mousedown", e => { mouseDown = true; paint(e); });
     window.addEventListener("mouseup", () => mouseDown = false);
-    canvas.addEventListener("mousemove", e => {
-      mouseX = e.offsetX;
-      mouseY = e.offsetY;
-      if (mouseDown) handlePaint(e);
-    });
+    canvas.addEventListener("mousemove", e => { if (mouseDown) paint(e); });
 
-    // Number keys change tile type
-    window.addEventListener("keydown", e => {
-      const num = parseInt(e.key);
-      if (!isNaN(num) && num >= 0 && num < TILE_COLORS.length) {
-        selectedTile = num;
-      }
-    });
-
-    function handlePaint(e) {
+    function paint(e) {
       const worldX = camX + e.offsetX;
       const worldY = camY + e.offsetY;
       const col = Math.floor(worldX / TILE_SIZE);
@@ -119,7 +126,15 @@
       setTile(col, row, selectedTile);
     }
 
-    // --- Update camera ---
+    // Number keys for tile select
+    window.addEventListener("keydown", e => {
+      const n = parseInt(e.key);
+      if (!isNaN(n) && n >= 0 && n < TILE_COLORS.length) {
+        selectedTile = n;
+        document.getElementById("tileNum").textContent = n;
+      }
+    });
+
     function update(dt) {
       if (keys["ArrowUp"]) camY -= speed * dt;
       if (keys["ArrowDown"]) camY += speed * dt;
@@ -130,7 +145,6 @@
       camY = Math.max(0, Math.min(camY, WORLD_SIZE * TILE_SIZE - canvas.height));
     }
 
-    // --- Draw tiles ---
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const startCol = Math.floor(camX / TILE_SIZE);
@@ -143,27 +157,48 @@
           const tile = getTile(col, row);
           if (tile !== 0) {
             ctx.fillStyle = TILE_COLORS[tile];
-            ctx.fillRect(
-              (col * TILE_SIZE) - camX,
-              (row * TILE_SIZE) - camY,
-              TILE_SIZE,
-              TILE_SIZE
-            );
+            ctx.fillRect(col * TILE_SIZE - camX, row * TILE_SIZE - camY, TILE_SIZE, TILE_SIZE);
           }
         }
       }
 
-      // Info HUD
-      ctx.fillStyle = "white";
-      ctx.font = "14px monospace";
-      ctx.fillText(`Selected tile: ${selectedTile}`, 10, 20);
-      ctx.fillText(`Chunks loaded: ${chunks.size}`, 10, 40);
-      ctx.fillText(`Arrow keys = move | 0–6 = color | Click = paint`, 10, 60);
-
+      document.getElementById("chunkCount").textContent = chunks.size;
       requestAnimationFrame(draw);
     }
 
-    // --- Game loop ---
+    // --- Save/Load/Clear ---
+    function saveWorld() {
+      const obj = {};
+      for (const [key, chunk] of chunks.entries()) {
+        obj[key] = Array.from(chunk);
+      }
+      localStorage.setItem("tileWorld", JSON.stringify(obj));
+      alert("World saved!");
+    }
+
+    function loadWorld() {
+      const data = localStorage.getItem("tileWorld");
+      if (!data) return alert("No saved world found.");
+      chunks.clear();
+      const obj = JSON.parse(data);
+      for (const [key, arr] of Object.entries(obj)) {
+        chunks.set(key, Uint8Array.from(arr));
+      }
+      alert("World loaded!");
+    }
+
+    function clearWorld() {
+      if (confirm("Clear world?")) {
+        chunks.clear();
+        localStorage.removeItem("tileWorld");
+      }
+    }
+
+    document.getElementById("saveBtn").onclick = saveWorld;
+    document.getElementById("loadBtn").onclick = loadWorld;
+    document.getElementById("clearBtn").onclick = clearWorld;
+
+    // --- Main loop ---
     let lastTime = performance.now();
     function loop(now) {
       const dt = (now - lastTime) / 1000;
