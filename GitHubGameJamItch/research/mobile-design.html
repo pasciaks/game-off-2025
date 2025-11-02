@@ -125,15 +125,15 @@
       left: 0%;
       transform: translateX(0%);
       display: flex;
-      gap: 10px;
+      gap: 2px;
       z-index: 10;
       /* above canvas */
     }
 
     /* Scrabble tile button */
     .rack-btn {
-      width: 30px;
-      height: 30px;
+      width: 45;
+      height: 45;
       font-family: 'Georgia', 'Times New Roman', serif;
       font-weight: bold;
       font-size: 20px;
@@ -176,13 +176,13 @@
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 10px;
+      gap: 2px;
       z-index: 10;
     }
 
     .rack-btn {
-      width: 30px;
-      height: 30px;
+      width: 45px;
+      height: 45px;
       font-family: 'Georgia', 'Times New Roman', serif;
       font-weight: bold;
       font-size: 20px;
@@ -376,19 +376,13 @@
     let ttt = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnn = Math.floor((Math.random() * 8)) + 1;
     let thefile = ttt + "" + nnn + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
+    thefile = 't3.png'
     console.log(thefile);
 
     tileImage.src = thefile;
-    //tileImage.src = 'Thick-Wood_01a-Black-64x64.png';
-    tileImage.onload = () => {
-      //const canvas = document.getElementById('board');
-      //const ctx = canvas.getContext('2d');
 
-      // Example usage
-      //drawLetterTile(ctx, 'A', 20, 20);
-      //drawLetterTile(ctx, 'B', 100, 20);
-      //drawLetterTile(ctx, 'Z', 180, 20);
-      //drawLetterTile(ctx, '_', 260, 20);
+    tileImage.onload = () => {
+
 
       setLetters(); // <-- add this line before starting the draw loop
 
@@ -410,18 +404,14 @@
       // Find tile position in grid
       for (let row = 0; row < TILE_ROWS; row++) {
         const col = TILE_ORDER[row].indexOf(letter);
-        if (col !== -1) {
+        if (col !== -1) { // this is regarding tile sprite images only
           const sx = col * TILE_SIZE;
           const sy = row * TILE_SIZE;
           ctx.drawImage(
             tileImage,
-            sx, sy, TILE_SIZE, TILE_SIZE,
+            sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
             x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
           );
-
-
-
-
           return;
         }
       }
@@ -463,10 +453,13 @@
       return " " + col + " , " + row;
     }
 
+
     // Camera position and zoom
     let cameraX = 0;
     let cameraY = 0;
     let zoom = .75;
+
+
 
     // --- Mouse drag handling ---
     let isDragging = false;
@@ -489,9 +482,10 @@
       console.log({ col, row })
       let tt = getTile(col, row);
       if (option) {
+
         tt.isSelected = !tt?.isSelected;
       }
-      setTime(col, row, tt);
+      setTile(col, row, tt);
       console.log(tt);
     }
 
@@ -667,20 +661,27 @@
 
     function setLetters() {
 
-      for (let i = -20; i < 20; i++) {
-        for (let j = -20; j < 20; j++) {
-          setTile(i, j, { letter: randomLetter() });
+      for (let i = -69; i < 69; i++) {
+        for (let j = -69; j < 69; j++) {
+
+          setTile(i, j, { letter: '_' });
+          if (Math.random() > .95) {
+            setTile(i, j, { letter: randomLetter() });
+          }
         }
       }
     }
 
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height); // fill, not clearRect
+
+      //ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       ctx.save();
       ctx.scale(zoom, zoom);
-
-
 
       const startX = Math.floor(cameraX / TILE);
       const startY = Math.floor(cameraY / TILE);
@@ -699,19 +700,26 @@
 
           let theTile = getTile(x, y);
 
+          let colBoundary = 69;
+          let rowBoundary = 69;
 
+          // drawLetterTile(ctx, '_', px, py);
 
-          if (theTile && theTile.letter !== "_") {
+          if (theTile && theTile.letter !== "~" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
             drawLetterTile(ctx, theTile.letter, px, py);
-            ctx.lineWidth = 15;
+            ctx.lineWidth = 3;
             ctx.strokeStyle = "white"
-            if (theTile.isSelected == true) { ctx.strokeRect(px, py, 64, 64) }
+            if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
+          } else {
+            // if (theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) {
+            //drawLetterTile(ctx, '_', px, py);
+            //}
           }
 
           // Draw tile border
-          ctx.strokeStyle = "red";
-          ctx.lineWidth = 2;
-          ctx.strokeRect(px, py, TILE, TILE);
+          // ctx.strokeStyle = "red";
+          // ctx.lineWidth = 2;
+          // ctx.strokeRect(px, py, TILE, TILE);
 
           // Draw col,row centered on tile
           // ctx.fillText(`${x},${y}`, px + TILE / 2, py + TILE / 2);
