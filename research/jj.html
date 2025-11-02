@@ -51,6 +51,13 @@
       return v < 0.3 ? "#775533" : v < 0.6 ? "#448844" : "#6666aa";
     }
 
+    function getTileItem(x, y) {
+      let col = Math.floor(x / TILE);
+      let row = Math.floor(y / TILE);
+      // console.log({ col, row });
+      return " " + col + " , " + row;
+    }
+
     // Camera position and zoom
     let cameraX = 0;
     let cameraY = 0;
@@ -80,7 +87,9 @@
         const dy = (e.clientY - dragStartY) / zoom;
         cameraX = cameraStartX - dx;
         cameraY = cameraStartY - dy;
-        console.log({ dx, dy });
+        console.log({ dx, dy, cameraX, cameraY });
+        console.log({ x: e.clientX, y: e.clientY });
+        console.log(getTileItem((e.clientX + cameraX), (e.clientY + cameraY)));
       }
     });
 
@@ -179,6 +188,9 @@
           ctx.fillRect(px, py, TILE, TILE);
           ctx.strokeStyle = "rgba(0,0,0,0.2)";
           ctx.strokeRect(px, py, TILE, TILE);
+          ctx.font = "12px Times New Roman";
+          ctx.fillStyle = 'black';
+          ctx.fillText(getTileItem(cameraX + px, cameraY + py), px, py + TILE / 2);
         }
       }
 
