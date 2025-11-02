@@ -58,6 +58,12 @@
       return " " + col + " , " + row;
     }
 
+    function getTileItemWithColRow(col, row) {
+
+      // console.log({ col, row });
+      return " " + col + " , " + row;
+    }
+
     // Camera position and zoom
     let cameraX = 0;
     let cameraY = 0;
@@ -70,13 +76,28 @@
     let cameraStartX = 0;
     let cameraStartY = 0;
 
+    function captureCoords(e) {
+
+      // Converts a mouse event (clientX, clientY) to world coordinates
+      const worldX = cameraX + e.clientX / zoom;
+      const worldY = cameraY + e.clientY / zoom;
+
+      // Convert world coordinates to tile coordinates
+      const col = Math.floor(worldX / TILE);
+      const row = Math.floor(worldY / TILE);
+
+      console.log(getTileItemWithColRow(col, row));
+      console.log({ col, row })
+    }
+
     canvas.addEventListener("mousedown", (e) => {
       isDragging = true;
       dragStartX = e.clientX;
       dragStartY = e.clientY;
       cameraStartX = cameraX;
       cameraStartY = cameraY;
-      console.log({ dragStartX, dragStartY });
+      captureCoords(e)
+      // console.log({ dragStartX, dragStartY });
     });
 
     window.addEventListener("mouseup", () => isDragging = false);
@@ -87,9 +108,13 @@
         const dy = (e.clientY - dragStartY) / zoom;
         cameraX = cameraStartX - dx;
         cameraY = cameraStartY - dy;
-        console.log({ dx, dy, cameraX, cameraY });
-        console.log({ x: e.clientX, y: e.clientY });
-        console.log(getTileItem((e.clientX + cameraX), (e.clientY + cameraY)));
+        // console.log({ dx, dy, cameraX, cameraY });
+        // console.log({ x: e.clientX, y: e.clientY });
+        console.log(getTileItem(((e.clientX + cameraX)), ((e.clientY + cameraY))));
+        // how to determine row and col of where i'm dragging in relation to TILE, and camera???
+
+        captureCoords(e)
+
       }
     });
 
@@ -102,6 +127,7 @@
       if (e.touches.length === 1) {
         // Single finger drag
         const t = e.touches[0];
+        captureCoords(t);
         isDragging = true;
         dragStartX = t.clientX;
         dragStartY = t.clientY;
@@ -124,6 +150,7 @@
     canvas.addEventListener("touchmove", (e) => {
       if (e.touches.length === 1 && isDragging) {
         const t = e.touches[0];
+        captureCoords(t);
         const dx = (t.clientX - dragStartX) / zoom;
         const dy = (t.clientY - dragStartY) / zoom;
         cameraX = cameraStartX - dx;
