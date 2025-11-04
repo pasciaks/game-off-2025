@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <title>Infinite Tile World</title>
   <style>
     html,
@@ -254,6 +255,21 @@
       flex-direction: column;
       gap: 5px;
     }
+
+    #connectscreen {
+      display: block;
+    }
+
+    #gamescreen {
+      display: none;
+    }
+
+    #debugscreen {
+      border: 2px solid gray;
+      background-color: darkgray;
+      color: black;
+      display: none;
+    }
   </style>
 </head>
 
@@ -266,14 +282,12 @@
       <button class="arrow-btn" id="up">↑</button>
       <div></div> <!-- empty -->
       <button class="arrow-btn" id="left">←</button>
-      <div></div> <!-- empty center -->
+      <div><button class="arrow-btn" id="center">*</button></div> <!-- empty center -->
       <button class="arrow-btn" id="right">→</button>
       <div></div> <!-- empty -->
       <button class="arrow-btn" id="down">↓</button>
       <div></div> <!-- empty -->
     </div>
-
-
   </div>
 
   <!-- Scrabble rack -->
@@ -285,31 +299,260 @@
     <button class="rack-btn" id="tile5">E</button>
     <button class="rack-btn" id="tile6">F</button>
     <button class="rack-btn" id="tile7">G</button>
+    <button class="rack-btn" id="submit">></button>
   </div>
 
+  <div id="connectscreen">
+    <p>Connecting...</p>
+  </div>
 
-  <canvas id="world"></canvas>
+  <div id="debugscreen">
+
+    <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
+    <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
+    <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
+    <button onclick="joinRoom('room2','mary')">Join Room 2 as mary</button>
+    <input id="msg" placeholder="Type message" />
+    <button onclick="sendMessage()">Send</button>
+    <pre id="log"></pre>
+
+  </div>
+
+  <div id="gamescreen">
+    <canvas id="world"></canvas>
+  </div>
+
   <script>
 
+
+    let mode = 'development';// 'production'; // production
+
+    // mode = prompt("Which mode?", mode);
+
+    let socket;
+
+    switch (mode) {
+      case "production":
+        try {
+          socket = io("https://pasciak.com:4433", {
+            transports: ["websocket"], // optional: force WebSocket only
+          });
+          console.log("production - https://pasciak.com:4433");
+        } catch (e) {
+          socket = io("http://127.0.0.1:4433/", {
+            transports: ["websocket"], // optional: force WebSocket only
+          });
+          console.log("production - errored, using http://127.0.0.1:4433/");
+        }
+
+        break;
+      default:
+        socket = io("http://127.0.0.1:4433/", {
+          transports: ["websocket"], // optional: force WebSocket only
+        });
+        console.log("default - errored, using http://127.0.0.1:4433/");
+        break;
+
+    }
+
+    const log = (text) => {
+      document.getElementById("log").textContent += text + "\n";
+    };
+
+    socket.on("connect", () => {
+      log("✅ Connected to server");
+      document.getElementById("gamescreen").style.display = 'block';
+      document.getElementById("connectscreen").style.display = 'none';
+    });
+
+    socket.on("reply", (msg) => {
+      log("Server: " + msg);
+    });
+
+    socket.on("broadcast", (msg) => {
+      log("Broadcasted: " + msg);
+    });
+
+    socket.on("disconnect", () => {
+      log("❌ Disconnected");
+    });
+
+    socket.on("roomsList", (data) => {
+      log(JSON.stringify(data));
+    })
+
+    socket.on("roomUsers", (data) => {
+      log(JSON.stringify(data));
+    })
+
+    socket.on('message', (msg) => {
+      console.log(msg)
+      log(msg);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById("msg").value;
+      socket.emit("message", msg);
+      socket.emit("getRooms", { test: 'getRooms Called' });
+      log("You: " + msg);
+    }
+
+    function joinRoom(roomName, nickname) {
+      socket.emit("joinRoom", { roomName, nickname });
+    }
+
+    let playerX, playerY;
+
+    let playerCol = 0;
+    let playerRow = 0;
+
     // Arrow buttons move camera
-    document.getElementById("up").addEventListener("click", () => cameraY -= TILE);
-    document.getElementById("down").addEventListener("click", () => cameraY += TILE);
-    document.getElementById("left").addEventListener("click", () => cameraX -= TILE);
-    document.getElementById("right").addEventListener("click", () => cameraX += TILE);
+    // document.getElementById("up").addEventListener("click", () => cameraY += TILE);
+    // document.getElementById("down").addEventListener("click", () => cameraY -= TILE);
+    // document.getElementById("left").addEventListener("click", () => cameraX += TILE);
+    // document.getElementById("right").addEventListener("click", () => cameraX -= TILE);
+
+    function keepPlayerVisible() {
+      // visible world bounds (top-left and bottom-right in world coordinates)
+      const visibleLeft = cameraX;
+      const visibleTop = cameraY;
+      const visibleRight = cameraX + canvas.width / zoom;
+      const visibleBottom = cameraY + canvas.height / zoom;
+
+      const margin = 50 / zoom; // margin adjusted for zoom scale
+
+      const tooFarLeft = playerX < visibleLeft + margin;
+      const tooFarRight = playerX > visibleRight - margin;
+      const tooFarUp = playerY < visibleTop + margin;
+      const tooFarDown = playerY > visibleBottom - margin;
+
+      // NOTE: This is incorrect and not working!
+      if (tooFarLeft || tooFarRight || tooFarUp || tooFarDown) {
+        //console.log("Player is out of view");
+        //navigateView(playerCol, playerRow);
+      }
+
+      // Debug info
+      console.log(
+        Math.floor(playerX),
+        Math.floor(playerY),
+      );
+
+      console.log(
+        Math.floor(cameraX),
+        Math.floor(cameraY),
+      );
+
+      console.log(
+        Math.floor(zoom),
+      );
+
+      console.log(
+
+        Math.floor(visibleLeft),
+        Math.floor(visibleRight),
+        Math.floor(visibleTop),
+        Math.floor(visibleBottom),
+      );
+
+      console.log(
+        Math.floor(canvas.width),
+        Math.floor(canvas.height),
+      );
+
+    }
+
+    let lastDirectionXY = { x: 0, y: 0 }
+
+    function playerLeft() {
+      playerCol -= 1;
+      // navigateView(playerCol, playerRow);
+      lastDirectionXY = { x: -1, y: 0 }
+      keepPlayerVisible();
+    }
+
+    function playerRight() {
+      playerCol += 1;
+      // navigateView(playerCol, playerRow);
+      lastDirectionXY = { x: 1, y: 0 }
+      keepPlayerVisible();
+    }
+
+    function playerUp() {
+      playerRow -= 1;
+      // navigateView(playerCol, playerRow);
+      lastDirectionXY = { x: 0, y: -1 }
+      keepPlayerVisible();
+    }
+
+    function playerDown() {
+      playerRow += 1;
+      // navigateView(playerCol, playerRow);
+      lastDirectionXY = { x: 0, y: 1 }
+      keepPlayerVisible();
+    }
+
+    function submitAttempt() {
+      // console.log(proposedTileMap);
+      proposedTileMap.forEach((i) => {
+        if (i.letter != "_") {
+          console.log(i);
+        }
+      });
+      proposedTileMap = new Map();
+    }
+
+    function playerCenter() {
+      navigateView(playerCol, playerRow);
+    }
+
+    document.getElementById("up").addEventListener("click", () => playerUp());
+    document.getElementById("down").addEventListener("click", () => playerDown());
+    document.getElementById("left").addEventListener("click", () => playerLeft());
+    document.getElementById("right").addEventListener("click", () => playerRight());
+
+    document.getElementById("center").addEventListener("click", () => playerCenter());
+
+    document.getElementById("submit").addEventListener("click", () => submitAttempt());
+
+
 
     // Number buttons
 
 
     // Scrabble rack buttons
     for (let i = 1; i <= 7; i++) {
-      document.getElementById(`tile${i}`).addEventListener("click", () => {
+      document.getElementById(`tile${i}`).addEventListener("click", (e) => {
         console.log(`Tile ${i} clicked`);
+
+        // TODO: convert to sockets to set (suggestedTiles array or something like it)
+        let newTile = { ...getTile(playerCol, playerRow) };
+        newTile.letter = e.target.innerText;
+        setProposedTile(playerCol, playerRow, newTile);
+
+
+        if (lastDirectionXY.x == 1) {
+          playerRight();
+        }
+        if (lastDirectionXY.x == -1) {
+          playerLeft();
+        }
+
+        if (lastDirectionXY.y == 1) {
+          playerDown();
+        }
+        if (lastDirectionXY.y == -1) {
+          playerUp();
+        }
+
       });
     }
 
     // --- TILE STORAGE SYSTEM ---
     // Using a Map for efficient key/value access (supports infinite world)
     const tileMap = new Map();
+
+    let proposedTileMap = new Map();
 
     /**
      * Helper to generate a unique key for a given tile coordinate.
@@ -333,12 +576,28 @@
           col,
           row,
           letter: "_",
-          color: getTileColor(col, row),
+          color: 'cyan', // getTileColor(col, row),
           status: "empty"
         };
         tileMap.set(key, newTile);
       }
       return tileMap.get(key);
+    }
+
+    function getProposedTile(col, row) {
+      const key = tileKey(col, row);
+      if (!proposedTileMap.has(key)) {
+        // Lazy-generate a new tile with defaults
+        const newTile = {
+          col,
+          row,
+          letter: "_",
+          color: 'cyan', // getTileColor(col, row),
+          status: "empty"
+        };
+        proposedTileMap.set(key, newTile);
+      }
+      return proposedTileMap.get(key);
     }
 
     /**
@@ -352,6 +611,13 @@
       // Merge given tileObj with col,row and store
       const updated = { col, row, ...tileObj };
       tileMap.set(key, updated);
+    }
+
+    function setProposedTile(col, row, tileObj) {
+      const key = tileKey(col, row);
+      // Merge given tileObj with col,row and store
+      const updated = { col, row, ...tileObj };
+      proposedTileMap.set(key, updated);
     }
 
     let player = {};
@@ -371,7 +637,8 @@
 
     // Load the tile sheet
     const playerImage = new Image();
-    playerImage.src = "./frame.png";
+    playerImage.src = "./player.png";
+
     const tileImage = new Image();
     let ttt = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnn = Math.floor((Math.random() * 8)) + 1;
@@ -434,11 +701,11 @@
     resize();
 
     // Procedural tile color generator
-    function getTileColor(x, y) {
-      const n = Math.abs(Math.sin(x * 12.9898 + y * 78.233)) * 43758.5453;
-      const v = n % 1;
-      return v < 0.3 ? "#775533" : v < 0.6 ? "#448844" : "#6666aa";
-    }
+    // function getTileColor(x, y) {
+    //   const n = Math.abs(Math.sin(x * 12.9898 + y * 78.233)) * 43758.5453;
+    //   const v = n % 1;
+    //   return v < 0.3 ? "#775533" : v < 0.6 ? "#448844" : "#6666aa";
+    // }
 
     function getTileItem(x, y) {
       let col = Math.floor(x / TILE);
@@ -478,15 +745,20 @@
       const col = Math.floor(worldX / TILE);
       const row = Math.floor(worldY / TILE);
 
-      console.log(getTileItemWithColRow(col, row));
-      console.log({ col, row })
-      let tt = getTile(col, row);
-      if (option) {
+      // console.log(getTileItemWithColRow(col, row));
 
-        tt.isSelected = !tt?.isSelected;
+      // console.log({ col, row })
+
+      let tt = getTile(col, row);
+
+      if (option) {
+        // tt.isSelected = !tt?.isSelected;
       }
+
       setTile(col, row, tt);
-      console.log(tt);
+      playerCol = col;
+      playerRow = row;
+      // console.log(tt);
     }
 
     // Track which arrow keys are currently pressed
@@ -496,16 +768,10 @@
     window.addEventListener("keydown", (e) => {
 
       console.log(e.key);
+
       if (e.key.toUpperCase() == "S") {
-        navigateView(0, 0);
-
-        // CHAT GPT - I WANT THIS COL,ROW TILE IN CENTER OF CANVAS BY ADJUSTING THE CAMERAX AND CAMERAY APPROPRIATELY
-
+        navigateView(playerCol, playerRow);
       }
-
-
-
-
 
       if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
         keysPressed[e.key] = true;
@@ -569,7 +835,9 @@
         //if (cameraY>2000) { cameraY=2000; }
         // console.log({ dx, dy, cameraX, cameraY });
         // console.log({ x: e.clientX, y: e.clientY });
-        console.log(getTileItem(((e.clientX + cameraX)), ((e.clientY + cameraY))));
+
+        // console.log(getTileItem(((e.clientX + cameraX)), ((e.clientY + cameraY))));
+
         // how to determine row and col of where i'm dragging in relation to TILE, and camera???
 
         captureCoords(e)
@@ -693,6 +961,10 @@
       ctx.textBaseline = "middle";
       ctx.fillStyle = "white";
 
+      playerX = playerCol * TILE - cameraX;
+      playerY = playerRow * TILE - cameraY;
+
+      // actual tiles
       for (let y = startY; y < endY; y++) {
         for (let x = startX; x < endX; x++) {
           const px = x * TILE - cameraX;
@@ -722,15 +994,56 @@
           // ctx.strokeRect(px, py, TILE, TILE);
 
           // Draw col,row centered on tile
-          // ctx.fillText(`${x},${y}`, px + TILE / 2, py + TILE / 2);
+          //      ctx.fillText(`${x},${y}`, px + TILE / 2, py + TILE / 2);
+
+          // if (x == playerCol) {
+          //   playerX = px;
+          // }
+
+          // if (y == playerRow) {
+          //   playerY = py;
+          // }
+
         }
       }
 
 
+      // proposed tiles
+      for (let y = startY; y < endY; y++) {
+        for (let x = startX; x < endX; x++) {
+          const px = x * TILE - cameraX;
+          const py = y * TILE - cameraY;
+
+          let theTile = getProposedTile(x, y);
+
+          // console.log(theTile.letter)
+
+          let colBoundary = 69;
+          let rowBoundary = 69;
+
+          // drawLetterTile(ctx, '_', px, py);
+
+          if (theTile && theTile.letter !== "_" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
+            drawLetterTile(ctx, theTile.letter, px + 5, py + 5);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "white"
+            if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
+          } else {
+            // if (theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) {
+            //drawLetterTile(ctx, '_', px, py);
+            //}
+          }
+
+
+
+        }
+      }
+
+
+      ctx.drawImage(playerImage, playerX, playerY)
+
       ctx.restore();
     }
-
-
 
 
     // --- Animation loop ---

@@ -9,14 +9,14 @@ import http from "http";
 import express from "express";
 import { Server } from "socket.io";
 
-import { loadJSON } from './loadJSON.js';
 import { loadJSONSync } from './loadJSONSync.js';
+import { loadTXTSync } from './loadTXTSync.js';
 
 const waves = loadJSONSync('./waves.json');
 console.log(waves);
 
-// const waves = await loadJSON('./waves.json');
-// console.log(waves);
+const words = loadTXTSync('./words.txt');
+console.log(words.length);
 
 let keys = Object.keys(waves);
 
