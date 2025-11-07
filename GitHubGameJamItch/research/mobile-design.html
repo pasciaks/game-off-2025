@@ -4,273 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="icon" type="image/png" href="player.png">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <title>Infinite Tile World</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #222;
-    }
+  <link rel="stylesheet" href="styles.css">
 
-    canvas {
-      display: block;
-      background: #3a3a3a;
-      image-rendering: pixelated;
-      cursor: grab;
-      touch-action: none;
-      /* prevent browser scroll/zoom gestures */
-    }
 
-    canvas:active {
-      cursor: grabbing;
-    }
-
-    #mobileMenu {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 25vh;
-      border: 2px solid red;
-      background-color: gray;
-    }
-
-    /* Keypad container */
-    #keypad {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    /* Arrow pad */
-    #arrows {
-      display: grid;
-      grid-template-columns: 50px 50px 50px;
-      grid-template-rows: 50px 50px 50px;
-      gap: 5px;
-    }
-
-    /* Arrow buttons */
-    .arrow-btn {
-      width: 50px;
-      height: 50px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Number pad */
-    #numbers {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .num-btn {
-      width: 50px;
-      height: 50px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    /* Common button style (applies to both arrow and number buttons) */
-    .arrow-btn,
-    .num-btn {
-      width: 50px;
-      height: 50px;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      font-weight: bold;
-      font-size: 20px;
-      color: #222;
-      background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%);
-      border: 2px solid #b58863;
-      border-radius: 8px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.1s ease-in-out;
-    }
-
-    /* Hover effect */
-    .arrow-btn:hover,
-    .num-btn:hover {
-      background: linear-gradient(to bottom, #e1c27a 0%, #f0d9b5 100%);
-      transform: translateY(-2px);
-      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    /* Pressed effect */
-    .arrow-btn:active,
-    .num-btn:active {
-      transform: translateY(1px);
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Optional: adjust font size for arrows */
-    .arrow-btn {
-      font-size: 22px;
-    }
-
-    /* Scrabble rack container */
-    #scrabbleRack {
-      position: absolute;
-      bottom: 20vh;
-      /* adjust as needed */
-      left: 0%;
-      transform: translateX(0%);
-      display: flex;
-      gap: 2px;
-      z-index: 10;
-      /* above canvas */
-    }
-
-    /* Scrabble tile button */
-    .rack-btn {
-      width: 45;
-      height: 45;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      font-weight: bold;
-      font-size: 20px;
-      color: #222;
-      background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%);
-      border: 2px solid #b58863;
-      border-radius: 8px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.1s ease-in-out;
-    }
-
-    /* Hover effect */
-    .rack-btn:hover {
-      background: linear-gradient(to bottom, #e1c27a 0%, #f0d9b5 100%);
-      transform: translateY(-2px);
-      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    /* Pressed effect */
-    .rack-btn:active {
-      transform: translateY(1px);
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
-    }
-
-    /* --- Keypad styling --- */
-
-    .arrow-btn:active,
-    .num-btn:active {
-      transform: translateY(1px);
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
-    }
-
-    /* --- Scrabble rack styling --- */
-    #scrabbleRack {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 2px;
-      z-index: 10;
-    }
-
-    .rack-btn {
-      width: 45px;
-      height: 45px;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      font-weight: bold;
-      font-size: 20px;
-      color: #222;
-      background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%);
-      border: 2px solid #b58863;
-      border-radius: 8px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.1s ease-in-out;
-    }
-
-    .rack-btn:hover {
-      background: linear-gradient(to bottom, #e1c27a 0%, #f0d9b5 100%);
-      transform: translateY(-2px);
-      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    .rack-btn:active {
-      transform: translateY(1px);
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
-    }
-
-    #keypad {
-      position: absolute;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      /* arrows + numbers side by side */
-      gap: 20px;
-      align-items: center;
-      z-index: 10;
-    }
-
-    #arrows {
-      display: grid;
-      grid-template-columns: 50px 50px 50px;
-      grid-template-rows: 50px 50px 50px;
-      gap: 5px;
-      justify-items: center;
-      align-items: center;
-    }
-
-    #up {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    #left {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    #right {
-      grid-column: 3;
-      grid-row: 2;
-    }
-
-    #down {
-      grid-column: 2;
-      grid-row: 3;
-    }
-
-    #numbers {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    #connectscreen {
-      display: block;
-    }
-
-    #gamescreen {
-      display: none;
-    }
-
-    #debugscreen {
-      border: 2px solid gray;
-      background-color: darkgray;
-      color: black;
-      display: none;
-    }
-  </style>
 </head>
 
 <body>
@@ -292,22 +31,35 @@
 
   <!-- Scrabble rack -->
   <div id="scrabbleRack">
-    <button class="rack-btn" id="tile1">A</button>
-    <button class="rack-btn" id="tile2">B</button>
-    <button class="rack-btn" id="tile3">C</button>
-    <button class="rack-btn" id="tile4">D</button>
-    <button class="rack-btn" id="tile5">E</button>
-    <button class="rack-btn" id="tile6">F</button>
-    <button class="rack-btn" id="tile7">G</button>
-    <button class="rack-btn" id="submit">></button>
+    <button class="rack-btn" id="tile1"></button>
+    <button class="rack-btn" id="tile2"></button>
+    <button class="rack-btn" id="tile3"></button>
+    <button class="rack-btn" id="tile4"></button>
+    <button class="rack-btn" id="tile5"></button>
+    <button class="rack-btn" id="tile6"></button>
+    <button class="rack-btn" id="tile7"></button>
+    <button class="rack-btn" id="tile8">_</button>
+    <!-- <button class="rack-btn" id="sendIt">></button> -->
+  </div>
+
+  <div id="scrabbleRackb">
+    <!-- <button class="rack-btns" id="tile1b">*</button>
+    <button class="rack-btns" id="tile2b">*</button>
+    <button class="rack-btns" id="tile3b">*</button>
+    <button class="rack-btns" id="tile4b">*</button>
+    <button class="rack-btns" id="tile5b">*</button>
+    <button class="rack-btns" id="tile6b">*</button>
+    <button class="rack-btns" id="tile7b">*</button> -->
+    <button class="rack-btns2" id="sendIt">Submit</button>
   </div>
 
   <div id="connectscreen">
     <p>Connecting...</p>
   </div>
 
-  <div id="debugscreen">
+  <!-- <button onclick="getMap()" id="getMap">Get Map</button> -->
 
+  <div id="debugscreen">
     <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
     <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
     <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
@@ -324,12 +76,219 @@
 
   <script>
 
+    // --- TILE STORAGE SYSTEM ---
+    // Using a Map for efficient key/value access (supports infinite world)
+    let tileMap = new Map();
 
-    let mode = 'development';// 'production'; // production
+    let proposedTileMap = new Map();
+
+    const users = new Map();
+
+    let myName = Math.random();
+
+    let mode = 'production';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
     let socket;
+
+    let lettersCollection = [];
+
+    let wordLetterValues = [
+      {
+        "letter": "A",
+        "quantity": 9,
+        "points": 1
+      },
+      {
+        "letter": "B",
+        "quantity": 2,
+        "points": 3
+      },
+      {
+        "letter": "C",
+        "quantity": 2,
+        "points": 3
+      },
+      {
+        "letter": "D",
+        "quantity": 4,
+        "points": 2
+      },
+      {
+        "letter": "E",
+        "quantity": 12,
+        "points": 1
+      },
+      {
+        "letter": "F",
+        "quantity": 2,
+        "points": 4
+      },
+      {
+        "letter": "G",
+        "quantity": 3,
+        "points": 2
+      },
+      {
+        "letter": "H",
+        "quantity": 2,
+        "points": 4
+      },
+      {
+        "letter": "I",
+        "quantity": 9,
+        "points": 1
+      },
+      {
+        "letter": "J",
+        "quantity": 1,
+        "points": 8
+      },
+      {
+        "letter": "K",
+        "quantity": 1,
+        "points": 5
+      },
+      {
+        "letter": "L",
+        "quantity": 4,
+        "points": 1
+      },
+      {
+        "letter": "M",
+        "quantity": 2,
+        "points": 3
+      },
+      {
+        "letter": "N",
+        "quantity": 6,
+        "points": 1
+      },
+      {
+        "letter": "O",
+        "quantity": 8,
+        "points": 1
+      },
+      {
+        "letter": "P",
+        "quantity": 2,
+        "points": 3
+      },
+      {
+        "letter": "Q",
+        "quantity": 1,
+        "points": 10
+      },
+      {
+        "letter": "R",
+        "quantity": 6,
+        "points": 1
+      },
+      {
+        "letter": "S",
+        "quantity": 4,
+        "points": 1
+      },
+      {
+        "letter": "T",
+        "quantity": 6,
+        "points": 1
+      },
+      {
+        "letter": "U",
+        "quantity": 4,
+        "points": 1
+      },
+      {
+        "letter": "V",
+        "quantity": 2,
+        "points": 4
+      },
+      {
+        "letter": "W",
+        "quantity": 2,
+        "points": 4
+      },
+      {
+        "letter": "X",
+        "quantity": 1,
+        "points": 8
+      },
+      {
+        "letter": "Y",
+        "quantity": 2,
+        "points": 4
+      },
+      {
+        "letter": "Z",
+        "quantity": 1,
+        "points": 10
+      },
+      // {
+      //   "letter": "_",
+      //   "quantity": 2,
+      //   "points": 0
+      // }
+    ];
+
+    function shuffleInPlace(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function createLetterCollection() {
+      for (let i = 0; i < wordLetterValues.length; i++) {
+        let current = wordLetterValues[i];
+        for (let j = 0; j < current.quantity; j++) {
+          lettersCollection.push(current?.letter || "_");
+        }
+      }
+      shuffleInPlace(lettersCollection);
+      console.log(lettersCollection.length);
+    }
+
+    function getLetterFromCollection() {
+      if (lettersCollection.length <= 0) {
+        createLetterCollection();
+      }
+      return lettersCollection.shift();
+    }
+
+    createLetterCollection();
+
+    function populatePlayerLetters() {
+      for (let i = 1; i <= 7; i++) {
+        document.getElementById(`tile${i}`).innerText = getLetterFromCollection();
+      }
+      document.getElementById(`tile${8}`).innerText = "_";
+    }
+
+    populatePlayerLetters();
+
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\\[\\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(url);
+
+      if (!results) return null;
+      if (!results[2]) return '';
+
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    let test = getParameterByName("room");
+
+    if (test) {
+
+    } else {
+      test = "room1";
+    }
+
+    let myRoom = `${test}`;
 
     switch (mode) {
       case "production":
@@ -361,13 +320,39 @@
 
     socket.on("connect", () => {
       log("✅ Connected to server");
+
+      setTimeout(() => {
+        joinRoom(myRoom, myName);
+        setTimeout(() => {
+          getMap();
+          playerStand();
+        }, 500)
+      }, 500)
+
       document.getElementById("gamescreen").style.display = 'block';
       document.getElementById("connectscreen").style.display = 'none';
     });
 
+    socket.on("tileMap", (data) => {
+      console.log("tileMap", data);
+      console.log(typeof data);
+      //tileMap = data;
+
+    });
+
+    socket.on("data", (data) => {
+      console.log(data);
+
+      updatePlayers(data);
+
+      log("received data: " + data);
+    });
+
+
     socket.on("reply", (msg) => {
       log("Server: " + msg);
     });
+
 
     socket.on("broadcast", (msg) => {
       log("Broadcasted: " + msg);
@@ -390,21 +375,90 @@
       log(msg);
     });
 
-    function sendMessage() {
-      const msg = document.getElementById("msg").value;
-      socket.emit("message", msg);
-      socket.emit("getRooms", { test: 'getRooms Called' });
+    socket.on('tileObjects', (jsonDataString) => {
+      console.log(jsonDataString)
+      try {
+        let o = JSON.parse(jsonDataString);
+        tileMap = new Map();
+        let o2 = Object.keys(o);
+
+        o2.forEach((k) => {
+          console.log(o[k]);
+          setTile(o[k].col, o[k].row, o[k]);
+        });
+
+
+
+        // console.log(o2);
+        // console.log(o);
+      } catch (e) {
+        console.log(e);
+      }
+    });
+
+    function updatePlayers(data) {
+      console.log('-----------------------------');
+      console.log('update players');
+      console.log('-----------------------------');
+      console.log(data.data);
+
+      let users2 = data.users;
+      console.log("USERS", users2);
+
+      users.set(data.data.myName, { dateTime: data.data.dateTime, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+
+      log(data);
+    }
+
+    function getMap(data) {
+      data = { now: Date.now(), room: myRoom }
+      socket.emit('getMap', data);
+
+      setTimeout(() => {
+        // document.getElementById("#scrabbleRack").style.display = 'flex';
+        // document.getElementById("#scrabbleRackb").style.display = 'flex';
+
+      }, 1000);
+    }
+
+    function updatePlayerPosition(data) {
+      console.log("send UpdatePlayerPosition", data);
+      data.command = "updatePlayer";
+      sendMessage(data);
+    }
+
+    function sendMessage(data) {
+      console.log("sendMessage", data);
+
+      socket.emit("getRooms", { test: 'getRooms Called', data: data });
+
       log("You: " + msg);
     }
 
     function joinRoom(roomName, nickname) {
+
+      const mapData = new Map([
+        ["-25,-25", { col: -25, row: -25, letter: "_" }],
+        ["-25,-24", { col: -25, row: -24, letter: "_" }],
+        ["-25,-23", { col: -25, row: -23, letter: "_" }]
+      ]);
+
+      const obj = Object.fromEntries(mapData); // Map → Object
+
+      const json = JSON.stringify(obj); // Object → JSON string
+
+      // socket.emit("joinRoom", { roomName, nickname, tileMap: json });
+
       socket.emit("joinRoom", { roomName, nickname });
+
     }
 
     let playerX, playerY;
 
     let playerCol = 0;
     let playerRow = 0;
+
+    let proposedLetterUse = {};
 
     // Arrow buttons move camera
     // document.getElementById("up").addEventListener("click", () => cameraY += TILE);
@@ -413,6 +467,10 @@
     // document.getElementById("right").addEventListener("click", () => cameraX -= TILE);
 
     function keepPlayerVisible() {
+
+      updatePlayerPosition({ playerCol, playerRow, myName, myRoom })
+
+
       // visible world bounds (top-left and bottom-right in world coordinates)
       const visibleLeft = cameraX;
       const visibleTop = cameraY;
@@ -433,36 +491,41 @@
       }
 
       // Debug info
-      console.log(
-        Math.floor(playerX),
-        Math.floor(playerY),
-      );
+      // console.log(
+      //   Math.floor(playerX),
+      //   Math.floor(playerY),
+      // );
 
-      console.log(
-        Math.floor(cameraX),
-        Math.floor(cameraY),
-      );
+      // console.log(
+      //   Math.floor(cameraX),
+      //   Math.floor(cameraY),
+      // );
 
-      console.log(
-        Math.floor(zoom),
-      );
+      // console.log(
+      //   Math.floor(zoom),
+      // );
 
-      console.log(
+      // console.log(
+      //   Math.floor(visibleLeft),
+      //   Math.floor(visibleRight),
+      //   Math.floor(visibleTop),
+      //   Math.floor(visibleBottom),
+      // );
 
-        Math.floor(visibleLeft),
-        Math.floor(visibleRight),
-        Math.floor(visibleTop),
-        Math.floor(visibleBottom),
-      );
-
-      console.log(
-        Math.floor(canvas.width),
-        Math.floor(canvas.height),
-      );
+      // console.log(
+      //   Math.floor(canvas.width),
+      //   Math.floor(canvas.height),
+      // );
 
     }
 
     let lastDirectionXY = { x: 0, y: 0 }
+
+    function playerStand() {
+      // navigateView(playerCol, playerRow);
+      lastDirectionXY = { x: 1, y: 0 }
+      keepPlayerVisible();
+    }
 
     function playerLeft() {
       playerCol -= 1;
@@ -493,10 +556,27 @@
     }
 
     function submitAttempt() {
+
+      console.log("proposedTileUse", proposedLetterUse);
+
+      proposedLetterUse = {};
+
       // console.log(proposedTileMap);
       proposedTileMap.forEach((i) => {
         if (i.letter != "_") {
           console.log(i);
+
+          //----------------------------------------------------------
+          ////////////////////////////////////////////////////////
+          // todo backend logic to accept or deny, etc....
+          ////////////////////////////////////////////////////////
+          const key = tileKey(i.col, i.row);
+          const updated = { col: i.col, row: i.row, ...i, myName, myRoom };
+          socket.emit("proposedTile", updated);
+          ////////////////////////////////////////////////////////
+          //----------------------------------------------------------
+
+          setTile(i.col, i.row, i);
         }
       });
       proposedTileMap = new Map();
@@ -513,46 +593,54 @@
 
     document.getElementById("center").addEventListener("click", () => playerCenter());
 
-    document.getElementById("submit").addEventListener("click", () => submitAttempt());
-
-
-
-    // Number buttons
-
+    document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
 
     // Scrabble rack buttons
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 8; i++) {
+
       document.getElementById(`tile${i}`).addEventListener("click", (e) => {
+
         console.log(`Tile ${i} clicked`);
 
         // TODO: convert to sockets to set (suggestedTiles array or something like it)
         let newTile = { ...getTile(playerCol, playerRow) };
-        newTile.letter = e.target.innerText;
-        setProposedTile(playerCol, playerRow, newTile);
 
+        if (newTile.letter == '_') { // only allow proposed tile on a blank tile on the board
 
-        if (lastDirectionXY.x == 1) {
-          playerRight();
-        }
-        if (lastDirectionXY.x == -1) {
-          playerLeft();
-        }
+          // if (/[a-z]/.test(e.target.innerText)) {
+          //   console.log("includes a lowercase...");
+          //   return;
+          // }
 
-        if (lastDirectionXY.y == 1) {
-          playerDown();
-        }
-        if (lastDirectionXY.y == -1) {
-          playerUp();
+          newTile.letter = e.target.innerText.toUpperCase();
+
+          proposedLetterUse[i] = (proposedLetterUse[i] || "") + newTile.letter;
+
+          // e.target.innerText = e.target.innerText.toLowerCase();
+
+          setProposedTile(playerCol, playerRow, newTile);
+
+          if (lastDirectionXY.x == 1) {
+            playerRight();
+          }
+
+          if (lastDirectionXY.x == -1) {
+            playerLeft();
+          }
+
+          if (lastDirectionXY.y == 1) {
+            playerDown();
+          }
+          if (lastDirectionXY.y == -1) {
+            playerUp();
+          }
+
         }
 
       });
     }
 
-    // --- TILE STORAGE SYSTEM ---
-    // Using a Map for efficient key/value access (supports infinite world)
-    const tileMap = new Map();
 
-    let proposedTileMap = new Map();
 
     /**
      * Helper to generate a unique key for a given tile coordinate.
@@ -614,10 +702,15 @@
     }
 
     function setProposedTile(col, row, tileObj) {
+
       const key = tileKey(col, row);
-      // Merge given tileObj with col,row and store
-      const updated = { col, row, ...tileObj };
+
+      const updated = { col, row, ...tileObj, myName, myRoom };
+
+      //socket.emit("proposedTile", updated);
+
       proposedTileMap.set(key, updated);
+
     }
 
     let player = {};
@@ -639,22 +732,27 @@
     const playerImage = new Image();
     playerImage.src = "./player.png";
 
+    const tileProoposedImage = new Image();
+    let tttp = "stuv".charAt(Math.floor(Math.random() * 4));
+    let nnnp = Math.floor((Math.random() * 8)) + 1;
+    let thefilep = tttp + "" + nnnp + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
+    console.log(thefilep);
+    thefilep = 's2.png';
+    tileProoposedImage.src = thefilep;
+    tileProoposedImage.onload = () => {
+
+    };
+
     const tileImage = new Image();
     let ttt = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnn = Math.floor((Math.random() * 8)) + 1;
     let thefile = ttt + "" + nnn + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
-    thefile = 't3.png'
-    console.log(thefile);
-
+    thefile = 't8.png';
     tileImage.src = thefile;
-
+    console.log(thefile)
     tileImage.onload = () => {
-
-
-      setLetters(); // <-- add this line before starting the draw loop
-
+      // setLetters(); // <-- add this line before starting the draw loop
       navigateView(0, 0);
-
       requestAnimationFrame(loop);
     };
 
@@ -665,7 +763,7 @@
      * @param {number} x - X position on canvas
      * @param {number} y - Y position on canvas
      */
-    function drawLetterTile(ctx, letter, x, y) {
+    function drawLetterTile(ctx, letter, x, y, optionOverride) {
       letter = letter.toUpperCase();
       let shrink = 0;
       // Find tile position in grid
@@ -674,12 +772,23 @@
         if (col !== -1) { // this is regarding tile sprite images only
           const sx = col * TILE_SIZE;
           const sy = row * TILE_SIZE;
-          ctx.drawImage(
-            tileImage,
-            sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
-            x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
-          );
-          return;
+
+          if (optionOverride) {
+            // tileProoposedImage
+            ctx.drawImage(
+              tileProoposedImage,
+              sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+              x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+            );
+            return;
+          } else {
+            ctx.drawImage(
+              tileImage,
+              sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+              x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+            );
+            return;
+          }
         }
       }
       console.warn('Letter not found:', letter);
@@ -758,6 +867,10 @@
       setTile(col, row, tt);
       playerCol = col;
       playerRow = row;
+      // playerUp();
+      // playerDown();
+      playerStand();
+
       // console.log(tt);
     }
 
@@ -928,18 +1041,15 @@
     }
 
     function setLetters() {
-
-      for (let i = -69; i < 69; i++) {
-        for (let j = -69; j < 69; j++) {
-
+      for (let i = -25; i < 25; i++) {
+        for (let j = -25; j < 25; j++) {
           setTile(i, j, { letter: '_' });
-          if (Math.random() > .95) {
+          if (Math.random() > .98) {
             setTile(i, j, { letter: randomLetter() });
           }
         }
       }
     }
-
 
     function draw() {
 
@@ -978,7 +1088,13 @@
           // drawLetterTile(ctx, '_', px, py);
 
           if (theTile && theTile.letter !== "~" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
-            drawLetterTile(ctx, theTile.letter, px, py);
+
+            if (theTile?.letter == "_") {
+              drawLetterTile(ctx, theTile.letter, px, py, true);
+            } else {
+              drawLetterTile(ctx, theTile.letter, px, py);
+            }
+
             ctx.lineWidth = 3;
             ctx.strokeStyle = "white"
             if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
@@ -1024,7 +1140,7 @@
           // drawLetterTile(ctx, '_', px, py);
 
           if (theTile && theTile.letter !== "_" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
-            drawLetterTile(ctx, theTile.letter, px + 5, py + 5);
+            drawLetterTile(ctx, theTile.letter, px, py, true); // override draw to use proposed tile drawing image
             ctx.lineWidth = 3;
             ctx.strokeStyle = "white"
             if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
@@ -1039,8 +1155,20 @@
         }
       }
 
+      users.forEach((u) => {
 
-      ctx.drawImage(playerImage, playerX, playerY)
+        let cplayerX = u.playerCol * TILE - cameraX;
+        let cplayerY = u.playerRow * TILE - cameraY;
+
+        if ((u?.dateTime)) {
+          console.log(u);
+        }
+
+        ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+
+      });
+
+      //ctx.drawImage(playerImage, playerX - 22, playerY - 22);
 
       ctx.restore();
     }

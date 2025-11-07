@@ -1,0 +1,194 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #222;
+}
+
+canvas {
+  display: block;
+  background: #3a3a3a;
+  image-rendering: pixelated;
+  cursor: grab;
+  touch-action: none;
+  /* prevent browser scroll/zoom gestures */
+}
+
+canvas:active {
+  cursor: grabbing;
+}
+
+/* ----- MOBILE MENU ----- */
+#mobileMenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 25vh;
+  border: 2px solid red;
+  background-color: gray;
+}
+
+/* ----- KEYPAD ----- */
+#keypad {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  /* arrows + numbers side by side */
+  gap: 20px;
+  align-items: center;
+  z-index: 10;
+}
+
+/* ----- ARROW PAD ----- */
+#arrows {
+  display: grid;
+  grid-template-columns: 35px 35px 35px;
+  grid-template-rows: 35px 35px 35px;
+  gap: 5px;
+  justify-items: center;
+  align-items: center;
+}
+
+#up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* ----- NUMBER PAD ----- */
+#numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* ----- COMMON BUTTON STYLES ----- */
+.arrow-btn,
+.num-btn,
+.rack-btn,
+.rack-btns {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: bold;
+  color: #222;
+  background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%);
+  border: 2px solid #b58863;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s ease-in-out;
+}
+
+/* ----- SPECIFIC BUTTON SIZES ----- */
+.arrow-btn,
+.num-btn {
+  width: 35px;
+  height: 35px;
+}
+
+.arrow-btn {
+  font-size: 22px;
+}
+
+.num-btn {
+  font-size: 18px;
+}
+
+.rack-btn {
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+}
+
+.rack-btns {
+  width: 45px;
+  height: 25px;
+  font-size: 20px;
+}
+
+/* ----- BUTTON INTERACTION EFFECTS ----- */
+.arrow-btn:hover,
+.num-btn:hover,
+.rack-btn:hover,
+.rack-btns:hover {
+  background: linear-gradient(to bottom, #e1c27a 0%, #f0d9b5 100%);
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.arrow-btn:active,
+.num-btn:active,
+.rack-btn:active,
+.rack-btns:active {
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* ----- SCRABBLE RACKS ----- */
+#scrabbleRack,
+#scrabbleRackb {
+  border: 1px solid red;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  /* center children horizontally */
+  align-items: center;
+  /* center vertically */
+  gap: 6px;
+  /* space between letter buttons */
+  z-index: 10;
+  /* above canvas */
+  background: rgba(0, 0, 0, 0.2);
+  /* optional translucent background */
+  padding: 6px 10px;
+  /* optional padding */
+  border-radius: 8px;
+  /* optional rounded corners */
+}
+
+#scrabbleRack {
+  bottom: 40px;
+}
+
+#scrabbleRackb {
+  bottom: 5px;
+}
+
+/* ----- SCREENS ----- */
+#connectscreen {
+  display: block;
+}
+
+#gamescreen {
+  display: none;
+}
+
+#debugscreen {
+  border: 2px solid gray;
+  background-color: darkgray;
+  color: black;
+  display: none;
+}

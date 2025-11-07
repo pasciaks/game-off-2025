@@ -11,3 +11,162 @@ this server is running at
 /var/www/websocks/server.js
 
 
+TODO:
+
+POWER-UPs, when enabled offer following abilities:
+
+-Can Repeat use the letters on your rack for a brief time or iteration.
+
+-Can replace letters on the board for a brief time or iteration.
+
+
+Games/Boards start with Preset partial waves words random on board.  When you complete/create a 'waves' themed word, you get random powerup. 
+
+ (( WORDS LIKE ))
+
+      "WAVE",
+      "RIPPLE",
+      "SWELL",
+      "SURF",
+      "BREAKER",
+      "CREST",
+      "TROUGH",
+      "TIDE",
+      "CURRENT",
+      "SURGE",
+      "FLOW",
+      "DRIFT",
+      "SPLASH",
+      "SPLASHDOWN",
+      "FOAM",
+      "FROTH",
+      "CURL",
+      "UNDULATE",
+      "OSCILLATE"
+
+Add Score keeping
+
+Store game and words found in player and games history for replay watching entire sequence.  Games possibly last 24 hours or until 95% filled... or something like that...
+
+Tile types.. stone or gray letters can only play connected to other stone or gray letters.
+
+Perhaps each player in a game has their own tile colors and only with a powerup can you connect to other players letters...
+
+
+
+Different game WAVEs for different rules.  Icon image or animated .gif on score indicates current game wave.
+
+RadiO ( word must begin with a consonant and end with a vowel )
+
+SounD ( consonant - consonant )
+
+ElectromagnetiC ( vowel - consonant )
+
+EnergY ( vowel - vowel )
+
+Microwave ( only 2 or 3 digit words )
+
+Crime Wave ( You can pick up / remove up to 7 letters from the board into your tile set )
+
+Tidal Wave ( Any connected letters to the word you make 'wash' away )
+
+Heat Wave ( ? )
+
+Shock ( ? )
+
+Brain Wave ( Must spell right to left or bottom to top - backwards )
+
+Sine Wave ( ? )
+
+---
+
+That’s awesome — you’re really turning Scrabble Scramble: Waves Edition into something with evolving modes and energy dynamics! 🌊⚡
+Let’s fill in those “?” gaps and suggest a few more “Wave Mode” ideas consistent with your style — short rules, thematic, and easy to implement or visualize.
+
+🌊 Wave Modes — Expanded List
+⚡ Heat Wave
+
+🔥 “Letters overheat under pressure.”
+
+After each turn, one random tile on the board “burns out” (turns black / unusable).
+
+OR: You can only play letters within 3 tiles of a red-hot letter (🔥 tile).
+
+OR simpler: Only words containing a “HOT” letter (A, E, I, O, U) score double.
+
+⚡ Shock Wave
+
+⚡ “One move triggers another.”
+
+When you place a word, adjacent letters (in 8 directions) vibrate and shift position by one space randomly (scrambling nearby tiles).
+
+OR: A shock wave extends your word by one random letter from the rack automatically.
+
+OR simpler: Every word that uses “Z”, “X”, or “Q” triggers a shock, rearranging the surrounding 3×3 area.
+
+🧠 Brain Wave
+
+🌀 (already clever — right-to-left or bottom-to-top)
+You could also add a mirror or inversion visual effect — letters briefly flip orientation when placed.
+
+🌈 Sine Wave
+
+🎵 “Language in rhythm.”
+
+Letters on the board move up and down smoothly (literally animated like a sine wave).
+
+Gameplay rule: You can only play on tiles currently “cresting” (highlighted) as the wave passes.
+
+OR: Word length must follow a pattern — e.g., 3-letter → 5-letter → 7-letter → back to 3.
+
+OR: Points oscillate — 2× multiplier on alternating turns.
+
+🕳 Gravitational Wave
+
+🌀 “Massive pull.”
+
+Newly placed words pull surrounding letters inward (shift them one step closer).
+
+Or: Words placed near the center gain bonus points, simulating gravitational focus.
+
+🧊 Cold Wave
+
+❄️ “Frozen tiles.”
+
+Random letters on the board freeze and cannot be used or replaced for 1–2 turns.
+
+If you thaw them by making a word containing “ICE”, “COLD”, etc., you get a small bonus.
+
+🧬 Quantum Wave
+
+⚛️ “Uncertainty rules.”
+
+When you place a word, one letter in it randomly changes after placement (collapses to a different value).
+
+Bonus points if your word still remains valid after the shift.
+
+💀 Death Wave
+
+☠️ “Decay spreads.”
+
+Each turn, one tile disappears permanently, starting from the edges (like erosion).
+
+Adds urgency: board shrinks over time.
+
+🌪️ Shockwave Chain (Power-Up Idea)
+
+Place a word that triggers a wave animation that spreads across the board, affecting tiles or stealing from other players.
+
+🧩 Extra Bonus Themes / Variants
+
+If you want to rotate “waves” every few hours or per match:
+
+“Echo Wave” – every word also repeats its last letter onto an adjacent empty square automatically.
+
+“Light Wave” – only letters with straight lines (A, E, F, H, I, K, L, M, N, T, V, W, X, Y, Z) can be used.
+
+“Dark Wave” – only curved letters (B, C, D, G, J, O, P, Q, R, S, U).
+
+“Brainstorm Wave” – each player can see the opponent’s next tile for 3 seconds before their turn.
+
+“Radioactive Wave” – every word that touches a glowing tile doubles in points but removes those tiles afterward.
