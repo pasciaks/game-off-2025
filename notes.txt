@@ -92,19 +92,21 @@ mobile zoom no work
 
 ---
 
-That’s awesome — you’re really turning Scrabble Scramble: Waves Edition into something with evolving modes and energy dynamics! 🌊⚡
-Let’s fill in those “?” gaps and suggest a few more “Wave Mode” ideas consistent with your style — short rules, thematic, and easy to implement or visualize.
+
+
+🌊⚡
+
+
 
 🌊 Wave Modes — Expanded List
+
 ⚡ Heat Wave
 
 🔥 “Letters overheat under pressure.”
 
 After each turn, one random tile on the board “burns out” (turns black / unusable).
 
-OR: You can only play letters within 3 tiles of a red-hot letter (🔥 tile).
-
-OR simpler: Only words containing a “HOT” letter (A, E, I, O, U) score double.
+Only words containing a “HOT” letter (A, E, I, O, U) score double.
 
 ⚡ Shock Wave
 
@@ -119,19 +121,13 @@ OR simpler: Every word that uses “Z”, “X”, or “Q” triggers a shock, 
 🧠 Brain Wave
 
 🌀 (already clever — right-to-left or bottom-to-top)
-You could also add a mirror or inversion visual effect — letters briefly flip orientation when placed.
 
 🌈 Sine Wave
 
-🎵 “Language in rhythm.”
 
-Letters on the board move up and down smoothly (literally animated like a sine wave).
+ Word length must follow a pattern — e.g., 3-letter → 5-letter → 7-letter → back to 3.
 
-Gameplay rule: You can only play on tiles currently “cresting” (highlighted) as the wave passes.
-
-OR: Word length must follow a pattern — e.g., 3-letter → 5-letter → 7-letter → back to 3.
-
-OR: Points oscillate — 2× multiplier on alternating turns.
+ Points oscillate — 2× multiplier on alternating turns.
 
 🕳 Gravitational Wave
 
