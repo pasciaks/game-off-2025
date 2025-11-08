@@ -25,6 +25,10 @@
 
   <p>Scrabble Scramble</p>
 
+  <h2><span id="playerName"></span></h2>
+
+  <button onclick="localStorage.clear();window.location.reload();">?</button>
+
   <h1>
     <a href="research/mobile-design.html?room=room1">Game 1</a>
   </h1>
@@ -36,6 +40,45 @@
   <h1>
     <a href="research/mobile-design.html?room=room3">Game 3</a>
   </h1>
+
+
+  <script>
+
+    function generateAuthorName() {
+      const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."];
+      const adjectives = [
+        "Eloquent", "Mysterious", "Somber", "Brilliant", "Enigmatic", "Gentle",
+        "Brooding", "Inspired", "Melancholic", "Witty", "Stoic", "Dreamy",
+        "Vivid", "Arcane", "Noble", "Poetic", "Clever", "Ambitious", "Haunted",
+        "Fabled", "Quiet", "Venerable", "Charming", "Daring", "Curious"
+      ];
+      const firstNames = [
+        "Tobias", "Ada", "Lillian", "Oscar", "Julian", "Clara", "Eleanor", "Hugo",
+        "Daphne", "Nathaniel", "Rowan", "Sylvia", "Edgar", "Vera", "August",
+        "Florence", "Lucian", "Ivy", "Gideon", "Mabel", "Arthur", "Beatrice",
+        "Felix", "Cecilia", "Miles"
+      ];
+      const lastNames = [
+        "Quill", "Penwright", "Inkwell", "Thorne", "Austen", "Brontë", "Heming",
+        "Wordsworth", "Hawthorne", "Byron", "Poe", "Shelley", "Twain", "Chaucer",
+        "Dickens", "Wilde", "Frost", "Lowell", "Whitman", "Melville", "Keats",
+        "Tennyson", "Carroll", "Eliot", "Huxley", "Orwell"
+      ];
+
+      const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+
+      return `${rand(titles)} ${rand(adjectives)} ${rand(firstNames)} ${rand(lastNames)}`;
+    }
+
+    let testName = localStorage.getItem("myName");
+
+    let myName = testName || generateAuthorName(); // Math.random();
+
+    localStorage.setItem("myName", myName);
+
+    document.getElementById("playerName").innerText = myName;
+
+  </script>
 
 </body>
 

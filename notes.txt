@@ -80,6 +80,18 @@ Sine Wave ( ? )
 
 ---
 
+maybe highlight used tiles before submit so you cant reuse
+ 
+DOWN and RIGHT, like scrabble
+ 
+what about unusable spaces  ( water )
+
+option to allow bottom to up and right to left ( or as a power up )
+
+mobile zoom no work
+
+---
+
 That’s awesome — you’re really turning Scrabble Scramble: Waves Edition into something with evolving modes and energy dynamics! 🌊⚡
 Let’s fill in those “?” gaps and suggest a few more “Wave Mode” ideas consistent with your style — short rules, thematic, and easy to implement or visualize.
 

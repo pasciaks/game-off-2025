@@ -84,7 +84,35 @@
 
     const users = new Map();
 
-    let myName = Math.random();
+    function generateAuthorName() {
+      const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."];
+      const adjectives = [
+        "Eloquent", "Mysterious", "Somber", "Brilliant", "Enigmatic", "Gentle",
+        "Brooding", "Inspired", "Melancholic", "Witty", "Stoic", "Dreamy",
+        "Vivid", "Arcane", "Noble", "Poetic", "Clever", "Ambitious", "Haunted",
+        "Fabled", "Quiet", "Venerable", "Charming", "Daring", "Curious"
+      ];
+      const firstNames = [
+        "Tobias", "Ada", "Lillian", "Oscar", "Julian", "Clara", "Eleanor", "Hugo",
+        "Daphne", "Nathaniel", "Rowan", "Sylvia", "Edgar", "Vera", "August",
+        "Florence", "Lucian", "Ivy", "Gideon", "Mabel", "Arthur", "Beatrice",
+        "Felix", "Cecilia", "Miles"
+      ];
+      const lastNames = [
+        "Quill", "Penwright", "Inkwell", "Thorne", "Austen", "Brontë", "Heming",
+        "Wordsworth", "Hawthorne", "Byron", "Poe", "Shelley", "Twain", "Chaucer",
+        "Dickens", "Wilde", "Frost", "Lowell", "Whitman", "Melville", "Keats",
+        "Tennyson", "Carroll", "Eliot", "Huxley", "Orwell"
+      ];
+
+      const rand = arr => arr[Math.floor(Math.random() * arr.length)];
+
+      return `${rand(titles)} ${rand(adjectives)} ${rand(firstNames)} ${rand(lastNames)}`;
+    }
+
+    let testName = localStorage.getItem("myName");
+
+    let myName = testName || generateAuthorName(); // Math.random();
 
     let mode = 'production';// 'production'; // production  // development
 
@@ -290,6 +318,10 @@
 
     let myRoom = `${test}`;
 
+    localStorage.setItem("myName", myName);
+    localStorage.setItem("myRoom", myRoom);
+
+
     switch (mode) {
       case "production":
         try {
@@ -405,7 +437,9 @@
       let users2 = data.users;
       console.log("USERS", users2);
 
-      users.set(data.data.myName, { dateTime: data.data.dateTime, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+      users.set(data.data.myName, { dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+
+      console.log(users);
 
       log(data);
     }
@@ -522,15 +556,21 @@
     let lastDirectionXY = { x: 0, y: 0 }
 
     function playerStand() {
+
+      if (lastDirectionXY.x == 1) {
+        lastDirectionXY = { x: 0, y: 1 }
+      } else {
+        lastDirectionXY = { x: 1, y: 0 }
+      }
       // navigateView(playerCol, playerRow);
-      lastDirectionXY = { x: 1, y: 0 }
+
       keepPlayerVisible();
     }
 
     function playerLeft() {
       playerCol -= 1;
       // navigateView(playerCol, playerRow);
-      lastDirectionXY = { x: -1, y: 0 }
+      lastDirectionXY = { x: 1, y: 0 }
       keepPlayerVisible();
     }
 
@@ -544,7 +584,7 @@
     function playerUp() {
       playerRow -= 1;
       // navigateView(playerCol, playerRow);
-      lastDirectionXY = { x: 0, y: -1 }
+      lastDirectionXY = { x: 0, y: 1 }
       keepPlayerVisible();
     }
 
@@ -613,6 +653,8 @@
           // }
 
           newTile.letter = e.target.innerText.toUpperCase();
+
+          e.target.innerText = "_";
 
           proposedLetterUse[i] = (proposedLetterUse[i] || "") + newTile.letter;
 
@@ -882,13 +924,24 @@
 
       console.log(e.key);
 
-      if (e.key.toUpperCase() == "S") {
-        navigateView(playerCol, playerRow);
+      // if (e.key.toUpperCase() == "S") {
+      //   navigateView(playerCol, playerRow);
+      // }
+
+      let tempKey = e?.key?.toUpperCase();
+
+      for (let i = 0; i <= 8; i++) {
+        let isKey = document.getElementById(`tile${i}`);
+        if (isKey?.innerText == tempKey) {
+          isKey.click();
+          break;
+        }
       }
 
       if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
         keysPressed[e.key] = true;
       }
+
     });
 
     // Key up → mark as released
@@ -1155,16 +1208,60 @@
         }
       }
 
+
+
       users.forEach((u) => {
+
+        console.log(u);
 
         let cplayerX = u.playerCol * TILE - cameraX;
         let cplayerY = u.playerRow * TILE - cameraY;
 
-        if ((u?.dateTime)) {
-          console.log(u);
+        let nickname = u?.nickname || "Unknown";
+
+        ctx.font = "18px Arial";
+
+        // if ((u?.dateTime)) {
+        //   ctx.fillText(u.dateTime, cplayerX - 22, cplayerY - 32);
+        // }
+
+        if (nickname == myName) {
+          ctx.fillStyle = 'black';
+        } else {
+          ctx.fillStyle = 'yellow';
         }
 
-        ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+        if (nickname != myName && (Date.now() - u.dateTime) > 15000) {
+
+        } else {
+          ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+
+          if ((Date.now() - u.dateTime) < 1000) {
+            ctx.fillText(nickname, cplayerX - 22, cplayerY - 22);
+          }
+
+        }
+
+        if (nickname == myName) {
+
+          if (lastDirectionXY.x > 0) {
+            ctx.font = "32px courier";
+            ctx.fillStyle = 'white';
+            // ctx.fillRect(cplayerX + 25, cplayerY + 1, 15, 15);
+            ctx.fillText("→", cplayerX + 25, cplayerY + 10)
+          }
+
+          if (lastDirectionXY.y > 0) {
+            ctx.font = "32px courier";
+            ctx.fillStyle = 'white';
+            // ctx.fillRect(cplayerX + 1, cplayerY + 25, 15, 15);
+            ctx.fillText("↓", cplayerX + 10, cplayerY + 25)
+          }
+
+        }
+
+        // ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+        // ctx.fillText(nickname, cplayerX - 22, cplayerY - 22);
 
       });
 
