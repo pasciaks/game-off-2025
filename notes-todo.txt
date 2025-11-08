@@ -9,19 +9,3 @@ https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt
 
 
 
-scrambled idea
-
-backend server must do a lot of the work
-
-gear front end to use sockets for all moves, etc
-
-when player hits arrows, send 'move_player' commands to server, etc
-
-let front end just be an updated view of the game running at the server by game #, room #, etc.
-
-allow front end to follow either yourself or other players
-
-consider multilanguage
-
-
-

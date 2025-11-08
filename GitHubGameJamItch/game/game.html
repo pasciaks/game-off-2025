@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="player.png">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <title>Infinite Tile World</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 
 
 </head>
@@ -902,9 +902,9 @@
 
       let tt = getTile(col, row);
 
-      if (option) {
-        // tt.isSelected = !tt?.isSelected;
-      }
+      // if (option) {
+      // tt.isSelected = !tt?.isSelected;
+      // }
 
       setTile(col, row, tt);
       playerCol = col;
@@ -1020,7 +1020,7 @@
       if (e.touches.length === 1) {
         // Single finger drag
         const t = e.touches[0];
-        captureCoords(t, true);
+        // captureCoords(t, true);
         isDragging = true;
         dragStartX = t.clientX;
         dragStartY = t.clientY;
@@ -1043,7 +1043,7 @@
     canvas.addEventListener("touchmove", (e) => {
       if (e.touches.length === 1 && isDragging) {
         const t = e.touches[0];
-        captureCoords(t, false);
+        //captureCoords(t, false);
         const dx = (t.clientX - dragStartX) / zoom;
         const dy = (t.clientY - dragStartY) / zoom;
         cameraX = cameraStartX - dx;
@@ -1065,9 +1065,10 @@
         cameraY = touchCameraStart.y + (mid.y - touchStartMid.y) / newZoom / zoomChange;
         zoom = newZoom;
       }
+      //captureCoords(t, false);
     });
 
-    canvas.addEventListener("touchend", () => {
+    canvas.addEventListener("touchend", (e) => {
       if (event.touches.length === 0) {
         isDragging = false;
         lastTouchDist = null;

@@ -90,13 +90,21 @@ option to allow bottom to up and right to left ( or as a power up )
 
 mobile zoom no work
 
+scrambled idea
+
+backend server must do a lot of the work
+
+gear front end to use sockets for all moves, etc
+
+when player hits arrows, send 'move_player' commands to server, etc
+
+let front end just be an updated view of the game running at the server by game #, room #, etc.
+
+allow front end to follow either yourself or other players
+
+consider multilanguage
+
 ---
-
-
-
-🌊⚡
-
-
 
 🌊 Wave Modes — Expanded List
 
@@ -123,7 +131,6 @@ OR simpler: Every word that uses “Z”, “X”, or “Q” triggers a shock, 
 🌀 (already clever — right-to-left or bottom-to-top)
 
 🌈 Sine Wave
-
 
  Word length must follow a pattern — e.g., 3-letter → 5-letter → 7-letter → back to 3.
 
