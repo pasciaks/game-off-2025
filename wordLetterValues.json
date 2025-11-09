@@ -128,10 +128,5 @@
     "letter": "Z",
     "quantity": 1,
     "points": 10
-  },
-  {
-    "letter": "Blank",
-    "quantity": 2,
-    "points": 0
   }
 ]

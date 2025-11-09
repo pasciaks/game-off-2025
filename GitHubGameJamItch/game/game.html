@@ -256,12 +256,7 @@
         "letter": "Z",
         "quantity": 1,
         "points": 10
-      },
-      // {
-      //   "letter": "_",
-      //   "quantity": 2,
-      //   "points": 0
-      // }
+      }
     ];
 
     function shuffleInPlace(array) {
@@ -280,7 +275,7 @@
         }
       }
       shuffleInPlace(lettersCollection);
-      console.log(lettersCollection.length);
+      // console.log(lettersCollection.length);
     }
 
     function getLetterFromCollection() {
@@ -332,12 +327,12 @@
           socket = io("https://pasciak.com:4433", {
             transports: ["websocket"], // optional: force WebSocket only
           });
-          console.log("production - https://pasciak.com:4433");
+          // console.log("production - https://pasciak.com:4433");
         } catch (e) {
           socket = io("http://127.0.0.1:4433/", {
             transports: ["websocket"], // optional: force WebSocket only
           });
-          console.log("production - errored, using http://127.0.0.1:4433/");
+          // console.log("production - errored, using http://127.0.0.1:4433/");
         }
 
         break;
@@ -345,7 +340,7 @@
         socket = io("http://127.0.0.1:4433/", {
           transports: ["websocket"], // optional: force WebSocket only
         });
-        console.log("default - errored, using http://127.0.0.1:4433/");
+        // console.log("default - errored, using http://127.0.0.1:4433/");
         break;
 
     }
@@ -370,14 +365,14 @@
     });
 
     socket.on("tileMap", (data) => {
-      console.log("tileMap", data);
-      console.log(typeof data);
+      // console.log("tileMap", data);
+      // console.log(typeof data);
       //tileMap = data;
 
     });
 
     socket.on("data", (data) => {
-      console.log(data);
+      // console.log(data);
 
       updatePlayers(data);
 
@@ -407,19 +402,19 @@
     })
 
     socket.on('message', (msg) => {
-      console.log(msg)
+      // console.log(msg)
       log(msg);
     });
 
     socket.on('tileObjects', (jsonDataString) => {
-      console.log(jsonDataString)
+      // console.log(jsonDataString)
       try {
         let o = JSON.parse(jsonDataString);
         tileMap = new Map();
         let o2 = Object.keys(o);
 
         o2.forEach((k) => {
-          console.log(o[k]);
+          //console.log(o[k]);
           setTile(o[k].col, o[k].row, o[k]);
         });
 
@@ -433,17 +428,17 @@
     });
 
     function updatePlayers(data) {
-      console.log('-----------------------------');
-      console.log('update players');
-      console.log('-----------------------------');
-      console.log(data.data);
+      // console.log('-----------------------------');
+      // console.log('update players');
+      // console.log('-----------------------------');
+      // console.log(data.data);
 
       let users2 = data.users;
-      console.log("USERS", users2);
+      // console.log("USERS", users2);
 
       users.set(data.data.myName, { dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
 
-      console.log(users);
+      // console.log(users);
 
       log(data);
     }
@@ -460,13 +455,13 @@
     }
 
     function updatePlayerPosition(data) {
-      console.log("send UpdatePlayerPosition", data);
+      // console.log("send UpdatePlayerPosition", data);
       data.command = "updatePlayer";
       sendMessage(data);
     }
 
     function sendMessage(data) {
-      console.log("sendMessage", data);
+      // console.log("sendMessage", data);
 
       socket.emit("getRooms", { test: 'getRooms Called', data: data });
 
@@ -616,7 +611,7 @@
 
     function submitAttempt() {
 
-      console.log("proposedTileUse", proposedLetterUse);
+      // console.log("proposedTileUse", proposedLetterUse);
 
       proposedLetterUse = {};
 
@@ -628,7 +623,7 @@
 
       proposedTileMap.forEach((i) => {
         if (i.letter != "_") {
-          console.log(i);
+          // console.log(i);
 
           //----------------------------------------------------------
           ////////////////////////////////////////////////////////
@@ -650,7 +645,7 @@
         ele.classList.remove("used");
         let eleText = ele.innerText;
         if (/[a-z]/.test(eleText)) {
-          console.log("includes a lowercase...");
+          // console.log("includes a lowercase...");
           ele.innerText = getLetterFromCollection();
         }
       }
@@ -681,9 +676,9 @@
 
       document.getElementById(`tile${i}`).addEventListener("click", (e) => {
 
-        console.log(`Tile ${i} clicked`);
+        // console.log(`Tile ${i} clicked`);
 
-        console.log(e.target);
+        // console.log(e.target);
 
         e.target.classList.add("used");
 
@@ -693,7 +688,7 @@
         if (newTile.letter == '_') { // only allow proposed tile on a blank tile on the board
 
           if (/[a-z]/.test(e.target.innerText)) {
-            console.log("includes a lowercase...");
+            // console.log("includes a lowercase...");
             return;
           }
 
@@ -825,7 +820,7 @@
     let tttp = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnnp = Math.floor((Math.random() * 8)) + 1;
     let thefilep = tttp + "" + nnnp + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
-    console.log(thefilep);
+    // console.log(thefilep);
     thefilep = 's2.png';
     tileProoposedImage.src = thefilep;
     tileProoposedImage.onload = () => {
@@ -838,7 +833,7 @@
     let thefile = ttt + "" + nnn + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
     thefile = 't8.png';
     tileImage.src = thefile;
-    console.log(thefile)
+    // console.log(thefile)
     tileImage.onload = () => {
       // setLetters(); // <-- add this line before starting the draw loop
       navigateView(0, 0);
@@ -969,11 +964,21 @@
     // Key down → mark as pressed
     window.addEventListener("keydown", (e) => {
 
-      console.log(e.key);
+      // console.log(e.key);
 
       // if (e.key.toUpperCase() == "S") {
       //   navigateView(playerCol, playerRow);
       // }
+
+      if (e.key == "Enter") {
+        document.getElementById("sendIt").click();
+        return;
+      }
+
+      if (e.key == "Backspace") {
+        document.getElementById("cancelIt").click();
+        return;
+      }
 
       let tempKey = e?.key?.toUpperCase();
 
@@ -1082,7 +1087,7 @@
           x: (t1.clientX + t2.clientX) / 2,
           y: (t1.clientY + t2.clientY) / 2
         };
-        console.log({ x, y });
+        // console.log({ x, y });
         touchCameraStart = { x: cameraX, y: cameraY, zoom };
       }
     });

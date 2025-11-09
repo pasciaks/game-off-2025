@@ -148,11 +148,6 @@ let wordLetterValues = [
     "letter": "Z",
     "quantity": 1,
     "points": 10
-  },
-  {
-    "letter": "_",
-    "quantity": 2,
-    "points": 0
   }
 ];
 
