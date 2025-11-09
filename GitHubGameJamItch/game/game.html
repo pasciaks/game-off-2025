@@ -9,10 +9,102 @@
   <title>Infinite Tile World</title>
   <link rel="stylesheet" href="./css/styles.css">
 
+  <style>
+    * {
+      text-align: center;
+    }
 
+    /* Toast container */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Toast style */
+    .toast {
+      display: flex;
+      align-items: center;
+      min-width: 250px;
+      max-width: 350px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: #fff;
+      font-family: sans-serif;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      position: relative;
+    }
+
+    /* Toast types */
+    .toast.success {
+      background-color: #4CAF50;
+    }
+
+    .toast.error {
+      background-color: #F44336;
+    }
+
+    .toast.info {
+      background-color: #2196F3;
+    }
+
+    .toast.warning {
+      background-color: #FFC107;
+      color: #333;
+    }
+
+    /* Show toast */
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Close button */
+    .toast .close-btn {
+      margin-left: auto;
+      cursor: pointer;
+      font-weight: bold;
+      padding-left: 10px;
+    }
+
+    dialog {
+      border: none;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* button {
+      padding: 8px 16px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    } */
+  </style>
 </head>
 
 <body>
+
+  <div id="toast-container"></div>
+
+  <dialog id="myDialog">
+    <h2>Hello!</h2>
+    <p>This is a simple dialog box.</p>
+    <a href="../index.html">Home</a>
+    <button id="closeDialog">Close</button>
+  </dialog>
 
   <!-- Keypad -->
   <div id="keypad">
@@ -55,7 +147,40 @@
 
   </div>
 
-  <button class="rack-btns2" id="eraseIt">Erase Board</button>
+  <div style="border:1px solid gray;margin:5px;padding:5px;">
+
+    <button class="rack-btns2" id="eraseIt">Erase Board</button>
+
+    <button onclick="showToast('This is a success!', 'success')">Success</button>
+    <button onclick="showToast('Something went wrong!', 'error')">Error</button>
+    <button onclick="showToast('Here is some info', 'info')">Info</button>
+    <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button>
+
+
+    <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
+" onclick="playAudioToggle('Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
+      Audio</button>
+
+
+
+    <button
+      title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
+      onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
+      Audio</button>
+
+    <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">Volume:
+      <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
+    </label>
+
+    <button id="openDialog">Open Dialog</button>
+
+    <button title="Allows you to copy a letter from the board into one of your tiles." class="rack-btns2"
+      id="toggleIsCrimeWave">Toggle Crime Wave</button>
+
+    <button title="Allows you to attempt to replace letters already placed with your tiles." class="rack-btns2"
+      id="toggleReplacement">Tidal Wave</button>
+
+  </div>
 
   <div id="connectscreen">
     <p>Connecting...</p>
@@ -64,14 +189,9 @@
   <!-- <button onclick="getMap()" id="getMap">Get Map</button> -->
 
   <div id="debugscreen">
-    <button onclick="joinRoom('room1','sheldon')">Join Room 1 as sheldon</button>
-    <button onclick="joinRoom('room1','john')">Join Room 1 as john</button>
-    <button onclick="joinRoom('room2','sue')">Join Room 2 as sue</button>
-    <button onclick="joinRoom('room2','mary')">Join Room 2 as mary</button>
     <input id="msg" placeholder="Type message" />
     <button onclick="sendMessage()">Send</button>
     <pre id="log"></pre>
-
   </div>
 
   <div id="gamescreen">
@@ -79,6 +199,106 @@
   </div>
 
   <script>
+
+    const dialog = document.getElementById('myDialog');
+    const openBtn = document.getElementById('openDialog');
+    const closeBtn = document.getElementById('closeDialog');
+
+    openBtn.addEventListener('click', () => {
+      dialog.showModal(); // Use show() for non-modal
+    });
+
+    closeBtn.addEventListener('click', () => {
+      dialog.close();
+    });
+
+
+
+    let currentAudio = null;
+    let currentFile = "";
+
+    // 🎚️ Volume control (0.0 — 1.0)
+    function setAudioVolume(value) {
+      if (currentAudio) {
+        currentAudio.volume = Math.min(Math.max(value, 0), 1); // clamp between 0–1
+      }
+    }
+
+    function playAudioToggle(filename) {
+      // First time playing or new file requested
+      if (!currentAudio || currentFile !== filename) {
+        // Stop old audio if any
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+
+        currentFile = filename;
+        currentAudio = new Audio(filename);
+        currentAudio.loop = true;
+        currentAudio.play().catch(err => console.error("Audio play error:", err));
+        return;
+      }
+
+      // Toggle play/pause for the same file
+      if (currentAudio.paused) {
+        currentAudio.play().catch(err => console.error("Audio resume error:", err));
+      } else {
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // restart if played again
+      }
+    }
+
+    function playAudio(filename) {
+      // Stop previous audio if playing
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+
+      // Create new audio element
+      currentAudio = new Audio(filename);
+      currentAudio.loop = true; // Enable repeat
+      currentAudio.play()
+        .catch(err => console.error('Error playing audio:', err));
+    }
+
+    function showToast(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toast-container');
+
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.classList.add('toast', type);
+      toast.innerHTML = `
+      <span>${message}</span>
+      <span class="close-btn">&times;</span>
+    `;
+
+      // Append to container
+      container.appendChild(toast);
+
+      // Show with animation
+      setTimeout(() => toast.classList.add('show'), 100);
+
+      // Remove toast after duration
+      const removeToast = () => {
+        toast.classList.remove('show');
+        setTimeout(() => container.removeChild(toast), 400);
+      };
+
+      // Auto remove after duration
+      const timeoutId = setTimeout(removeToast, duration);
+
+      // Close button event
+      toast.querySelector('.close-btn').addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        removeToast();
+      });
+    }
+
+    let isCrimeWave = false;
+
+    let canReplace = false;
 
     // --- TILE STORAGE SYSTEM ---
     // Using a Map for efficient key/value access (supports infinite world)
@@ -414,11 +634,19 @@
         let o2 = Object.keys(o);
 
         o2.forEach((k) => {
+          // if (!o[k]?.type) {
+          //   o[k].type = 'normal';
+          //   if (Math.random()>.5) {
+          //     o[k].type = 'powerup';
+          //   }
+          // }
+
+          // NOTE: TEMP, ALL E'S ARE A POWERUP BUT THIS SHOULD BE SET AT BOARD LEVEL FROM SERVER
+          if (o[k].letter == 'E') { o[k].type = 'powerup' }
+
           //console.log(o[k]);
           setTile(o[k].col, o[k].row, o[k]);
         });
-
-
 
         // console.log(o2);
         // console.log(o);
@@ -470,15 +698,15 @@
 
     function joinRoom(roomName, nickname) {
 
-      const mapData = new Map([
-        ["-25,-25", { col: -25, row: -25, letter: "_" }],
-        ["-25,-24", { col: -25, row: -24, letter: "_" }],
-        ["-25,-23", { col: -25, row: -23, letter: "_" }]
-      ]);
+      // const mapData = new Map([
+      //   ["-25,-25", { col: -25, row: -25, letter: "_" }],
+      //   ["-25,-24", { col: -25, row: -24, letter: "_" }],
+      //   ["-25,-23", { col: -25, row: -23, letter: "_" }]
+      // ]);
 
-      const obj = Object.fromEntries(mapData); // Map → Object
+      // const obj = Object.fromEntries(mapData); // Map → Object
 
-      const json = JSON.stringify(obj); // Object → JSON string
+      // const json = JSON.stringify(obj); // Object → JSON string
 
       // socket.emit("joinRoom", { roomName, nickname, tileMap: json });
 
@@ -566,31 +794,55 @@
       keepPlayerVisible();
     }
 
-    function playerLeft() {
+    function playerLeft(allowAutomove = false) {
       playerCol -= 1;
       // navigateView(playerCol, playerRow);
       lastDirectionXY = { x: 1, y: 0 }
+
+      //auto keep moving   over existing letters
+      let temp = getTile(playerCol, playerRow);
+      if (allowAutomove) if (temp.letter != "_") { playerLeft(allowAutomove); }
+      /////////////////////////////////////////////
+
       keepPlayerVisible();
     }
 
-    function playerRight() {
+    function playerRight(allowAutomove = false) {
       playerCol += 1;
       // navigateView(playerCol, playerRow);
       lastDirectionXY = { x: 1, y: 0 }
+
+      //auto keep moving   over existing letters
+      let temp = getTile(playerCol, playerRow);
+      if (allowAutomove) if (temp.letter != "_") { playerRight(allowAutomove); }
+      /////////////////////////////////////////////
+
       keepPlayerVisible();
     }
 
-    function playerUp() {
+    function playerUp(allowAutomove = false) {
       playerRow -= 1;
       // navigateView(playerCol, playerRow);
       lastDirectionXY = { x: 0, y: 1 }
+
+      //auto keep moving   over existing letters
+      let temp = getTile(playerCol, playerRow);
+      if (allowAutomove) if (temp.letter != "_") { playerUp(allowAutomove); }
+      /////////////////////////////////////////////
+
       keepPlayerVisible();
     }
 
-    function playerDown() {
+    function playerDown(allowAutomove = false) {
       playerRow += 1;
       // navigateView(playerCol, playerRow);
       lastDirectionXY = { x: 0, y: 1 }
+
+      //auto keep moving   over existing letters
+      let temp = getTile(playerCol, playerRow);
+      if (allowAutomove) if (temp.letter != "_") { playerDown(allowAutomove); }
+      /////////////////////////////////////////////
+
       keepPlayerVisible();
     }
 
@@ -607,6 +859,7 @@
         let eleText = ele.innerText;
         ele.innerText = ele.innerText.toUpperCase();
       }
+
     }
 
     function submitAttempt() {
@@ -622,6 +875,7 @@
       // Consider use of power-up to replace existing letter on backend
 
       proposedTileMap.forEach((i) => {
+
         if (i.letter != "_") {
           // console.log(i);
 
@@ -630,7 +884,7 @@
           // todo backend logic to accept or deny, etc....
           ////////////////////////////////////////////////////////
           const key = tileKey(i.col, i.row);
-          const updated = { col: i.col, row: i.row, ...i, myName, myRoom };
+          const updated = { ...i, col: i.col, row: i.row, ...i, myName, myRoom };
           socket.emit("proposedTile", updated);
           ////////////////////////////////////////////////////////
           //----------------------------------------------------------
@@ -650,25 +904,36 @@
         }
       }
 
+      canReplace = false;
+
     }
 
     function playerCenter() {
       navigateView(playerCol, playerRow);
     }
 
-    document.getElementById("up").addEventListener("click", () => playerUp());
-    document.getElementById("down").addEventListener("click", () => playerDown());
-    document.getElementById("left").addEventListener("click", () => playerLeft());
-    document.getElementById("right").addEventListener("click", () => playerRight());
+    try {
 
-    document.getElementById("center").addEventListener("click", () => playerCenter());
+      document.getElementById("up").addEventListener("click", () => playerUp());
+      document.getElementById("down").addEventListener("click", () => playerDown());
+      document.getElementById("left").addEventListener("click", () => playerLeft());
+      document.getElementById("right").addEventListener("click", () => playerRight());
 
-    document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
+      document.getElementById("center").addEventListener("click", () => playerCenter());
 
-    document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
+      document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
 
-    document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
+      document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
 
+      document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
+
+      document.getElementById("toggleIsCrimeWave").addEventListener("click", (e) => { e.preventDefault(); isCrimeWave = !isCrimeWave; });
+
+      document.getElementById("toggleReplacement").addEventListener("click", (e) => { e.preventDefault(); canReplace = !canReplace; });
+
+    } catch (e) {
+
+    }
 
 
     // Scrabble rack buttons
@@ -680,17 +945,19 @@
 
         // console.log(e.target);
 
-        e.target.classList.add("used");
+
 
         // TODO: convert to sockets to set (suggestedTiles array or something like it)
         let newTile = { ...getTile(playerCol, playerRow) };
 
-        if (newTile.letter == '_') { // only allow proposed tile on a blank tile on the board
+        if (newTile.letter == '_' || canReplace) { // only allow proposed tile on a blank tile on the board unless can replace mode
 
           if (/[a-z]/.test(e.target.innerText)) {
             // console.log("includes a lowercase...");
             return;
           }
+
+          e.target.classList.add("used");
 
           newTile.letter = e.target.innerText.toUpperCase();
 
@@ -705,19 +972,32 @@
           e.target.innerText = e.target.innerText.toLowerCase();
 
           if (lastDirectionXY.x == 1) {
-            playerRight();
+            playerRight(!canReplace);
           }
 
           if (lastDirectionXY.x == -1) {
-            playerLeft();
+            playerLeft(!canReplace);
           }
 
           if (lastDirectionXY.y == 1) {
-            playerDown();
+            playerDown(!canReplace);
           }
           if (lastDirectionXY.y == -1) {
-            playerUp();
+            playerUp(!canReplace);
           }
+
+        } else {
+
+          // NOTE: You clicked a letter tile while you are on a tile already having a letter
+
+          // isCrimeWave=true;
+
+          if (isCrimeWave) {
+            e.target.innerText = newTile.letter;
+            isCrimeWave = false;
+            e.target.classList.remove("used");
+          }
+
 
         }
 
@@ -779,11 +1059,66 @@
      * @param {{col:number,row:number,letter:string,color:string,status:string}} tileObj
      */
     function setTile(col, row, tileObj) {
+      if (!tileObj?.type) { tileObj.type = 'normal'; }
+
       const key = tileKey(col, row);
       // Merge given tileObj with col,row and store
       const updated = { col, row, ...tileObj };
       tileMap.set(key, updated);
     }
+
+    function createWave() {
+      const wavePoints = [];
+      const resolution = 25; // col range -25..25
+      const step = 1; // step size
+      const amplitude = 10; // max wave height
+
+      for (let col = -resolution; col <= resolution; col += step) {
+        // sine wave formula
+        const rowValue = 10 * Math.sin((col / resolution) * 2 * Math.PI);
+        const row = Math.round(rowValue);
+
+        // Fill in from 0 up to row (handles positive and negative waves)
+        if (row >= 0) {
+          for (let r = 0; r <= row; r++) {
+            wavePoints.push({ col, row: r });
+          }
+        } else {
+          for (let r = 0; r >= row; r--) {
+            wavePoints.push({ col, row: r });
+          }
+        }
+      }
+
+      return wavePoints;
+    }
+
+    let theWaveArea = [];// createWave(); // assuming this returns your wavePoints array
+
+    function isValidPlace(tto) {
+      // Ensure tto exists and has col and row
+      if (!tto || typeof tto.col !== 'number' || typeof tto.row !== 'number') return false;
+
+      // Check if the point exists in the wavePoints
+      const existsInWave = theWaveArea.some(
+        point => point.col === tto.col && point.row === tto.row
+      );
+
+      if (!existsInWave) return true;
+
+      // Original rules
+      if ((tto.col + tto.row) % 8 === 0) {
+        if (tto.row % 25 === 0) {
+          return true;
+        }
+      }
+      if (tto.col > 5 && tto.col < 15) {
+        return true;
+      }
+
+      return false;
+    }
+
 
     function setProposedTile(col, row, tileObj) {
 
@@ -827,6 +1162,14 @@
 
     };
 
+    const tilePower = new Image();
+    let thefilepower = tttp + "" + nnnp + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
+    thefilepower = 'u7.png';
+    tilePower.src = thefilepower;
+    tilePower.onload = () => {
+      //
+    };
+
     const tileImage = new Image();
     let ttt = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnn = Math.floor((Math.random() * 8)) + 1;
@@ -847,7 +1190,8 @@
      * @param {number} x - X position on canvas
      * @param {number} y - Y position on canvas
      */
-    function drawLetterTile(ctx, letter, x, y, optionOverride) {
+    function drawLetterTile(ctx, theTileData, x, y, optionOverride) {
+      let letter = theTileData.letter;
       letter = letter.toUpperCase();
       let shrink = 0;
       // Find tile position in grid
@@ -864,18 +1208,56 @@
               sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
               x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
             );
+
+
+            // out of bounds areas ? water traps, etc
+            if (!isValidPlace(theTileData)) {
+              shrink = 2;
+              ctx.fillStyle = 'black';
+              ctx.fillRect(x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2);
+            }
+
             return;
+
           } else {
+
             ctx.drawImage(
               tileImage,
               sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
               x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
             );
+
+            if (theTileData?.type == 'powerup') {
+              shrink = 5;
+              ctx.drawImage(
+                tilePower,
+                sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+                x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+              );
+
+              ctx.strokeStyle = 'white';
+              ctx.strokeRect(x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2);
+            }
+
+
+
+            //ctx.fillText(theTileData?.type.charAt(0), x + shrink + 15, y + shrink + 15);
+
+
+            // out of bounds areas ? water traps, etc
+            if (!isValidPlace(theTileData)) {
+              shrink = 2;
+              ctx.fillStyle = 'black';
+              ctx.fillRect(x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2);
+            }
+
             return;
           }
         }
       }
       console.warn('Letter not found:', letter);
+
+
     }
 
 
@@ -931,12 +1313,18 @@
     function captureCoords(e, option) {
 
       // Converts a mouse event (clientX, clientY) to world coordinates
-      const worldX = cameraX + e.clientX / zoom;
-      const worldY = cameraY + e.clientY / zoom;
+      const worldX = Math.floor(cameraX + e.clientX / zoom);
+      const worldY = Math.floor(cameraY + e.clientY / zoom - TILE / 2);
 
       // Convert world coordinates to tile coordinates
       const col = Math.floor(worldX / TILE);
       const row = Math.floor(worldY / TILE);
+
+
+      // console.log(col);
+      // console.log(row);
+      // console.log(worldX);
+      // console.log(worldY);
 
       // console.log(getTileItemWithColRow(col, row));
 
@@ -947,6 +1335,8 @@
       // if (option) {
       // tt.isSelected = !tt?.isSelected;
       // }
+
+      if (!tt?.type) { tt.type = 'normal' }
 
       setTile(col, row, tt);
       playerCol = col;
@@ -1160,6 +1550,7 @@
     function draw() {
 
       ctx.fillStyle = 'black';
+
       ctx.fillRect(0, 0, canvas.width, canvas.height); // fill, not clearRect
 
       //ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1196,9 +1587,9 @@
           if (theTile && theTile.letter !== "~" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
 
             if (theTile?.letter == "_") {
-              drawLetterTile(ctx, theTile.letter, px, py, true);
+              drawLetterTile(ctx, theTile, px, py, true);
             } else {
-              drawLetterTile(ctx, theTile.letter, px, py);
+              drawLetterTile(ctx, theTile, px, py);
             }
 
             ctx.lineWidth = 3;
@@ -1216,7 +1607,22 @@
           // ctx.strokeRect(px, py, TILE, TILE);
 
           // Draw col,row centered on tile
-          //      ctx.fillText(`${x},${y}`, px + TILE / 2, py + TILE / 2);
+          if (isCrimeWave) {
+            if (theTile.letter != "_") {
+              ctx.strokeStyle = 'red';
+              // ctx.strokeRect(px - TILE / 2, py - TILE / 2, TILE, TILE);
+              ctx.strokeRect(px, py, TILE, TILE);
+            }
+          }
+
+          if (canReplace) {
+            if (theTile.letter != "_") {
+              ctx.strokeStyle = 'green';
+
+              // ctx.strokeRect(px - TILE / 2, py - TILE / 2, TILE, TILE);
+              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+            }
+          }
 
           // if (x == playerCol) {
           //   playerX = px;
@@ -1246,7 +1652,7 @@
           // drawLetterTile(ctx, '_', px, py);
 
           if (theTile && theTile.letter !== "_" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
-            drawLetterTile(ctx, theTile.letter, px, py, true); // override draw to use proposed tile drawing image
+            drawLetterTile(ctx, theTile, px, py, true); // override draw to use proposed tile drawing image
             ctx.lineWidth = 3;
             ctx.strokeStyle = "white"
             if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
@@ -1255,8 +1661,6 @@
             //drawLetterTile(ctx, '_', px, py);
             //}
           }
-
-
 
         }
       }

@@ -10,35 +10,132 @@
   <title>Scrabble Scramble</title>
   <style>
     body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #D2B48C;
+      /* Tan background */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    p {
       text-align: center;
-      background-color: red;
+      margin: 10px 0;
+      color: #333;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
+      width: 90%;
+      max-width: 1000px;
+      margin-bottom: 40px;
+    }
+
+    .game-container a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      background: #f0e6d2;
+      /* light card color */
+      color: #4CAF50;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .game-container a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
+      background: #e6d6b8;
+    }
+
+    img {
+      width: 50%;
     }
   </style>
 </head>
 
 <body>
 
-  <p>Scrabble Scramble</p>
+  <div id="randomTitle"></div>
+
 
   <h2><span id="playerName"></span></h2>
 
-  <button onclick="localStorage.clear();window.location.reload();">?</button>
+  <button onclick="localStorage.clear(); window.location.reload();">Random Name</button>
 
-  <h1>
-    <a href="game/game.html?room=room1">Game 1</a>
-  </h1>
-
-  <h1>
-    <a href="game/game.html?room=room2">Game 2</a>
-  </h1>
-
-  <h1>
-    <a href="game/game.html?room=room3">Game 3</a>
-  </h1>
-
+  <h1>Select a Game</h1>
+  <div class="game-container" id="gameLinks"></div>
 
   <script>
 
+
+    // Array of all image filenames
+    const titles = [
+      "title.png",
+      // "title1.png",
+      // "title2.png",
+      // "title3.png",
+      // "title4.png",
+      // "title5.png",
+      // "title6.png",
+      // "title7.png",
+      // "title8.png",
+      // "title9.png",
+      // "title10.png"
+    ];
+
+    // Pick a random index
+    const randomIndex = Math.floor(Math.random() * titles.length);
+
+    // Create the <p><img> element
+    const p = document.createElement('p');
+    const img = document.createElement('img');
+    img.src = titles[randomIndex];
+    img.alt = `title${randomIndex}`;
+    p.appendChild(img);
+
+    // Add it to the page
+    document.getElementById('randomTitle').appendChild(p);
+
+
+    // Generate 1-99 game links dynamically
+    const container = document.getElementById('gameLinks');
+    for (let i = 1; i <= 100; i++) {
+      const a = document.createElement('a');
+      a.href = `game/game.html?room=room${i}`;
+      a.textContent = `Game ${i}`;
+      container.appendChild(a);
+    }
+
+    // Author name generator
     function generateAuthorName() {
       const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."];
       const adjectives = [
@@ -59,20 +156,13 @@
         "Dickens", "Wilde", "Frost", "Lowell", "Whitman", "Melville", "Keats",
         "Tennyson", "Carroll", "Eliot", "Huxley", "Orwell"
       ];
-
       const rand = arr => arr[Math.floor(Math.random() * arr.length)];
-
       return `${rand(titles)} ${rand(adjectives)} ${rand(firstNames)} ${rand(lastNames)}`;
     }
 
-    let testName = localStorage.getItem("myName");
-
-    let myName = testName || generateAuthorName(); // Math.random();
-
+    let myName = localStorage.getItem("myName") || generateAuthorName();
     localStorage.setItem("myName", myName);
-
     document.getElementById("playerName").innerText = myName;
-
   </script>
 
 </body>
