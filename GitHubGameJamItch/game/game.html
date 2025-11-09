@@ -38,7 +38,7 @@
     <button class="rack-btn" id="tile5"></button>
     <button class="rack-btn" id="tile6"></button>
     <button class="rack-btn" id="tile7"></button>
-    <button class="rack-btn" id="tile8">_</button>
+    <!-- <button class="rack-btn" id="tile8">_</button> -->
     <!-- <button class="rack-btn" id="sendIt">></button> -->
   </div>
 
@@ -50,6 +50,7 @@
     <button class="rack-btns" id="tile5b">*</button>
     <button class="rack-btns" id="tile6b">*</button>
     <button class="rack-btns" id="tile7b">*</button> -->
+    <button class="rack-btns2" id="cancelIt">Cancel</button>
     <button class="rack-btns2" id="sendIt">Submit</button>
   </div>
 
@@ -292,7 +293,7 @@
       for (let i = 1; i <= 7; i++) {
         document.getElementById(`tile${i}`).innerText = getLetterFromCollection();
       }
-      document.getElementById(`tile${8}`).innerText = "_";
+      //document.getElementById(`tile${8}`).innerText = "_";
     }
 
     populatePlayerLetters();
@@ -595,13 +596,28 @@
       keepPlayerVisible();
     }
 
+    function cancelAttempt() {
+      proposedTileMap = new Map();
+      for (let i = 1; i <= 7; i++) {
+        let ele = document.getElementById(`tile${i}`);
+        ele.classList.remove("used");
+        let eleText = ele.innerText;
+        ele.innerText = ele.innerText.toUpperCase();
+      }
+    }
+
     function submitAttempt() {
 
       console.log("proposedTileUse", proposedLetterUse);
 
       proposedLetterUse = {};
 
-      // console.log(proposedTileMap);
+      // TODO - rather than send each letter, send entire object of all proposed letters to backend
+      // have backend validate that any new letters connect to existing words and all connections are valid words
+      // then receive good or bad word back as accepted or not and appropriately clear proposed tiles, update scores on backend and get new tiles
+
+      // Consider use of power-up to replace existing letter on backend
+
       proposedTileMap.forEach((i) => {
         if (i.letter != "_") {
           console.log(i);
@@ -620,6 +636,17 @@
         }
       });
       proposedTileMap = new Map();
+
+      for (let i = 1; i <= 7; i++) {
+        let ele = document.getElementById(`tile${i}`);
+        ele.classList.remove("used");
+        let eleText = ele.innerText;
+        if (/[a-z]/.test(eleText)) {
+          console.log("includes a lowercase...");
+          ele.innerText = getLetterFromCollection();
+        }
+      }
+
     }
 
     function playerCenter() {
@@ -635,32 +662,40 @@
 
     document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
 
+    document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
+
     // Scrabble rack buttons
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 7; i++) {
 
       document.getElementById(`tile${i}`).addEventListener("click", (e) => {
 
         console.log(`Tile ${i} clicked`);
+
+        console.log(e.target);
+
+        e.target.classList.add("used");
 
         // TODO: convert to sockets to set (suggestedTiles array or something like it)
         let newTile = { ...getTile(playerCol, playerRow) };
 
         if (newTile.letter == '_') { // only allow proposed tile on a blank tile on the board
 
-          // if (/[a-z]/.test(e.target.innerText)) {
-          //   console.log("includes a lowercase...");
-          //   return;
-          // }
+          if (/[a-z]/.test(e.target.innerText)) {
+            console.log("includes a lowercase...");
+            return;
+          }
 
           newTile.letter = e.target.innerText.toUpperCase();
 
-          e.target.innerText = "_";
+          // e.target.innerText = "_";
 
           proposedLetterUse[i] = (proposedLetterUse[i] || "") + newTile.letter;
 
           // e.target.innerText = e.target.innerText.toLowerCase();
 
           setProposedTile(playerCol, playerRow, newTile);
+
+          e.target.innerText = e.target.innerText.toLowerCase();
 
           if (lastDirectionXY.x == 1) {
             playerRight();
@@ -1213,7 +1248,7 @@
 
       users.forEach((u) => {
 
-        console.log(u);
+        //console.log(u);
 
         let cplayerX = u.playerCol * TILE - cameraX;
         let cplayerY = u.playerRow * TILE - cameraY;

@@ -85,7 +85,7 @@ canvas:active {
 .num-btn,
 .rack-btn,
 .rack-btns {
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'Courier', 'Georgia', 'Times New Roman', serif;
   font-weight: bold;
   color: #222;
   background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%);
@@ -97,6 +97,11 @@ canvas:active {
   cursor: pointer;
   user-select: none;
   transition: all 0.1s ease-in-out;
+}
+
+.used {
+  color: red !important;
+  border: 5px solid red !important;
 }
 
 /* ----- SPECIFIC BUTTON SIZES ----- */
