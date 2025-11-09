@@ -85,13 +85,15 @@
       background: rgba(0, 0, 0, 0.5);
     }
 
-    /* button {
-      padding: 8px 16px;
+    #commands button {
+      padding: 5px;
       margin-top: 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-    } */
+      margin: 5px;
+
+    }
   </style>
 </head>
 
@@ -100,9 +102,9 @@
   <div id="toast-container"></div>
 
   <dialog id="myDialog">
-    <h2>Hello!</h2>
-    <p>This is a simple dialog box.</p>
-    <a href="../index.html">Home</a>
+    <h2>Instructions!</h2>
+    <p><a href="../index.html">Home</a></p>
+    <br>
     <button id="closeDialog">Close</button>
   </dialog>
 
@@ -149,27 +151,27 @@
 
   <div id="commands" style="border:1px solid gray;margin:0px;padding:0px;">
 
-    <button class="rack-btns2" id="eraseIt">Erase Board</button>
+    <!-- <button class="rack-btns2" id="eraseIt">Erase Board</button> -->
 
-    <button onclick="showToast('This is a success!', 'success')">Success</button>
-    <button onclick="showToast('Something went wrong!', 'error')">Error</button>
-    <button onclick="showToast('Here is some info', 'info')">Info</button>
-    <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button>
+    <!-- <button onclick="showToast('This is a success!', 'success')">Success</button> -->
+    <!-- <button onclick="showToast('Something went wrong!', 'error')">Error</button> -->
+    <!-- <button onclick="showToast('Here is some info', 'info')">Info</button> -->
+    <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
 
     <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle('Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
-      Audio</button>
+      Shining Stars</button>
 
     <button
       title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
       onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
-      Audio</button>
+      Advertime</button>
 
     <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">Volume:
       <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
     </label>
 
-    <button id="openDialog">Open Dialog</button>
+    <button id="openDialog">Instructions</button>
 
     <button title="Allows you to copy a letter from the board into one of your tiles." class="rack-btns2"
       id="toggleIsCrimeWave">Toggle Crime Wave</button>
@@ -922,23 +924,25 @@
 
       document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
 
-      document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
+      // document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
 
       document.getElementById("toggleIsCrimeWave").addEventListener("click", (e) => {
         e.preventDefault();
         isCrimeWave = !isCrimeWave;
-        showToast("Place your character on a red-outlined letter, then click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
+        showToast("Place your character on a blue outlined letter, then click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
         showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
       });
 
       document.getElementById("toggleReplacement").addEventListener("click", (e) => {
         e.preventDefault();
         canReplace = !canReplace;
-        showToast("You can place proposed letters on top of green outilned letters.", "info", 9999);
-        showToast("If the changes result in valid words, they remain on the new board.", "info", 9999);
+        showToast("You can place proposed letters on top of green outilned letters.", "success", 9999);
+        showToast("If the changes result in valid words, they remain on the new board.", "success", 9999);
       });
 
     } catch (e) {
+
+      console.log(e);
 
     }
 
@@ -1618,7 +1622,7 @@
           // Draw col,row centered on tile
           if (isCrimeWave) {
             if (theTile.letter != "_") {
-              ctx.strokeStyle = 'red';
+              ctx.strokeStyle = 'blue';
               // ctx.strokeRect(px - TILE / 2, py - TILE / 2, TILE, TILE);
               ctx.strokeRect(px, py, TILE, TILE);
             }
