@@ -52,7 +52,10 @@
     <button class="rack-btns" id="tile7b">*</button> -->
     <button class="rack-btns2" id="cancelIt">Cancel</button>
     <button class="rack-btns2" id="sendIt">Submit</button>
+
   </div>
+
+  <button class="rack-btns2" id="eraseIt">Erase Board</button>
 
   <div id="connectscreen">
     <p>Connecting...</p>
@@ -596,6 +599,11 @@
       keepPlayerVisible();
     }
 
+    function eraseBoard() {
+
+      socket.emit("eraseBoard", { myRoom, myName })
+    }
+
     function cancelAttempt() {
       proposedTileMap = new Map();
       for (let i = 1; i <= 7; i++) {
@@ -663,6 +671,10 @@
     document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
 
     document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
+
+    document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
+
+
 
     // Scrabble rack buttons
     for (let i = 1; i <= 7; i++) {

@@ -299,6 +299,15 @@ function getUsersInRoom(room) {
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
+  socket.on("eraseBoard", (data) => {
+    createMap(maps[data?.myRoom]);
+    console.log(data);
+    const obj2 = Object.fromEntries(maps[data?.myRoom]); // Map → Object
+    const json = JSON.stringify(obj2); // Object → JSON string
+    // socket.emit('tileObjects', json);
+    io.to(data?.myRoom).emit('tileObjects', json);
+  })
+
   socket.on('proposedTile', (data) => {
 
     console.log("data");
