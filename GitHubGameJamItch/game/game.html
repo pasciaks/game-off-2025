@@ -17,7 +17,7 @@
     /* Toast container */
     #toast-container {
       position: fixed;
-      top: 20px;
+      top: 60px;
       right: 20px;
       z-index: 9999;
       display: flex;
@@ -147,7 +147,7 @@
 
   </div>
 
-  <div style="border:1px solid gray;margin:5px;padding:5px;">
+  <div id="commands" style="border:1px solid gray;margin:0px;padding:0px;">
 
     <button class="rack-btns2" id="eraseIt">Erase Board</button>
 
@@ -156,12 +156,9 @@
     <button onclick="showToast('Here is some info', 'info')">Info</button>
     <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button>
 
-
     <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle('Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
       Audio</button>
-
-
 
     <button
       title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
@@ -927,9 +924,19 @@
 
       document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
 
-      document.getElementById("toggleIsCrimeWave").addEventListener("click", (e) => { e.preventDefault(); isCrimeWave = !isCrimeWave; });
+      document.getElementById("toggleIsCrimeWave").addEventListener("click", (e) => {
+        e.preventDefault();
+        isCrimeWave = !isCrimeWave;
+        showToast("Place your character on a red-outlined letter, then click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
+        showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
+      });
 
-      document.getElementById("toggleReplacement").addEventListener("click", (e) => { e.preventDefault(); canReplace = !canReplace; });
+      document.getElementById("toggleReplacement").addEventListener("click", (e) => {
+        e.preventDefault();
+        canReplace = !canReplace;
+        showToast("You can place proposed letters on top of green outilned letters.", "info", 9999);
+        showToast("If the changes result in valid words, they remain on the new board.", "info", 9999);
+      });
 
     } catch (e) {
 
@@ -1312,9 +1319,11 @@
 
     function captureCoords(e, option) {
 
+      const rect = canvas.getBoundingClientRect();
+
       // Converts a mouse event (clientX, clientY) to world coordinates
-      const worldX = Math.floor(cameraX + e.clientX / zoom);
-      const worldY = Math.floor(cameraY + e.clientY / zoom - TILE / 2);
+      const worldX = Math.floor(cameraX + (e.clientX - rect.left) / zoom);
+      const worldY = Math.floor(cameraY + (e.clientY - rect.top) / zoom);
 
       // Convert world coordinates to tile coordinates
       const col = Math.floor(worldX / TILE);
@@ -1691,10 +1700,10 @@
         if (nickname != myName && (Date.now() - u.dateTime) > 15000) {
 
         } else {
-          ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+          // ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
 
           if ((Date.now() - u.dateTime) < 1000) {
-            ctx.fillText(nickname, cplayerX - 22, cplayerY - 22);
+            ctx.fillText(nickname, cplayerX + TILE / 2, cplayerY + TILE / 2);
           }
 
         }
@@ -1702,17 +1711,17 @@
         if (nickname == myName) {
 
           if (lastDirectionXY.x > 0) {
-            ctx.font = "32px courier";
+            ctx.font = "40px courier";
             ctx.fillStyle = 'white';
             // ctx.fillRect(cplayerX + 25, cplayerY + 1, 15, 15);
-            ctx.fillText("→", cplayerX + 25, cplayerY + 10)
+            ctx.fillText("→", cplayerX + TILE / 2, cplayerY + TILE / 2)
           }
 
           if (lastDirectionXY.y > 0) {
-            ctx.font = "32px courier";
+            ctx.font = "40px courier";
             ctx.fillStyle = 'white';
             // ctx.fillRect(cplayerX + 1, cplayerY + 25, 15, 15);
-            ctx.fillText("↓", cplayerX + 10, cplayerY + 25)
+            ctx.fillText("↓", cplayerX + TILE / 2, cplayerY + TILE / 2)
           }
 
         }
