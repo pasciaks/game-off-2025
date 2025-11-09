@@ -277,7 +277,7 @@ const io = new Server(server, {
 const users = new Map();
 
 // You can define rooms here or manage dynamically
-const availableRooms = ['room1', 'room2', 'room3'];
+const availableRooms = ['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'room7', 'room8', 'room9', 'room10'];
 
 availableRooms.forEach((r) => {
   maps[r] = new Map();
