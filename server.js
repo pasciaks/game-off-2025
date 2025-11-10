@@ -193,9 +193,9 @@ function tileKey(col, row) {
 function createMap(mapRef) {
   for (let i = -25; i < 25; i++) {
     for (let j = -25; j < 25; j++) {
-      setTile(i, j, mapRef, { letter: '_' });
+      setTile(i, j, mapRef, { letter: '_', type: 'normal' });
       if (Math.random() > .98) {
-        setTile(i, j, mapRef, { letter: randomLetter() });
+        setTile(i, j, mapRef, { letter: randomLetter(), type: Math.random() < .58 ? 'normal' : 'powerup' });
       }
     }
   }
@@ -212,7 +212,8 @@ function getTile(col, row, mapRef) {
       row,
       letter: "_",
       color: 'cyan', // getTileColor(col, row),
-      status: "empty"
+      status: "empty",
+      type: "normal"
     };
     mapRef.set(key, newTile);
   }

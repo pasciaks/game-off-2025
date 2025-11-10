@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="icon" type="image/png" href="player.png">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <title>Infinite Tile World</title>
+  <title>Scrabble Scramble</title>
   <link rel="stylesheet" href="./css/styles.css">
 
   <style>
@@ -75,6 +75,7 @@
     }
 
     dialog {
+      background-color: #0099ff;
       border: none;
       border-radius: 8px;
       padding: 20px;
@@ -85,14 +86,105 @@
       background: rgba(0, 0, 0, 0.5);
     }
 
+    #commands {
+      background-color: rgb(18, 127, 216);
+    }
+
     #commands button {
       padding: 5px;
+
       margin-top: 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       margin: 5px;
 
+    }
+
+
+
+
+
+    .waterButton {
+      position: relative;
+      display: inline-block;
+      padding: 4px 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #e8faff;
+      background: linear-gradient(180deg, #0099ff 0%, #0066cc 100%);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 40px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0, 180, 255, 0.4);
+      text-shadow: 0 1px 3px rgba(0, 0, 30, 0.5);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    /* Rippling layer */
+    .waterButton::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25), transparent 25%),
+        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.2), transparent 25%),
+        radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.15), transparent 25%),
+        radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.15), transparent 25%);
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      animation: rippleMove 8s linear infinite;
+      mix-blend-mode: overlay;
+      opacity: 0.8;
+    }
+
+    /* Subtle shimmer */
+    .waterButton::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+      opacity: 0;
+      transform: translateX(-100%);
+      transition: opacity 0.4s, transform 0.8s;
+    }
+
+    /* Hover effects */
+    .waterButton:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(0, 200, 255, 0.6);
+    }
+
+    .waterButton:hover::after {
+      opacity: 1;
+      transform: translateX(100%);
+    }
+
+    /* Click feedback */
+    .waterButton:active {
+      transform: scale(0.97);
+    }
+
+    /* Rippling motion */
+    @keyframes rippleMove {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(-25px, -15px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
     }
   </style>
 </head>
@@ -102,14 +194,16 @@
   <div id="toast-container"></div>
 
   <dialog id="myDialog">
-    <h2>Instructions!</h2>
-    <p><a href="../index.html">Home</a></p>
+    <img src="logo.png" />
+    <h2>Instructions</h2>
+
+    <p><a class="waterButton" href="../index.html">Home</a></p>
     <br>
-    <button id="closeDialog">Close</button>
+    <button class="waterButton" id="closeDialog">Close</button>
   </dialog>
 
   <!-- Keypad -->
-  <div id="keypad">
+  <div style="display:none;" id="keypad">
     <div id="arrows">
       <div></div> <!-- empty -->
       <button class="arrow-btn" id="up">↑</button>
@@ -144,8 +238,8 @@
     <button class="rack-btns" id="tile5b">*</button>
     <button class="rack-btns" id="tile6b">*</button>
     <button class="rack-btns" id="tile7b">*</button> -->
-    <button class="rack-btns2" id="cancelIt">Cancel</button>
-    <button class="rack-btns2" id="sendIt">Submit</button>
+    <button class="waterButton rack-btns2" id="cancelIt">Cancel</button>
+    <button class="waterButton rack-btns2" id="sendIt">Submit</button>
 
   </div>
 
@@ -157,41 +251,53 @@
     <!-- <button onclick="showToast('Something went wrong!', 'error')">Error</button> -->
     <!-- <button onclick="showToast('Here is some info', 'info')">Info</button> -->
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
+    <span><a href="../index.html"><img src="logo.png" style="height:50px;" /></a></span>
+
+    <button id="openDialog">❓</button>
 
     <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
-" onclick="playAudioToggle('Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
+" onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
       Shining Stars</button>
 
     <button
       title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
-      onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">Play
+      onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
       Advertime</button>
 
-    <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">Volume:
+    <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">🔊
       <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
     </label>
 
-    <button id="openDialog">Instructions</button>
+
 
     <button title="Allows you to copy a letter from the board into one of your tiles." class="rack-btns2"
-      id="toggleIsCrimeWave">Toggle Crime Wave</button>
+      id="toggleIsCrimeWave">0 <span style="font-size: 24px;">🕵️‍♂️</span></button>
 
     <button title="Allows you to attempt to replace letters already placed with your tiles." class="rack-btns2"
-      id="toggleReplacement">Tidal Wave</button>
+      id="toggleReplacement">0 <span style="font-size: 24px;">⚡</span></button>
 
+    <button title="Allows you to swap letters from your letter rack." class="rack-btns2" id="swapLetterTiles">0 <span
+        style="font-size: 24px;">🧠</span>
+    </button>
 
+    <button title="(Micro Wave) Words must be only be 2 or 3 characters short." class="rack-btns2" id="microWave"><span
+        style="font-size: 24px;">📡</span>
+    </button>
 
-    <button title="Word must begin with a consonant and end with a vowel." class="rack-btns2" id="radioWave">RadiO
-      Wave</button>
+    <button title="(RadiO Wave) Word must begin with a consonant and end with a vowel." class="rack-btns2"
+      id="radioWave"><span style="font-size: 24px;">📻</span>
+    </button>
 
-    <button title="Word must begin with a consonant and end with a consonant." class="rack-btns2" id="soundWave">SounD
-      Wave</button>
+    <button title="(SounD Wave) Word must begin with a consonant and end with a consonant." class="rack-btns2"
+      id="soundWave"><span style="font-size: 24px;">🎙️</span>
+    </button>
 
-    <button title="Word must begin with a vowel and end with a consonant." class="rack-btns2"
-      id="ElectromagneticWave">ElectromagnetiC Wave</button>
+    <button title="(ElectromagnetiC Wave) Word must begin with a vowel and end with a consonant." class="rack-btns2"
+      id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
 
-    <button title="Word must begin with a vowel and end with a vowel." class="rack-btns2" id="energyWave">EnergY
-      Wave</button>
+    <button title="(EnergY Wave) Word must begin with a vowel and end with a vowel." class="rack-btns2"
+      id="energyWave"><span style="font-size: 24px;">🔋</span>
+    </button>
 
   </div>
 
@@ -351,7 +457,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'development';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -655,7 +761,7 @@
           // }
 
           // NOTE: TEMP, ALL E'S ARE A POWERUP BUT THIS SHOULD BE SET AT BOARD LEVEL FROM SERVER
-          if (o[k].letter == 'E') { o[k].type = 'powerup' }
+          // if (o[k].letter == 'E') { o[k].type = 'powerup' }
 
           //console.log(o[k]);
           setTile(o[k].col, o[k].row, o[k]);
@@ -881,6 +987,8 @@
 
       proposedLetterUse = {};
 
+      canReplace = false;
+
       // TODO - rather than send each letter, send entire object of all proposed letters to backend
       // have backend validate that any new letters connect to existing words and all connections are valid words
       // then receive good or bad word back as accepted or not and appropriately clear proposed tiles, update scores on backend and get new tiles
@@ -905,6 +1013,7 @@
           setTile(i.col, i.row, i);
         }
       });
+
       proposedTileMap = new Map();
 
       for (let i = 1; i <= 7; i++) {
@@ -918,6 +1027,8 @@
       }
 
       canReplace = false;
+
+      return false;
 
     }
 
@@ -969,8 +1080,6 @@
         // console.log(`Tile ${i} clicked`);
 
         // console.log(e.target);
-
-
 
         // TODO: convert to sockets to set (suggestedTiles array or something like it)
         let newTile = { ...getTile(playerCol, playerRow) };
@@ -1718,7 +1827,7 @@
         if (nickname != myName && (Date.now() - u.dateTime) > 15000) {
 
         } else {
-          // ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
+          ctx.drawImage(playerImage, cplayerX - 22, cplayerY - 22);
 
           if ((Date.now() - u.dateTime) < 1000) {
             ctx.fillText(nickname, cplayerX + TILE / 2, cplayerY + TILE / 2);

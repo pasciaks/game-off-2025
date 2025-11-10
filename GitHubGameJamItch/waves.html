@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <link rel="icon" type="image/png" href="./game/player.png">
+  <link rel="icon" type="image/png" href="player.png">
   <title>Scrabble Scramble</title>
   <style>
     html,
@@ -171,16 +171,15 @@
 
   <div id="game">
 
-    <a href="index.html"><img src='game/logo.png' /></a>
+    <img src='game/logo.png' />
 
     <a href="index.html">
       <div id="randomTitle"></div>
     </a>
 
     <h2><span id="playerName"></span></h2>
-    <p><button onclick="updateRandomName();">❓</button></p>
 
-
+    <button onclick="updateRandomName();">Random Name</button>
 
     <!-- <h1>Select a Game</h1> -->
     <div class="game-container" id="gameLinks"></div>
@@ -251,7 +250,7 @@
 
     setTimeout(() => {
       showBox();
-    }, 750);
+    }, 1500);
 
 
     // Generate 1-99 game links dynamically
@@ -259,7 +258,7 @@
     for (let i = 1; i <= 10; i++) {
       const a = document.createElement('a');
       a.href = `game/game.html?room=room${i}`;
-      a.textContent = `Wave ${i}`;
+      a.textContent = `Game ${i}`;
       container.appendChild(a);
     }
 
