@@ -2017,19 +2017,19 @@
 
       let tempKey = e?.key?.toUpperCase();
 
-
+      //--------------------------------------------------
       // -- test override allow type onto letters
-
       let newTile = { ...getTile(playerCol, playerRow) };
       newTile.letter = tempKey;
       if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
         setProposedTile(playerCol, playerRow, newTile);
       }
-      return;
+      console.log(tempKey);
+      return; // keep this in to enable cheat mode
+      // -- test override allow type onto letters
+      //--------------------------------------------------
 
-      //
-
-      for (let i = 0; i <= 8; i++) {
+      for (let i = 1; i <= 7; i++) {
         let isKey = document.getElementById(`tile${i}`);
         if (isKey?.innerText == tempKey) {
           isKey.click();
