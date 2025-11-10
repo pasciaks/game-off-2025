@@ -15,13 +15,13 @@ export function loadTXTSync(filePath, baseDir = __dirname) {
 
   console.log("loading...");
 
-  console.log(data);
-
   // Split on newlines, trim whitespace, and remove empty lines
   const lines = data
     .split(/\r?\n/)
     .map(line => line.trim())
     .filter(line => line.length > 0);
+
+  console.log(lines.length);
 
   return lines;
 }

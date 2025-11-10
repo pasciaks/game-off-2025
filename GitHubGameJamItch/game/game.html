@@ -197,7 +197,7 @@
 
   <dialog id="myDialog">
 
-    <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button>
+    <!-- <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button> -->
 
 
     <img style="cursor:pointer;" onclick="window.location='../index.html'" src="logo.png" />
@@ -233,7 +233,18 @@
     <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves()'>Click to Enable Waves</button>
     </p>
 
-    <button class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button>
+    <button
+      title=" ABYSS   AMPLITUDE   BAY   BLUE   BREAKER   BRINE   CASCADE   COASTLINE   CORAL   CREST   CURRENT   CURL   CYCLONE   DEEP   DRIFT   DRIFTWOOD   EBB   ECHO   EMOTION   FLOOD   FLOW   FLUCTUATE   FLUCTUATION   FLUID   FOAM   FREQUENCY   FROTH   GLIDE   GUST   HORIZON   HUM   INTERFERENCE   KELP   LAGOON   MAELSTROM   MEANDER   MODULATION   MONSOON   MOMENTUM   MOVEMENT   OCEAN   OSCILLATE   OSCILLATION   PEARL   PHASE   PROPAGATION   PULSE   RADIATION   REEF   RESONANCE   RIPPLE   ROLL   SALT   SEA   SHELL   SIGNAL   SLIDE   SPECTRUM   SPLASH   SPLASHDOWN   STORM   STATIC   SURF   SURGE   SWAY   SWEEP   SWELL   TEMPEST   TIDAL   TIDE   TONE   TREND   TROUGH   TRANSMISSION   TRANSMIT   TSUNAMI   UNDULATE   VIBE   VIBRATION   WASH   WAVE   WAVELENGTH   WAVY   WHIRLPOOL ">
+      ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB
+      ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP
+      LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION
+      PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC
+      SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE
+      VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL </button>
+
+    <!-- <button
+      title=" ABYSS   AMPLITUDE   BAY   BLUE   BREAKER   BRINE   CASCADE   COASTLINE   CORAL   CREST   CURRENT   CURL   CYCLONE   DEEP   DRIFT   DRIFTWOOD   EBB   ECHO   EMOTION   FLOOD   FLOW   FLUCTUATE   FLUCTUATION   FLUID   FOAM   FREQUENCY   FROTH   GLIDE   GUST   HORIZON   HUM   INTERFERENCE   KELP   LAGOON   MAELSTROM   MEANDER   MODULATION   MONSOON   MOMENTUM   MOVEMENT   OCEAN   OSCILLATE   OSCILLATION   PEARL   PHASE   PROPAGATION   PULSE   RADIATION   REEF   RESONANCE   RIPPLE   ROLL   SALT   SEA   SHELL   SIGNAL   SLIDE   SPECTRUM   SPLASH   SPLASHDOWN   STORM   STATIC   SURF   SURGE   SWAY   SWEEP   SWELL   TEMPEST   TIDAL   TIDE   TONE   TREND   TROUGH   TRANSMISSION   TRANSMIT   TSUNAMI   UNDULATE   VIBE   VIBRATION   WASH   WAVE   WAVELENGTH   WAVY   WHIRLPOOL "
+      class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button> -->
 
     <button class="waterButton" id="closeDialog">Close</button>
 
@@ -978,13 +989,23 @@
     socket.on("word_result", (data) => {
       console.log(data);
 
+
+
       if (data?.wasInvalid) {
         // invalid
       } else {
 
+        if (data?.theBonusWords) {
+          console.log(JSON.stringify(data.theBonusWords));
+          yourScore += 50 * Math.floor(data?.theBonusWords?.length || 0);
+          data.theBonusWords.forEach((w) => {
+            showToast("Bonus word found => " + w, "info");
+          })
+        }
+
         showToast("Word(s) Score: " + data?.tempWordScore || 0, "info", 9999);
 
-        yourScore += data?.tempWordScore || 0;
+        yourScore += Math.floor(data?.tempWordScore || 0);
 
         localStorage.setItem("yourScore", Math.floor(yourScore));
 

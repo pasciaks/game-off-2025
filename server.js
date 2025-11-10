@@ -13,7 +13,10 @@ import { loadJSONSync } from './loadJSONSync.js';
 import { loadTXTSync } from './loadTXTSync.js';
 
 const waves = loadJSONSync('./waves.json');
-// console.log(waves);
+console.log("waves", waves);
+
+const uniqueWords = [...new Set(Object.values(waves).flatMap(c => c.words))];
+console.log("uniqueWords", uniqueWords);
 
 const words = loadTXTSync('./words.txt');
 // console.log(words.length);
@@ -389,9 +392,6 @@ io.on("connection", (socket) => {
 
   socket.on('submitWord', (data) => {
 
-    //console.log("data");
-    //console.log(data);
-
     let { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
     let theRoom = myRoom || data?.myRoom || '';
@@ -416,6 +416,8 @@ io.on("connection", (socket) => {
     let newBrain = 0;
 
     let tempWordScore = 0;
+    let bonusWords = 0;
+    let theBonusWords = [];
 
     for (let i = 0; i < sendTiles.length; i++) {
 
@@ -443,8 +445,6 @@ io.on("connection", (socket) => {
         newShock++;
       }
 
-
-
       let left = (findLeft(cw.col - 1, cw.row, mapRef));
       let right = (findRight(cw.col + 1, cw.row, mapRef));
       let top = (findTop(cw.col, cw.row - 1, mapRef));
@@ -462,17 +462,26 @@ io.on("connection", (socket) => {
         if (tempLetter == "_") { tempLetter = "" };
         hzWord += tempLetter;
       }
+
       console.log(hzWord);
+
       if (hzWord.length > 1) {
         console.log(hzWord);
         if (words.indexOf(hzWord.toLowerCase()) > -1) {
-          console.log('hzWordfound');
+          console.log('hzWordfound', hzWord);
+
+          if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
+            console.log("Found (case-insensitive)!");
+            if (!theBonusWords.includes(hzWord)) {
+              bonusWords++;
+              theBonusWords.push(hzWord);
+            }
+          }
+
         } else {
           console.log('hzWord not found', hzWord);
           wasInvalid = true;
         }
-      } else {
-        //wasInvalid = true;
       }
 
       let vtWord = "";
@@ -490,13 +499,20 @@ io.on("connection", (socket) => {
       if (vtWord.length > 1) {
         console.log(vtWord);
         if (words.indexOf(vtWord.toLowerCase()) > -1) {
-          console.log('vtWord found');
+          console.log('vtWord found', vtWord);
+
+          if (uniqueWords.some(w => w.toLowerCase() == vtWord.toLowerCase())) {
+            console.log("Found (case-insensitive)!");
+            if (!theBonusWords.includes(vtWord)) {
+              bonusWords++;
+              theBonusWords.push(vtWord);
+            }
+          }
+
         } else {
           console.log('vtWord not found', vtWord);
           wasInvalid = true;
         }
-      } else {
-        //wasInvalid = true;
       }
 
       setTile(cw.col, cw.row, mapRef, cw);
@@ -525,7 +541,9 @@ io.on("connection", (socket) => {
 
     // setTile(data.col, data.row, mapRef, data);
 
-    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore });
+    console.log({ wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore, bonusWords, theBonusWords });
+
+    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore, bonusWords, theBonusWords });
 
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
@@ -537,6 +555,7 @@ io.on("connection", (socket) => {
     }
 
     sendBoardDataToRoom(theRoom);
+
     //const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
     //const json = JSON.stringify(obj2); // Object → JSON string
     //io.to(theRoom).emit('tileObjects', json);
