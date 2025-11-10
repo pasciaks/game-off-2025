@@ -191,11 +191,18 @@ function tileKey(col, row) {
 }
 
 function createMap(mapRef) {
-  for (let i = -25; i < 25; i++) {
-    for (let j = -25; j < 25; j++) {
-      setTile(i, j, mapRef, { letter: '_', type: 'normal' });
+  for (let i = -69; i < 69; i++) {
+    for (let j = -69; j < 69; j++) {
+      let powerUpType = ['brainwave', 'crimewave', 'shockwave'][Math.floor(Math.random() * 3)];
+
+      if (Math.random() > 0.98) {
+        setTile(i, j, mapRef, { letter: '_', type: powerUpType });
+      } else {
+        setTile(i, j, mapRef, { letter: '_', type: 'normal' });
+      }
+
       if (Math.random() > .98) {
-        setTile(i, j, mapRef, { letter: randomLetter(), type: Math.random() < .58 ? 'normal' : 'powerup' });
+        setTile(i, j, mapRef, { letter: randomLetter(), type: Math.random() < .58 ? 'normal' : powerUpType });
       }
     }
   }

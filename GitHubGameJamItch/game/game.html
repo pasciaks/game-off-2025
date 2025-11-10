@@ -87,7 +87,7 @@
     }
 
     #commands {
-      background-color: rgb(18, 127, 216);
+      background-color: rgb(0, 0, 0);
     }
 
     #commands button {
@@ -195,10 +195,27 @@
 
   <dialog id="myDialog">
     <img src="logo.png" />
-    <h2>Instructions</h2>
+    <!-- <h2>Instructions</h2> -->
 
-    <p><a class="waterButton" href="../index.html">Home</a></p>
+    <div>
+      <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
+" onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
+        Shining Stars</button>
+
+      <button
+        title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
+        onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
+        Advertime</button>
+
+      <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">🔊
+        <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
+      </label>
+    </div>
+
     <br>
+
+    <button class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button>
+
     <button class="waterButton" id="closeDialog">Close</button>
   </dialog>
 
@@ -253,35 +270,24 @@
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
     <span><a href="../index.html"><img src="logo.png" style="height:50px;" /></a></span>
 
-    <button id="openDialog">❓</button>
-
-    <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
-" onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-      Shining Stars</button>
-
-    <button
-      title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
-      onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-      Advertime</button>
-
-    <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">🔊
-      <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
-    </label>
+    <button id="openDialog" class="rack-btns2"><span style="font-size: 24px;">Settings 🌊</span></button>
 
 
 
     <button title="Allows you to copy a letter from the board into one of your tiles." class="rack-btns2"
-      id="toggleIsCrimeWave">0 <span style="font-size: 24px;">🕵️‍♂️</span></button>
+      id="togglecanCommitCrime"><span id='crimeCount'></span><span style="font-size: 24px;color:blue;">🕵️‍♂️
+        Crime</span></button>
 
     <button title="Allows you to attempt to replace letters already placed with your tiles." class="rack-btns2"
-      id="toggleReplacement">0 <span style="font-size: 24px;">⚡</span></button>
+      id="toggleReplacement"><span id='shockCount'></span><span
+        style="font-size: 24px;color:green;">⚡Shock</span></button>
 
-    <button title="Allows you to swap letters from your letter rack." class="rack-btns2" id="swapLetterTiles">0 <span
-        style="font-size: 24px;">🧠</span>
+    <button title="Allows you to swap letters from your letter rack." class="rack-btns2" id="swapLetterTiles"><span
+        id='brainCount'></span><span style="font-size: 24px;color:red;">🧠 Brain</span>
     </button>
 
-    <button title="(Micro Wave) Words must be only be 2 or 3 characters short." class="rack-btns2" id="microWave"><span
-        style="font-size: 24px;">📡</span>
+    <button title="(Micro Wave) Microwave mode means only 1 or 2 letters can be submitted to make words."
+      class="rack-btns2" id="microWave"><span style="font-size: 24px;">📡</span>
     </button>
 
     <button title="(RadiO Wave) Word must begin with a consonant and end with a vowel." class="rack-btns2"
@@ -319,6 +325,93 @@
 
   <script>
 
+    let is_microWave = false;
+    let is_radioWave = false;
+    let is_soundWave = false;
+    let is_ElectromagneticWave = false;
+    let is_energyWave = false;
+
+    function updateWaves() {
+      if (is_microWave) {
+        document.getElementById('microWave').classList.add("active");
+      } else {
+        document.getElementById('microWave').classList.remove("active");
+      }
+
+      if (is_radioWave) {
+        document.getElementById('radioWave').classList.add("active");
+      } else {
+        document.getElementById('radioWave').classList.remove("active");
+      }
+
+      if (is_soundWave) {
+        document.getElementById('soundWave').classList.add("active");
+      } else {
+        document.getElementById('soundWave').classList.remove("active");
+      }
+
+      if (is_ElectromagneticWave) {
+        document.getElementById('ElectromagneticWave').classList.add("active");
+      } else {
+        document.getElementById('ElectromagneticWave').classList.remove("active");
+      }
+
+      if (is_energyWave) {
+        document.getElementById('energyWave').classList.add("active");
+      } else {
+        document.getElementById('energyWave').classList.remove("active");
+      }
+    }
+
+    is_microWave = true; updateWaves();
+    is_radioWave = false; updateWaves();
+    is_soundWave = false; updateWaves();
+    is_ElectromagneticWave = false; updateWaves();
+    is_energyWave = false; updateWaves();
+
+    //     <button title="(Micro Wave) Words must be only be 2 or 3 characters short." class="rack-btns2"
+    //   id="microWave"><span style="font-size: 24px;">📡</span>
+    // </button>
+
+    // <button title="(RadiO Wave) Word must begin with a consonant and end with a vowel." class="rack-btns2"
+    //   id="radioWave"><span style="font-size: 24px;">📻</span>
+    // </button>
+
+    // <button title="(SounD Wave) Word must begin with a consonant and end with a consonant." class="rack-btns2"
+    //   id="soundWave"><span style="font-size: 24px;">🎙️</span>
+    // </button>
+
+    // <button title="(ElectromagnetiC Wave) Word must begin with a vowel and end with a consonant." class="rack-btns2"
+    //   id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
+
+    // <button title="(EnergY Wave) Word must begin with a vowel and end with a vowel." class="rack-btns2"
+    //   id="energyWave"><span style="font-size: 24px;">🔋</span>
+    // </button>
+
+    let canCommitCrime = false; // crime
+    let canReplace = false; // shock
+    let canSwap = false; // brain
+
+    let crimeCount = 1;
+    let shockCount = 3;
+    let brainCount = 7;
+
+    function updateCounts() {
+      setTimeout(() => {
+        document.getElementById('crimeCount').innerText = crimeCount;
+        document.getElementById('shockCount').innerText = shockCount;
+        document.getElementById('brainCount').innerText = brainCount;
+      }, 500);
+    }
+
+    updateCounts();
+
+    function updatePowerUps() {
+      canReplace = false;
+      canSwap = false;
+      canCommitCrime = false;
+    }
+
     const dialog = document.getElementById('myDialog');
     const openBtn = document.getElementById('openDialog');
     const closeBtn = document.getElementById('closeDialog');
@@ -330,8 +423,6 @@
     closeBtn.addEventListener('click', () => {
       dialog.close();
     });
-
-
 
     let currentAudio = null;
     let currentFile = "";
@@ -415,9 +506,7 @@
       });
     }
 
-    let isCrimeWave = false;
 
-    let canReplace = false;
 
     // --- TILE STORAGE SYSTEM ---
     // Using a Map for efficient key/value access (supports infinite world)
@@ -987,16 +1076,42 @@
 
       proposedLetterUse = {};
 
-      canReplace = false;
+      if (canCommitCrime) { updateCounts(); }
+      if (canReplace) { shockCount--; showToast("Used Shock Wave", "error"); updateCounts(); }
+      if (canSwap) { updateCounts(); }
+
+      // canReplace = false;
 
       // TODO - rather than send each letter, send entire object of all proposed letters to backend
       // have backend validate that any new letters connect to existing words and all connections are valid words
       // then receive good or bad word back as accepted or not and appropriately clear proposed tiles, update scores on backend and get new tiles
 
+      // todo - submit whole word/letters data
+
+      let sendTiles = [];
+
+      proposedTileMap.forEach((i) => {
+        if (i.letter != "_") {
+          const key = tileKey(i.col, i.row);
+          const updated = { ...i, col: i.col, row: i.row, ...i, myName, myRoom };
+          sendTiles.push(updated);
+        }
+      });
+
+      if (is_microWave) {
+        if (sendTiles.length > 2) {
+          showToast("Microwave mode means only 1 or 2 letters can be submitted to make words.", "error");
+          return false;
+        }
+      }
+
+      let submissionData = { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles }
+
+      console.log(submissionData);
+
       // Consider use of power-up to replace existing letter on backend
 
       proposedTileMap.forEach((i) => {
-
         if (i.letter != "_") {
           // console.log(i);
 
@@ -1051,18 +1166,55 @@
 
       // document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
 
-      document.getElementById("toggleIsCrimeWave").addEventListener("click", (e) => {
+      document.getElementById("togglecanCommitCrime").addEventListener("click", (e) => {
         e.preventDefault();
-        isCrimeWave = !isCrimeWave;
-        showToast("Place your character on a blue outlined letter, then click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
-        showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
+        if (canCommitCrime) {
+          canCommitCrime = false;
+          return false;
+        }
+        if (crimeCount > 0) {
+          updatePowerUps();
+          canCommitCrime = true;
+          showToast("Place your character on a blue outlined letter, then click one of the letters in your rack to steal the letter value for your use.", "info", 9999);
+          // showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
+        } else {
+          showToast("You are out of crime waves.", "error", 9999);
+        }
+
       });
 
       document.getElementById("toggleReplacement").addEventListener("click", (e) => {
         e.preventDefault();
-        canReplace = !canReplace;
-        showToast("You can place proposed letters on top of green outilned letters.", "success", 9999);
-        showToast("If the changes result in valid words, they remain on the new board.", "success", 9999);
+        if (canReplace) {
+          canReplace = false;
+          cancelAttempt();
+          return false;
+        }
+        if (shockCount > 0) {
+          updatePowerUps();
+          canReplace = true;
+          showToast("You can place proposed letters on top of green outilned letters.", "info", 9999);
+          // showToast("If the changes result in valid words, they remain on the new board.", "success", 9999);
+        } else {
+          showToast("You are out of shock waves.", "error", 9999);
+        }
+      });
+
+      document.getElementById("swapLetterTiles").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (canSwap) {
+          canSwap = false;
+          document.getElementById("scrabbleRack").style.border = 'none';
+          return false;
+        }
+        if (brainCount > 0) {
+          updatePowerUps();
+          canSwap = true;
+          document.getElementById("scrabbleRack").style.border = '5px solid red';
+          showToast("You can swap letters from your tile rack.", "info", 9999);
+        } else {
+          showToast("You are out of brain waves.", "error", 9999);
+        }
       });
 
     } catch (e) {
@@ -1076,6 +1228,16 @@
     for (let i = 1; i <= 7; i++) {
 
       document.getElementById(`tile${i}`).addEventListener("click", (e) => {
+
+        if (canSwap) {
+          e.target.innerText = getLetterFromCollection();
+          brainCount--;
+          showToast("Used Brain Wave", "error");
+          canSwap = false;
+          updateCounts();
+          document.getElementById("scrabbleRack").style.border = 'none';
+          return false;
+        }
 
         // console.log(`Tile ${i} clicked`);
 
@@ -1124,11 +1286,14 @@
 
           // NOTE: You clicked a letter tile while you are on a tile already having a letter
 
-          // isCrimeWave=true;
+          // canCommitCrime=true;
 
-          if (isCrimeWave) {
+          if (canCommitCrime) {
             e.target.innerText = newTile.letter;
-            isCrimeWave = false;
+            crimeCount--;
+            showToast("Used Crime Wave", "error");
+            updateCounts();
+            canCommitCrime = false;
             e.target.classList.remove("used");
           }
 
@@ -1343,6 +1508,7 @@
               x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
             );
 
+            // ctx.fillText(theTileData?.type, x + shrink + 15, y + shrink + 15);
 
             // out of bounds areas ? water traps, etc
             if (!isValidPlace(theTileData)) {
@@ -1375,7 +1541,8 @@
 
 
 
-            //ctx.fillText(theTileData?.type.charAt(0), x + shrink + 15, y + shrink + 15);
+            // ctx.fillText(theTileData?.type, x + shrink + 15, y + shrink + 15);
+
 
 
             // out of bounds areas ? water traps, etc
@@ -1742,11 +1909,38 @@
           // ctx.lineWidth = 2;
           // ctx.strokeRect(px, py, TILE, TILE);
 
+          if (theTile?.type != 'normal') {
+            ctx.strokeStyle = 'gold';
+
+            if (theTile?.type == 'crimewave') {
+              ctx.strokeStyle = 'blue';
+              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+              ctx.lineWidth = 3;
+              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+              ctx.fillText("🕵️‍♂️", px + TILE / 8, py + TILE / 8);
+            }
+            if (theTile?.type == 'shockwave') {
+              ctx.strokeStyle = 'green';
+              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+              ctx.lineWidth = 3;
+              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+              ctx.fillText("⚡", px + TILE / 8, py + TILE / 8);
+            }
+            if (theTile?.type == 'brainwave') {
+              ctx.strokeStyle = 'red';
+              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+              ctx.lineWidth = 3;
+              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+              ctx.fillText("🧠", px + TILE / 8, py + TILE / 8);
+            }
+
+          }
+
           // Draw col,row centered on tile
-          if (isCrimeWave) {
+          if (canCommitCrime) {
             if (theTile.letter != "_") {
               ctx.strokeStyle = 'blue';
-              // ctx.strokeRect(px - TILE / 2, py - TILE / 2, TILE, TILE);
+              ctx.lineWidth = 5;
               ctx.strokeRect(px, py, TILE, TILE);
             }
           }
@@ -1754,8 +1948,7 @@
           if (canReplace) {
             if (theTile.letter != "_") {
               ctx.strokeStyle = 'green';
-
-              // ctx.strokeRect(px - TILE / 2, py - TILE / 2, TILE, TILE);
+              ctx.lineWidth = 5;
               ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
             }
           }
@@ -1797,6 +1990,8 @@
             //drawLetterTile(ctx, '_', px, py);
             //}
           }
+
+          //ctx.fillText(`${x},${y}`, px, py);
 
         }
       }

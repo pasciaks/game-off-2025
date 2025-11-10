@@ -19,6 +19,44 @@ canvas:active {
   cursor: grabbing;
 }
 
+
+
+
+
+.active {
+  border: 2px solid #00f;
+  /* bright blue border */
+  /* box-shadow: 0 0 16px #00f, 0 0 32px rgb(102, 102, 198); */
+  /* glowing effect */
+  transition: all 0.15s ease;
+  background-color: transparent;
+  /* smooth glow transition */
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgb(255, 255, 255), 0 0 64px rgb(0, 0, 255);
+    border: 2px solid red;
+  }
+
+  50% {
+    box-shadow: 0 0 16px rgb(0, 0, 255), 0 0 64px rgb(255, 255, 255);
+    border: 2px solid blue;
+  }
+}
+
+.active {
+  border: 2px solid #00f;
+  animation: glow 1.5s infinite alternate;
+}
+
+
+
+
+
+
 /* ----- MOBILE MENU ----- */
 #mobileMenu {
   position: absolute;
@@ -99,6 +137,21 @@ canvas:active {
   transition: all 0.1s ease-in-out;
 }
 
+.rack-btns2 {
+  font-family: 'Courier', 'Georgia', 'Times New Roman', serif;
+  font-weight: bold;
+  color: #222;
+  /* background: linear-gradient(to bottom, #f0d9b5 0%, #e1c27a 100%); */
+  /* border: 2px solid #b58863; */
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s ease-in-out;
+}
+
 .used {
   color: red !important;
   border: 5px solid red !important;
@@ -142,10 +195,22 @@ canvas:active {
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
 
+.rack-btns2:hover {
+  background: linear-gradient(to bottom, #0b9aa4 0%, #14a6c6 100%);
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
 .arrow-btn:active,
 .num-btn:active,
 .rack-btn:active,
 .rack-btns:active {
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.rack-btns2:active {
   transform: translateY(1px);
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
