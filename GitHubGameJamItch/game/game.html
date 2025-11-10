@@ -325,6 +325,9 @@
 
   <script>
 
+    let boardColsMagnitude = 25;
+    let boardRowsMagnitude = 25;
+
     let is_microWave = false;
     let is_radioWave = false;
     let is_soundWave = false;
@@ -363,7 +366,7 @@
       }
     }
 
-    is_microWave = true; updateWaves();
+    is_microWave = false; updateWaves();
     is_radioWave = false; updateWaves();
     is_soundWave = false; updateWaves();
     is_ElectromagneticWave = false; updateWaves();
@@ -546,7 +549,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'development';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -745,6 +748,17 @@
 
     let myRoom = `${test}`;
 
+    switch (myRoom) {
+      case 'room1':
+        boardColsMagnitude = 5;
+        boardRowsMagnitude = 5;
+        break;
+      default:
+        boardColsMagnitude = 25;
+        boardRowsMagnitude = 25;
+        break;
+    }
+
     localStorage.setItem("myName", myName);
     localStorage.setItem("myRoom", myRoom);
 
@@ -799,6 +813,27 @@
 
     });
 
+    socket.on("word_result", (data) => {
+      console.log(data);
+
+      for (let i = 1; i <= 7; i++) {
+        let ele = document.getElementById(`tile${i}`);
+        ele.classList.remove("used");
+        let eleText = ele.innerText;
+        if (/[a-z]/.test(eleText)) {
+          if (data?.wasInvalid) {
+            ele.innerText = ele.innerText.toUpperCase();
+          } else {
+            ele.innerText = getLetterFromCollection();
+          }
+
+          console.log(eleText);
+        }
+      }
+
+
+    })
+
     socket.on("data", (data) => {
       // console.log(data);
 
@@ -835,11 +870,13 @@
     });
 
     socket.on('tileObjects', (jsonDataString) => {
-      // console.log(jsonDataString)
+      console.log("----tileObjects----");
+      // console.log(jsonDataString);
       try {
         let o = JSON.parse(jsonDataString);
-        tileMap = new Map();
+        //tileMap = new Map();
         let o2 = Object.keys(o);
+        console.log(o2.length);
 
         o2.forEach((k) => {
           // if (!o[k]?.type) {
@@ -890,10 +927,18 @@
       }, 1000);
     }
 
+    // let lastupdate = Date.now();
+    let lastData = {};
+
     function updatePlayerPosition(data) {
       // console.log("send UpdatePlayerPosition", data);
       data.command = "updatePlayer";
-      sendMessage(data);
+      if (JSON.stringify(data) != lastData) {
+        // console.log(isDragging);
+        sendMessage(data);
+        // lastupdate = Date.now();
+        lastData = JSON.stringify(data);
+      }
     }
 
     function sendMessage(data) {
@@ -905,21 +950,7 @@
     }
 
     function joinRoom(roomName, nickname) {
-
-      // const mapData = new Map([
-      //   ["-25,-25", { col: -25, row: -25, letter: "_" }],
-      //   ["-25,-24", { col: -25, row: -24, letter: "_" }],
-      //   ["-25,-23", { col: -25, row: -23, letter: "_" }]
-      // ]);
-
-      // const obj = Object.fromEntries(mapData); // Map → Object
-
-      // const json = JSON.stringify(obj); // Object → JSON string
-
-      // socket.emit("joinRoom", { roomName, nickname, tileMap: json });
-
       socket.emit("joinRoom", { roomName, nickname });
-
     }
 
     let playerX, playerY;
@@ -929,16 +960,9 @@
 
     let proposedLetterUse = {};
 
-    // Arrow buttons move camera
-    // document.getElementById("up").addEventListener("click", () => cameraY += TILE);
-    // document.getElementById("down").addEventListener("click", () => cameraY -= TILE);
-    // document.getElementById("left").addEventListener("click", () => cameraX += TILE);
-    // document.getElementById("right").addEventListener("click", () => cameraX -= TILE);
-
     function keepPlayerVisible() {
 
       updatePlayerPosition({ playerCol, playerRow, myName, myRoom })
-
 
       // visible world bounds (top-left and bottom-right in world coordinates)
       const visibleLeft = cameraX;
@@ -1105,43 +1129,50 @@
         }
       }
 
-      let submissionData = { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles }
+      for (let jj = 0; jj < sendTiles.length; jj++) {
+        let cT = sendTiles[jj];
+        if ((cT.col < -boardColsMagnitude) || (cT.col > boardColsMagnitude)) {
+          console.log("Out of column magnitude bounds", cT.col, boardColsMagnitude);
+          console.log(cT);
+        }
+        if ((cT.row < -boardRowsMagnitude) || (cT.row > boardRowsMagnitude)) {
+          console.log("Out of row magnitude bounds", cT.row, boardRowsMagnitude);
+          console.log(cT);
+        }
+      }
+
+      let submissionData = { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
 
       console.log(submissionData);
 
       // Consider use of power-up to replace existing letter on backend
 
-      proposedTileMap.forEach((i) => {
-        if (i.letter != "_") {
-          // console.log(i);
+      socket.emit("submitWord", submissionData);
 
-          //----------------------------------------------------------
-          ////////////////////////////////////////////////////////
-          // todo backend logic to accept or deny, etc....
-          ////////////////////////////////////////////////////////
-          const key = tileKey(i.col, i.row);
-          const updated = { ...i, col: i.col, row: i.row, ...i, myName, myRoom };
-          socket.emit("proposedTile", updated);
-          ////////////////////////////////////////////////////////
-          //----------------------------------------------------------
-
-          setTile(i.col, i.row, i);
-        }
-      });
+      // proposedTileMap.forEach((i) => {
+      //   if (i.letter != "_") {
+      //     const key = tileKey(i.col, i.row);
+      //     const updated = { ...i, col: i.col, row: i.row, ...i, myName, myRoom };
+      //     socket.emit("proposedTile", updated);
+      //     setTile(i.col, i.row, i);
+      //   }
+      // });
 
       proposedTileMap = new Map();
 
+      // NOTE: // TODO: Wait until word result to get new letters
       for (let i = 1; i <= 7; i++) {
         let ele = document.getElementById(`tile${i}`);
         ele.classList.remove("used");
         let eleText = ele.innerText;
         if (/[a-z]/.test(eleText)) {
-          // console.log("includes a lowercase...");
-          ele.innerText = getLetterFromCollection();
+          // ele.innerText = getLetterFromCollection();
         }
       }
 
       canReplace = false;
+      canCommitCrime = false;
+      canSwap = false;
 
       return false;
 
@@ -1675,6 +1706,16 @@
 
       let tempKey = e?.key?.toUpperCase();
 
+
+      // -- test override allow type onto letters
+
+      let newTile = { ...getTile(playerCol, playerRow) };
+      newTile.letter = tempKey;
+      setProposedTile(playerCol, playerRow, newTile);
+      return;
+
+      //
+
       for (let i = 0; i <= 8; i++) {
         let isKey = document.getElementById(`tile${i}`);
         if (isKey?.innerText == tempKey) {
@@ -1727,7 +1768,7 @@
       dragStartY = e.clientY;
       cameraStartX = cameraX;
       cameraStartY = cameraY;
-      captureCoords(e, true)
+      captureCoords(e)
       // console.log({ dragStartX, dragStartY });
     });
 
@@ -1751,7 +1792,7 @@
 
         // how to determine row and col of where i'm dragging in relation to TILE, and camera???
 
-        captureCoords(e)
+        captureCoords(e);
 
       }
     });
@@ -1812,6 +1853,8 @@
       }
       //captureCoords(t, false);
     });
+
+    // TODO: CHECK AND VERIFY THAT TOUCH UPDATES REMOTE PLAYER POSITIONS...
 
     canvas.addEventListener("touchend", (e) => {
       if (event.touches.length === 0) {
@@ -1882,8 +1925,8 @@
 
           let theTile = getTile(x, y);
 
-          let colBoundary = 69;
-          let rowBoundary = 69;
+          let colBoundary = boardColsMagnitude;
+          let rowBoundary = boardRowsMagnitude;
 
           // drawLetterTile(ctx, '_', px, py);
 
@@ -1909,32 +1952,30 @@
           // ctx.lineWidth = 2;
           // ctx.strokeRect(px, py, TILE, TILE);
 
-          if (theTile?.type != 'normal') {
-            ctx.strokeStyle = 'gold';
-
-            if (theTile?.type == 'crimewave') {
-              ctx.strokeStyle = 'blue';
-              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
-              ctx.lineWidth = 3;
-              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
-              ctx.fillText("🕵️‍♂️", px + TILE / 8, py + TILE / 8);
-            }
-            if (theTile?.type == 'shockwave') {
-              ctx.strokeStyle = 'green';
-              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
-              ctx.lineWidth = 3;
-              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
-              ctx.fillText("⚡", px + TILE / 8, py + TILE / 8);
-            }
-            if (theTile?.type == 'brainwave') {
-              ctx.strokeStyle = 'red';
-              ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
-              ctx.lineWidth = 3;
-              ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
-              ctx.fillText("🧠", px + TILE / 8, py + TILE / 8);
-            }
-
+          // if (theTile?.type != 'normal') {
+          ctx.strokeStyle = 'transparent';
+          if (theTile?.type == 'crimewave') {
+            ctx.strokeStyle = 'blue';
+            ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+            ctx.lineWidth = 3;
+            ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+            ctx.fillText("🕵️‍♂️", px + TILE / 8, py + TILE / 8);
           }
+          if (theTile?.type == 'shockwave') {
+            ctx.strokeStyle = 'green';
+            ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+            ctx.lineWidth = 3;
+            ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+            ctx.fillText("⚡", px + TILE / 8, py + TILE / 8);
+          }
+          if (theTile?.type == 'brainwave') {
+            ctx.strokeStyle = 'red';
+            ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+            ctx.lineWidth = 3;
+            ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+            ctx.fillText("🧠", px + TILE / 8, py + TILE / 8);
+          }
+          // }
 
           // Draw col,row centered on tile
           if (canCommitCrime) {
@@ -1975,8 +2016,8 @@
 
           // console.log(theTile.letter)
 
-          let colBoundary = 69;
-          let rowBoundary = 69;
+          let colBoundary = boardColsMagnitude;
+          let rowBoundary = boardRowsMagnitude;
 
           // drawLetterTile(ctx, '_', px, py);
 

@@ -18,6 +18,9 @@ const waves = loadJSONSync('./waves.json');
 const words = loadTXTSync('./words.txt');
 // console.log(words.length);
 
+let boardColsMagnitude = 50;
+let boardRowsMagnitude = 50;
+
 let wordLetterValues = [
   {
     "letter": "A",
@@ -191,8 +194,8 @@ function tileKey(col, row) {
 }
 
 function createMap(mapRef) {
-  for (let i = -69; i < 69; i++) {
-    for (let j = -69; j < 69; j++) {
+  for (let i = -boardColsMagnitude; i < boardColsMagnitude; i++) {
+    for (let j = -boardRowsMagnitude; j < boardRowsMagnitude; j++) {
       let powerUpType = ['brainwave', 'crimewave', 'shockwave'][Math.floor(Math.random() * 3)];
 
       if (Math.random() > 0.98) {
@@ -210,7 +213,7 @@ function createMap(mapRef) {
   return mapRef;
 }
 
-function getTile(col, row, mapRef) {
+function getTile(col, row, mapRef, allowNew = true) {
   const key = tileKey(col, row);
   if (!mapRef.has(key)) {
     // Lazy-generate a new tile with defaults
@@ -222,14 +225,13 @@ function getTile(col, row, mapRef) {
       status: "empty",
       type: "normal"
     };
-    mapRef.set(key, newTile);
+    if (allowNew) { mapRef.set(key, newTile); }
   }
   return mapRef.get(key);
 }
 
 function setTile(col, row, mapRef, tileObj) {
   const key = tileKey(col, row);
-  // Merge given tileObj with col,row and store
   const updated = { col, row, ...tileObj };
   mapRef.set(key, updated);
 }
@@ -307,12 +309,11 @@ io.on("connection", (socket) => {
     console.log(data);
     const obj2 = Object.fromEntries(maps[data?.myRoom]); // Map → Object
     const json = JSON.stringify(obj2); // Object → JSON string
-    // socket.emit('tileObjects', json);
     io.to(data?.myRoom).emit('tileObjects', json);
   })
 
   socket.on('proposedTile', (data) => {
-
+    console.log("----proposedTile------");
     console.log("data");
     console.log(data);
 
@@ -332,29 +333,182 @@ io.on("connection", (socket) => {
 
   });
 
+  function sendBoardDataToRoom(theRoom) {
+    console.log("------sendBoardDataToRoom------");
+    // const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
+    // const json = JSON.stringify(obj2); // Object → JSON string
+    // io.to(theRoom).emit('tileObjects', json);
+    // return;
+    // Filter the Map first before converting it to an object
+    console.log(Array.from(maps[theRoom]).length);
+    const filtered = Array.from(maps[theRoom]).filter(
+      ([key, value]) => value.letter !== "_"
+    );
+    console.log(filtered.length);
+    const obj2 = Object.fromEntries(filtered); // Map → Object
+    const json = JSON.stringify(obj2); // Object → JSON string
+    io.to(theRoom).emit('tileObjects', json);
+  }
+
+  function findLeft(col, row, mapRef) {
+    const testCase = getTile(col, row, mapRef, false);
+    // console.log(testCase);
+    return testCase.letter != '_' ? findLeft(col - 1, row, mapRef) : { col, row };
+  }
+
+  function findRight(col, row, mapRef) {
+    const testCase = getTile(col, row, mapRef, false);
+    // console.log(testCase);
+    return testCase.letter != '_' ? findRight(col + 1, row, mapRef) : { col, row };
+  }
+
+  function findTop(col, row, mapRef) {
+    const testCase = getTile(col, row, mapRef, false);
+    // console.log(testCase);
+    return testCase.letter != '_' ? findTop(col, row - 1, mapRef) : { col, row };
+  }
+
+  function findBottom(col, row, mapRef) {
+    const testCase = getTile(col, row, mapRef, false);
+    // console.log(testCase);
+    return testCase.letter != '_' ? findBottom(col, row + 1, mapRef) : { col, row };
+  }
+
+
+  socket.on('submitWord', (data) => {
+
+    //console.log("data");
+    //console.log(data);
+
+    let { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+
+    let theRoom = myRoom || data?.myRoom || '';
+
+    let mapRef = maps[theRoom];
+
+    //console.log(data.myRoom);
+
+    let wasInvalid = false;
+
+    let oldTiles = [];
+
+    for (let i = 0; i < sendTiles.length; i++) {
+      let cw = sendTiles[i];
+      let oldTile = getTile(cw.col, cw.row, mapRef, false);
+      oldTiles.push(oldTile)
+      setTile(cw.col, cw.row, mapRef, { ...oldTile, letter: cw.letter })
+    }
+
+    for (let i = 0; i < sendTiles.length; i++) {
+
+      let cw = sendTiles[i];
+
+      let currentTile = getTile(cw.col, cw.row, mapRef, false);
+      console.log({ currentTile });
+
+      let left = (findLeft(cw.col - 1, cw.row, mapRef));
+      let right = (findRight(cw.col + 1, cw.row, mapRef));
+      let top = (findTop(cw.col, cw.row - 1, mapRef));
+      let bottom = (findBottom(cw.col, cw.row + 1, mapRef));
+
+      //console.log({ left, right, top, bottom })
+
+      let hzWord = "";
+      for (let hz = left.col; hz <= right.col; hz++) {
+        let tempLetter = getTile(hz, cw.row, mapRef, false)?.letter || "";
+        if (hz == cw.col) {
+          tempLetter = cw.letter;
+
+        }
+        if (tempLetter == "_") { tempLetter = "" };
+        hzWord += tempLetter;
+      }
+      console.log(hzWord);
+      if (hzWord.length > 1) {
+        console.log(hzWord);
+        if (words.indexOf(hzWord.toLowerCase()) > -1) {
+          console.log('hzWordfound');
+        } else {
+          console.log('hzWord not found', hzWord);
+          wasInvalid = true;
+        }
+      } else {
+        //wasInvalid = true;
+      }
+
+      let vtWord = "";
+      for (let vt = top.row; vt <= bottom.row; vt++) {
+        let tempLetter = getTile(cw.col, vt, mapRef, false)?.letter || "";
+        if (vt == cw.row) {
+          tempLetter = cw.letter;
+
+        }
+        if (tempLetter == "_") { tempLetter = "" };
+        vtWord += tempLetter;
+      }
+
+      console.log(vtWord);
+      if (vtWord.length > 1) {
+        console.log(vtWord);
+        if (words.indexOf(vtWord.toLowerCase()) > -1) {
+          console.log('vtWord found');
+        } else {
+          console.log('vtWord not found', vtWord);
+          wasInvalid = true;
+        }
+      } else {
+        //wasInvalid = true;
+      }
+
+      setTile(cw.col, cw.row, mapRef, cw);
+    }
+
+    if (wasInvalid) {
+      // not a good word somewhere
+      console.log("was invalid");
+      // for (let i = 0; i < sendTiles.length; i++) {
+      //   let cw = sendTiles[i];
+      //   cw.letter = "_";
+      //   setTile(cw.col, cw.row, mapRef, cw);
+      // }
+      for (let i = 0; i < oldTiles.length; i++) {
+        let cw = oldTiles[i];
+        setTile(cw.col, cw.row, mapRef, { ...cw });
+      }
+    } else {
+      // all good
+      console.log("was all good");
+      for (let i = 0; i < sendTiles.length; i++) {
+        let cw = sendTiles[i];
+        setTile(cw.col, cw.row, mapRef, cw);
+      }
+    }
+
+    // setTile(data.col, data.row, mapRef, data);
+
+    socket.emit("word_result", { wasInvalid, sendTiles });
+
+    sendBoardDataToRoom(theRoom);
+    //const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
+    //const json = JSON.stringify(obj2); // Object → JSON string
+    //io.to(theRoom).emit('tileObjects', json);
+
+  });
+
   socket.on('getMap', (data) => {
-    console.log(users);
 
+    console.log("------getMap------");
     let theUser;
-
     users.forEach((u) => {
-      console.log("user found: ", u);
-
       if (u.id == socket.id) {
         theUser = u;
       }
     })
 
-    console.log(theUser);
-
     let roomName = theUser?.room || data?.room || '';
 
-    console.log(data);
-
     const obj2 = Object.fromEntries(maps[roomName]); // Map → Object
-
     const json = JSON.stringify(obj2); // Object → JSON string
-
     socket.emit('tileObjects', json);
 
   });
