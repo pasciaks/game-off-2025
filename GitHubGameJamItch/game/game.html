@@ -17,7 +17,7 @@
     /* Toast container */
     #toast-container {
       position: fixed;
-      top: 60px;
+      top: 120px;
       right: 20px;
       z-index: 9999;
       display: flex;
@@ -78,7 +78,8 @@
       background-color: #0099ff;
       border: none;
       border-radius: 8px;
-      padding: 20px;
+      padding: 10px;
+      width: 80%;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
@@ -198,24 +199,32 @@
     <!-- <h2>Instructions</h2> -->
 
     <div>
-      <button title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
+
+      <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Shining Stars</button>
 
-      <button
+
+
+      <button class="rack-btns2"
         title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
         onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Advertime</button>
 
-      <label style="text-wrap-mode:nowrap;border:2px solid yellow;color:white;">🔊
+      <br>
+
+      <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
       </label>
     </div>
 
     <br>
 
+    <p><button class="rack-btns2" id='reset' onclick='localStorage.clear();window.location.reload();'>RESET</button></p>
+
     <p id="wavesStatus">Waves are disabled!</p>
-    <p><button id='toggleEnableWaves' onclick='toggleEnableWaves()'>Click to Enable Waves</button></p>
+    <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves()'>Click to Enable Waves</button>
+    </p>
 
     <button class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button>
 
@@ -337,6 +346,7 @@
     let wavesEnabled = false;
 
     function toggleEnableWaves() {
+
       wavesEnabled = !wavesEnabled;
       if (wavesEnabled) {
         showToast("Waves are enabled.", "info", 9999);
@@ -355,7 +365,7 @@
       }
     }
 
-    let yourScore = 0;
+    let yourScore = localStorage.getItem("yourScore") || 0;
 
     let boardColsMagnitude = 25;
     let boardRowsMagnitude = 25;
@@ -408,9 +418,22 @@
     let canReplace = false; // shock
     let canSwap = false; // brain
 
-    let crimeCount = 1;
-    let shockCount = 3;
-    let brainCount = 7;
+    function getAndSetLocal(key, value) {
+      value = Math.floor(localStorage.getItem(key) || value);
+      localStorage.setItem(key, value);
+      return value;
+    }
+
+    function justSetLocal(key, value) {
+      localStorage.setItem(key, value);
+      return value;
+    }
+
+
+
+    let crimeCount = getAndSetLocal('crimeCount', 1);//1;
+    let shockCount = getAndSetLocal('shockCount', 3);//3;
+    let brainCount = getAndSetLocal('brainCount', 7);//7;
 
     function updateCounts() {
       setTimeout(() => {
@@ -946,17 +969,20 @@
 
         // valid
         if (data?.newBrain > 0) {
-          brainCount += data?.newBrain || 0;
+          brainCount += Math.floor(data?.newBrain || 0);
+          justSetLocal('brainCount', brainCount);
           showToast(`Brain Power! 🧠${brainCount}`, "info", 9999);
         }
 
         if (data?.newCrime > 0) {
-          crimeCount += data?.newCrime || 0;
+          crimeCount += Math.floor(data?.newCrime || 0);
+          justSetLocal('crimeCount', crimeCount);
           showToast(`Crime Pays! 🕵️‍♂️${crimeCount}`, "info", 9999);
         }
 
         if (data?.newShock > 0) {
-          shockCount += data?.newShock || 0;
+          shockCount += Math.floor(data?.newShock || 0);
+          justSetLocal('shockCount', shockCount);
           showToast(`Shocking! ⚡${shockCount}`, "info", 9999);
         }
 
@@ -1268,7 +1294,14 @@
       proposedLetterUse = {};
 
       if (canCommitCrime) { updateCounts(); }
-      if (canReplace) { shockCount--; showToast("Used Shock Wave", "error"); updateCounts(); }
+
+      if (canReplace) {
+        shockCount--;
+        justSetLocal('shockCount', shockCount);
+        showToast("Used Shock Wave", "error");
+        updateCounts();
+      }
+
       if (canSwap) { updateCounts(); }
 
       // canReplace = false;
@@ -1504,6 +1537,7 @@
         if (canSwap) {
           e.target.innerText = getLetterFromCollection();
           brainCount--;
+          justSetLocal('brainCount', brainCount);
           showToast("Used Brain Wave", "error");
           canSwap = false;
           updateCounts();
@@ -1563,6 +1597,7 @@
           if (canCommitCrime) {
             e.target.innerText = newTile.letter;
             crimeCount--;
+            justSetLocal('crimeCount', crimeCount);
             showToast("Used Crime Wave", "error");
             updateCounts();
             canCommitCrime = false;
@@ -1811,11 +1846,7 @@
               ctx.strokeRect(x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2);
             }
 
-
-
             // ctx.fillText(theTileData?.type, x + shrink + 15, y + shrink + 15);
-
-
 
             // out of bounds areas ? water traps, etc
             if (!isValidPlace(theTileData)) {
@@ -1828,13 +1859,10 @@
           }
         }
       }
+
       console.warn('Letter not found:', letter);
 
-
     }
-
-
-
 
     const TILE = 64;
     const canvas = document.getElementById("world");
@@ -1952,7 +1980,9 @@
 
       let newTile = { ...getTile(playerCol, playerRow) };
       newTile.letter = tempKey;
-      setProposedTile(playerCol, playerRow, newTile);
+      if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
+        setProposedTile(playerCol, playerRow, newTile);
+      }
       return;
 
       //
