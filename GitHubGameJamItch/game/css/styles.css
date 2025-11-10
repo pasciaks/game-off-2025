@@ -207,6 +207,10 @@ canvas:active {
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
 
+.bigWater {
+  width: 50%;
+}
+
 .arrow-btn:active,
 .num-btn:active,
 .rack-btn:active,

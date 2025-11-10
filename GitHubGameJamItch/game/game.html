@@ -113,8 +113,9 @@
       font-size: 1.1rem;
       font-weight: bold;
       color: #e8faff;
+      width: 50%;
       background: linear-gradient(180deg, #0099ff 0%, #0066cc 100%);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 5px solid rgba(0, 0, 0, 0.3);
       border-radius: 40px;
       cursor: pointer;
       overflow: hidden;
@@ -195,7 +196,13 @@
   <div id="toast-container"></div>
 
   <dialog id="myDialog">
-    <img src="logo.png" />
+
+    <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button>
+
+
+    <img style="cursor:pointer;" onclick="window.location='../index.html'" src="logo.png" />
+
+
     <!-- <h2>Instructions</h2> -->
 
     <div>
@@ -212,6 +219,7 @@
         Advertime</button>
 
       <br>
+      <br>
 
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
@@ -220,15 +228,17 @@
 
     <br>
 
-    <p><button class="rack-btns2" id='reset' onclick='localStorage.clear();window.location.reload();'>RESET</button></p>
 
-    <p id="wavesStatus">Waves are disabled!</p>
+    <p id="wavesStatus"><img src='no-waves.png' /></p>
     <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves()'>Click to Enable Waves</button>
     </p>
 
     <button class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button>
 
     <button class="waterButton" id="closeDialog">Close</button>
+
+
+
   </dialog>
 
   <!-- Keypad -->
@@ -343,6 +353,15 @@
 
   <script>
 
+    function resetGameSaves() {
+
+      if (confirm("Are you sure you want to reset your score and saved crime/shock/brain wave counts?")) {
+        localStorage.clear();
+        window.location.reload();
+      }
+
+    }
+
     let wavesEnabled = false;
 
     function toggleEnableWaves() {
@@ -365,7 +384,7 @@
       }
     }
 
-    let yourScore = localStorage.getItem("yourScore") || 0;
+    let yourScore = Math.floor(localStorage.getItem("yourScore") || 0);
 
     let boardColsMagnitude = 25;
     let boardRowsMagnitude = 25;
@@ -966,6 +985,8 @@
         showToast("Word(s) Score: " + data?.tempWordScore || 0, "info", 9999);
 
         yourScore += data?.tempWordScore || 0;
+
+        localStorage.setItem("yourScore", Math.floor(yourScore));
 
         // valid
         if (data?.newBrain > 0) {
