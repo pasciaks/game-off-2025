@@ -214,6 +214,9 @@
 
     <br>
 
+    <p id="wavesStatus">Waves are disabled!</p>
+    <p><button id='toggleEnableWaves' onclick='toggleEnableWaves()'>Click to Enable Waves</button></p>
+
     <button class="waterButton" id="goHome" onclick="window.location='../index.html'">Home</button>
 
     <button class="waterButton" id="closeDialog">Close</button>
@@ -260,7 +263,7 @@
 
   </div>
 
-  <div id="commands" style="border:1px solid gray;margin:0px;padding:0px;">
+  <div id="commands" style="border:0px solid gray;margin:5px;padding:5px;">
 
     <!-- <button class="rack-btns2" id="eraseIt">Erase Board</button> -->
 
@@ -268,41 +271,47 @@
     <!-- <button onclick="showToast('Something went wrong!', 'error')">Error</button> -->
     <!-- <button onclick="showToast('Here is some info', 'info')">Info</button> -->
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
-    <span><a href="../index.html"><img src="logo.png" style="height:50px;" /></a></span>
 
-    <button id="openDialog" class="rack-btns2"><span style="font-size: 24px;">Settings 🌊</span></button>
-
+    <!-- <span><a href="../index.html"><img src="logo.png" style="height:15px;" /></a></span> -->
 
 
-    <button title="Allows you to copy a letter from the board into one of your tiles." class="rack-btns2"
-      id="togglecanCommitCrime"><span id='crimeCount'></span><span style="font-size: 24px;color:blue;">🕵️‍♂️
-        Crime</span></button>
 
-    <button title="Allows you to attempt to replace letters already placed with your tiles." class="rack-btns2"
-      id="toggleReplacement"><span id='shockCount'></span><span
-        style="font-size: 24px;color:green;">⚡Shock</span></button>
 
-    <button title="Allows you to swap letters from your letter rack." class="rack-btns2" id="swapLetterTiles"><span
-        id='brainCount'></span><span style="font-size: 24px;color:red;">🧠 Brain</span>
+    <button id="openDialog" class="rack-btns2 rack-btns-also-hover"><span title="Settings menu, and instructions link."
+        style="font-size: 24px;">🌊<img src="logo.png" style="height:15px;" /></span></button>
+
+    <button title="Allows you to copy a letter from the board into one of your tiles."
+      class="rack-btns2 rack-btns-also-hover" id="togglecanCommitCrime"><span id='crimeCount'></span><span
+        style="font-size: 24px;color:blue;">🕵️‍♂️</span></button>
+
+    <button title="Allows you to attempt to replace letters already placed with your tiles."
+      class="rack-btns2 rack-btns-also-hover" id="toggleReplacement"><span id='shockCount'></span><span
+        style="font-size: 24px;color:green;">⚡</span></button>
+
+    <button title="Allows you to swap letters from your letter rack." class="rack-btns2 rack-btns-also-hover"
+      id="swapLetterTiles"><span id='brainCount'></span><span style="font-size: 24px;color:red;">🧠</span>
     </button>
+
+    <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2"><span
+        id='yourScore'></span><span style="font-size: 24px;color:green;">🪙</span></button>
 
     <button title="(Micro Wave) Microwave mode means only 1 or 2 letters can be submitted to make words."
       class="rack-btns2" id="microWave"><span style="font-size: 24px;">📡</span>
     </button>
 
-    <button title="(RadiO Wave) Word must begin with a consonant and end with a vowel." class="rack-btns2"
-      id="radioWave"><span style="font-size: 24px;">📻</span>
+    <button title="(RadiO Wave) 1st letter submitted must be a consonant and last letter must be a vowel."
+      class="rack-btns2" id="radioWave"><span style="font-size: 24px;">📻</span>
     </button>
 
-    <button title="(SounD Wave) Word must begin with a consonant and end with a consonant." class="rack-btns2"
-      id="soundWave"><span style="font-size: 24px;">🎙️</span>
+    <button title="(SounD Wave) 1st letter submitted must be a consonant and last letter must be a consonant."
+      class="rack-btns2" id="soundWave"><span style="font-size: 24px;">🎙️</span>
     </button>
 
-    <button title="(ElectromagnetiC Wave) Word must begin with a vowel and end with a consonant." class="rack-btns2"
-      id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
+    <button title="(ElectromagnetiC Wave) 1st letter submitted must be a vowel and last letter must be a consonant."
+      class="rack-btns2" id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
 
-    <button title="(EnergY Wave) Word must begin with a vowel and end with a vowel." class="rack-btns2"
-      id="energyWave"><span style="font-size: 24px;">🔋</span>
+    <button title="(EnergY Wave) 1st letter submitted must be a vowel and last letter must be a vowel."
+      class="rack-btns2" id="energyWave"><span style="font-size: 24px;">🔋</span>
     </button>
 
   </div>
@@ -324,6 +333,29 @@
   </div>
 
   <script>
+
+    let wavesEnabled = false;
+
+    function toggleEnableWaves() {
+      wavesEnabled = !wavesEnabled;
+      if (wavesEnabled) {
+        showToast("Waves are enabled.", "info", 9999);
+        document.getElementById('wavesStatus').innerHTML = "<img src='waves.png'/>";
+        document.getElementById('toggleEnableWaves').innerText = 'Click to Disable Waves';
+      } else {
+        document.getElementById('wavesStatus').innerHTML = "<img src='no-waves.png'/>";
+        document.getElementById('toggleEnableWaves').innerText = 'Click to Enable Waves';
+        is_microWave = false;
+        is_radioWave = false;
+        is_soundWave = false;
+        is_ElectromagneticWave = false;
+        is_energyWave = false;
+        showToast("Waves are NOT enabled.", "info", 9999);
+        updateWaves();
+      }
+    }
+
+    let yourScore = 0;
 
     let boardColsMagnitude = 25;
     let boardRowsMagnitude = 25;
@@ -372,25 +404,6 @@
     is_ElectromagneticWave = false; updateWaves();
     is_energyWave = false; updateWaves();
 
-    //     <button title="(Micro Wave) Words must be only be 2 or 3 characters short." class="rack-btns2"
-    //   id="microWave"><span style="font-size: 24px;">📡</span>
-    // </button>
-
-    // <button title="(RadiO Wave) Word must begin with a consonant and end with a vowel." class="rack-btns2"
-    //   id="radioWave"><span style="font-size: 24px;">📻</span>
-    // </button>
-
-    // <button title="(SounD Wave) Word must begin with a consonant and end with a consonant." class="rack-btns2"
-    //   id="soundWave"><span style="font-size: 24px;">🎙️</span>
-    // </button>
-
-    // <button title="(ElectromagnetiC Wave) Word must begin with a vowel and end with a consonant." class="rack-btns2"
-    //   id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
-
-    // <button title="(EnergY Wave) Word must begin with a vowel and end with a vowel." class="rack-btns2"
-    //   id="energyWave"><span style="font-size: 24px;">🔋</span>
-    // </button>
-
     let canCommitCrime = false; // crime
     let canReplace = false; // shock
     let canSwap = false; // brain
@@ -404,6 +417,8 @@
         document.getElementById('crimeCount').innerText = crimeCount;
         document.getElementById('shockCount').innerText = shockCount;
         document.getElementById('brainCount').innerText = brainCount;
+        document.getElementById('yourScore').innerText = yourScore;
+
       }, 500);
     }
 
@@ -753,9 +768,45 @@
         boardColsMagnitude = 5;
         boardRowsMagnitude = 5;
         break;
-      default:
+      case 'room2':
+        boardColsMagnitude = 15;
+        boardRowsMagnitude = 5;
+        break;
+      case 'room3':
+        boardColsMagnitude = 15;
+        boardRowsMagnitude = 25;
+        break;
+      case 'room4':
+        boardColsMagnitude = 15;
+        boardRowsMagnitude = 25;
+        break;
+      case 'room5':
         boardColsMagnitude = 25;
         boardRowsMagnitude = 25;
+        break;
+      case 'room6':
+        boardColsMagnitude = 50;
+        boardRowsMagnitude = 50;
+        break;
+      case 'room7':
+        boardColsMagnitude = 15;
+        boardRowsMagnitude = 50;
+        break;
+      case 'room8':
+        boardColsMagnitude = 50;
+        boardRowsMagnitude = 15;
+        break;
+      case 'room9':
+        boardColsMagnitude = 35;
+        boardRowsMagnitude = 35;
+        break;
+      case 'room10':
+        boardColsMagnitude = 50;
+        boardRowsMagnitude = 50;
+        break;
+      default:
+        boardColsMagnitude = 50;
+        boardRowsMagnitude = 50;
         break;
     }
 
@@ -807,14 +858,112 @@
     });
 
     socket.on("tileMap", (data) => {
-      // console.log("tileMap", data);
-      // console.log(typeof data);
-      //tileMap = data;
 
+      // not used
+
+    });
+
+    // let is_microWave = false;
+    socket.on("is_microWave", (data) => {
+      if (!wavesEnabled) { showToast("Waves are disabled!", "info"); return; }
+      console.log("is_microWave", data);
+      is_microWave = false;
+      is_radioWave = false;
+      is_soundWave = false;
+      is_ElectromagneticWave = false;
+      is_energyWave = false;
+
+      is_microWave = true;
+      updateWaves();
+    });
+
+    // let is_radioWave = false;
+    socket.on("is_radioWave", (data) => {
+      if (!wavesEnabled) { showToast("Waves are disabled!", "info"); return; }
+      console.log("is_radioWave", data);
+      is_microWave = false;
+      is_radioWave = false;
+      is_soundWave = false;
+      is_ElectromagneticWave = false;
+      is_energyWave = false;
+
+      is_radioWave = true;
+      updateWaves();
+    });
+
+    // let is_soundWave = false;
+    socket.on("is_soundWave", (data) => {
+      if (!wavesEnabled) { showToast("Waves are disabled!", "info"); return; }
+      console.log("is_soundWave", data);
+      is_microWave = false;
+      is_radioWave = false;
+      is_soundWave = false;
+      is_ElectromagneticWave = false;
+      is_energyWave = false;
+
+      is_soundWave = true;
+      updateWaves();
+    });
+
+    // let is_ElectromagneticWave = false;
+    socket.on("is_ElectromagneticWave", (data) => {
+      if (!wavesEnabled) { showToast("Waves are disabled!", "info"); return; }
+      console.log("is_ElectromagneticWave", data);
+      is_microWave = false;
+      is_radioWave = false;
+      is_soundWave = false;
+      is_ElectromagneticWave = false;
+      is_energyWave = false;
+
+      is_ElectromagneticWave = true;
+      updateWaves();
+    });
+
+    // let is_energyWave = false;
+    socket.on("is_energyWave", (data) => {
+      if (!wavesEnabled) { showToast("Waves are disabled!", "info"); return; }
+      console.log("is_energyWave", data);
+      is_microWave = false;
+      is_radioWave = false;
+      is_soundWave = false;
+      is_ElectromagneticWave = false;
+      is_energyWave = false;
+
+      is_energyWave = true;
+      updateWaves();
     });
 
     socket.on("word_result", (data) => {
       console.log(data);
+
+      if (data?.wasInvalid) {
+        // invalid
+      } else {
+
+        showToast("Word(s) Score: " + data?.tempWordScore || 0, "info", 9999);
+
+        yourScore += data?.tempWordScore || 0;
+
+        // valid
+        if (data?.newBrain > 0) {
+          brainCount += data?.newBrain || 0;
+          showToast(`Brain Power! 🧠${brainCount}`, "info", 9999);
+        }
+
+        if (data?.newCrime > 0) {
+          crimeCount += data?.newCrime || 0;
+          showToast(`Crime Pays! 🕵️‍♂️${crimeCount}`, "info", 9999);
+        }
+
+        if (data?.newShock > 0) {
+          shockCount += data?.newShock || 0;
+          showToast(`Shocking! ⚡${shockCount}`, "info", 9999);
+        }
+
+        updateCounts();
+
+        // showToast(`🕵️‍♂️${crimeCount} ⚡${shockCount} 🧠${brainCount}`, "info", 9999);
+      }
 
       for (let i = 1; i <= 7; i++) {
         let ele = document.getElementById(`tile${i}`);
@@ -824,6 +973,8 @@
           if (data?.wasInvalid) {
             ele.innerText = ele.innerText.toUpperCase();
           } else {
+
+
             ele.innerText = getLetterFromCollection();
           }
 
@@ -1094,6 +1245,22 @@
 
     }
 
+    function getLetterType(letter) {
+      if (!letter || typeof letter !== 'string') return null; // handle invalid input
+
+      const upper = letter.toUpperCase();
+      const vowels = ['A', 'E', 'I', 'O', 'U'];
+
+      if (vowels.includes(upper)) {
+        return 'vowel';
+      } else if (upper >= 'A' && upper <= 'Z') {
+        return 'consonant';
+      } else {
+        return null; // not a letter
+      }
+    }
+
+
     function submitAttempt() {
 
       // console.log("proposedTileUse", proposedLetterUse);
@@ -1128,6 +1295,71 @@
           return false;
         }
       }
+
+      if (is_radioWave) {
+        try {
+          // consonant
+          if (getLetterType(sendTiles[0].letter) != 'consonant') {
+            throw new Error("Not a consonant.");
+          }
+          // vowel
+          if (getLetterType(sendTiles[sendTiles?.length - 1].letter) != 'vowel') {
+            throw new Error("Not a vowel.");
+          }
+        } catch (e) {
+          showToast("Failed RadiO Wave!", "error", 9999);
+          return false;
+        }
+      }
+
+      if (is_soundWave) {
+        try {
+          // consonant
+          if (getLetterType(sendTiles[0].letter) != 'consonant') {
+            throw new Error("Not a consonant.");
+          }
+          // consonant
+          if (getLetterType(sendTiles[sendTiles?.length - 1].letter) != 'consonant') {
+            throw new Error("Not a consonant.");
+          }
+        } catch (e) {
+          showToast("Failed SounD Wave!", "error", 9999);
+          return false;
+        }
+      }
+
+      if (is_ElectromagneticWave) {
+        try {
+          // vowel
+          if (getLetterType(sendTiles[0].letter) != 'vowel') {
+            throw new Error("Not a vowel.");
+          }
+          // consonant
+          if (getLetterType(sendTiles[sendTiles?.length - 1].letter) != 'consonant') {
+            throw new Error("Not a consonant.");
+          }
+        } catch (e) {
+          showToast("Failed ElectromagnetiC Wave!", "error", 9999);
+          return false;
+        }
+      }
+
+      if (is_energyWave) {
+        try {
+          // vowel
+          if (getLetterType(sendTiles[0].letter) != 'vowel') {
+            throw new Error("Not a vowel.");
+          }
+          // vowel
+          if (getLetterType(sendTiles[sendTiles?.length - 1].letter) != 'vowel') {
+            throw new Error("Not a vowel.");
+          }
+        } catch (e) {
+          showToast("Failed EnergY Wave!", "error", 9999);
+          return false;
+        }
+      }
+
 
       for (let jj = 0; jj < sendTiles.length; jj++) {
         let cT = sendTiles[jj];
@@ -1201,11 +1433,15 @@
         e.preventDefault();
         if (canCommitCrime) {
           canCommitCrime = false;
+
           return false;
         }
         if (crimeCount > 0) {
-          updatePowerUps();
           canCommitCrime = true;
+          canReplace = false;
+          canSwap = false;
+
+          document.getElementById("scrabbleRack").style.border = 'none';
           showToast("Place your character on a blue outlined letter, then click one of the letters in your rack to steal the letter value for your use.", "info", 9999);
           // showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
         } else {
@@ -1218,12 +1454,16 @@
         e.preventDefault();
         if (canReplace) {
           canReplace = false;
+
           cancelAttempt();
           return false;
         }
         if (shockCount > 0) {
-          updatePowerUps();
           canReplace = true;
+          canCommitCrime = false;
+          canSwap = false;
+
+          document.getElementById("scrabbleRack").style.border = 'none';
           showToast("You can place proposed letters on top of green outilned letters.", "info", 9999);
           // showToast("If the changes result in valid words, they remain on the new board.", "success", 9999);
         } else {
@@ -1239,8 +1479,9 @@
           return false;
         }
         if (brainCount > 0) {
-          updatePowerUps();
           canSwap = true;
+          canCommitCrime = false;
+          canReplace = false;
           document.getElementById("scrabbleRack").style.border = '5px solid red';
           showToast("You can swap letters from your tile rack.", "info", 9999);
         } else {

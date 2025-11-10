@@ -18,8 +18,8 @@ const waves = loadJSONSync('./waves.json');
 const words = loadTXTSync('./words.txt');
 // console.log(words.length);
 
-let boardColsMagnitude = 50;
-let boardRowsMagnitude = 50;
+let boardColsMagnitude = 55;
+let boardRowsMagnitude = 55;
 
 let wordLetterValues = [
   {
@@ -353,25 +353,37 @@ io.on("connection", (socket) => {
   function findLeft(col, row, mapRef) {
     const testCase = getTile(col, row, mapRef, false);
     // console.log(testCase);
-    return testCase.letter != '_' ? findLeft(col - 1, row, mapRef) : { col, row };
+    if (!testCase) {
+      return { col, row };
+    }
+    return testCase?.letter != '_' ? findLeft(col - 1, row, mapRef) : { col, row };
   }
 
   function findRight(col, row, mapRef) {
     const testCase = getTile(col, row, mapRef, false);
     // console.log(testCase);
-    return testCase.letter != '_' ? findRight(col + 1, row, mapRef) : { col, row };
+    if (!testCase) {
+      return { col, row };
+    }
+    return testCase?.letter != '_' ? findRight(col + 1, row, mapRef) : { col, row };
   }
 
   function findTop(col, row, mapRef) {
     const testCase = getTile(col, row, mapRef, false);
     // console.log(testCase);
-    return testCase.letter != '_' ? findTop(col, row - 1, mapRef) : { col, row };
+    if (!testCase) {
+      return { col, row };
+    }
+    return testCase?.letter != '_' ? findTop(col, row - 1, mapRef) : { col, row };
   }
 
   function findBottom(col, row, mapRef) {
     const testCase = getTile(col, row, mapRef, false);
     // console.log(testCase);
-    return testCase.letter != '_' ? findBottom(col, row + 1, mapRef) : { col, row };
+    if (!testCase) {
+      return { col, row };
+    }
+    return testCase?.letter != '_' ? findBottom(col, row + 1, mapRef) : { col, row };
   }
 
 
@@ -399,19 +411,46 @@ io.on("connection", (socket) => {
       setTile(cw.col, cw.row, mapRef, { ...oldTile, letter: cw.letter })
     }
 
+    let newCrime = 0;
+    let newShock = 0;
+    let newBrain = 0;
+
+    let tempWordScore = 0;
+
     for (let i = 0; i < sendTiles.length; i++) {
 
       let cw = sendTiles[i];
 
       let currentTile = getTile(cw.col, cw.row, mapRef, false);
+
       console.log({ currentTile });
+
+      let objForScore = wordLetterValues.find((i) => i?.letter == currentTile?.letter?.toUpperCase());
+
+      tempWordScore += objForScore?.points || 0;
+
+      console.log(tempWordScore);
+
+      if (currentTile?.type == 'brainwave') {
+        newBrain++;
+      }
+
+      if (currentTile?.type == 'crimewave') {
+        newCrime++;
+      }
+
+      if (currentTile?.type == 'shockwave') {
+        newShock++;
+      }
+
+
 
       let left = (findLeft(cw.col - 1, cw.row, mapRef));
       let right = (findRight(cw.col + 1, cw.row, mapRef));
       let top = (findTop(cw.col, cw.row - 1, mapRef));
       let bottom = (findBottom(cw.col, cw.row + 1, mapRef));
 
-      //console.log({ left, right, top, bottom })
+      // console.log({ left, right, top, bottom })
 
       let hzWord = "";
       for (let hz = left.col; hz <= right.col; hz++) {
@@ -486,7 +525,16 @@ io.on("connection", (socket) => {
 
     // setTile(data.col, data.row, mapRef, data);
 
-    socket.emit("word_result", { wasInvalid, sendTiles });
+    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore });
+
+    if (!wasInvalid) {
+      let random = Math.floor(Math.random() * 5)
+      if (random == 0) { socket.emit("is_microWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+      if (random == 1) { socket.emit("is_radioWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+      if (random == 2) { socket.emit("is_soundWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+      if (random == 3) { socket.emit("is_ElectromagneticWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+      if (random == 4) { socket.emit("is_energyWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+    }
 
     sendBoardDataToRoom(theRoom);
     //const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object

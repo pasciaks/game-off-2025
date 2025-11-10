@@ -53,9 +53,14 @@ canvas:active {
 }
 
 
-
-
-
+/* #scoreContainer {
+  border: 2px solid blue;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  height: 150px !important;
+  background-color: rgb(29, 81, 91);
+} */
 
 /* ----- MOBILE MENU ----- */
 #mobileMenu {
@@ -195,7 +200,7 @@ canvas:active {
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
 
-.rack-btns2:hover {
+.rack-btns-also-hover:hover {
   background: linear-gradient(to bottom, #0b9aa4 0%, #14a6c6 100%);
   transform: translateY(-2px);
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5),
