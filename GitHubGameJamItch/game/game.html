@@ -372,7 +372,7 @@
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "block";
-    }, 3000);
+    }, 300000);
 
     function resetGameSaves() {
 
@@ -543,7 +543,6 @@
         document.getElementById('shockCount').innerText = shockCount;
         document.getElementById('brainCount').innerText = brainCount;
         document.getElementById('yourScore').innerText = yourScore;
-
       }, 500);
     }
 
@@ -1235,11 +1234,11 @@
       data = { now: Date.now(), room: myRoom }
       socket.emit('getMap', data);
 
-      setTimeout(() => {
-        // document.getElementById("#scrabbleRack").style.display = 'flex';
-        // document.getElementById("#scrabbleRackb").style.display = 'flex';
+      // setTimeout(() => {
+      //   // document.getElementById("#scrabbleRack").style.display = 'flex';
+      //   // document.getElementById("#scrabbleRackb").style.display = 'flex';
+      // }, 1000);
 
-      }, 1000);
     }
 
     // let lastupdate = Date.now();
