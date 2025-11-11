@@ -18,8 +18,61 @@ console.log("waves", waves);
 const uniqueWords = [...new Set(Object.values(waves).flatMap(c => c.words))];
 console.log("uniqueWords", uniqueWords);
 
-const words = loadTXTSync('./words.txt');
+let words = loadTXTSync('./words.txt');
 // console.log(words.length);
+
+function removeShortWords(words) {
+
+  let tc = 0;
+  words.forEach((w) => {
+    if (w.length == 2) {
+      tc++;
+      if (twoLetterWords.includes(w)) {
+      } else {
+        console.log("missing:", w)
+      }
+    }
+  });
+  console.log("two letter words original", tc)
+
+  return words.filter(word => word.length > 2);
+
+}
+
+const twoLetterWords = [
+  "aa", "ab", "ad", "ae", "ag", "ah", "ai", "al", "am", "an", "ar", "as", "at", "aw", "ax", "ay",
+  "ba", "be", "bi", "bo", "by",
+  "da", "de", "do",
+  "ed", "ef", "eh", "el", "em", "en", "er", "es", "et", "ew", "ex",
+  "fa", "fe",
+  "gi", "go",
+  "ha", "he", "hi", "hm", "ho",
+  "id", "if", "in", "is", "it",
+  "jo",
+  "ka", "ki",
+  "la", "li", "lo",
+  "ma", "me", "mi", "mm", "mo",
+  "na", "ne", "no", "nu",
+  "od", "oe", "of", "oh", "oi", "ok", "om", "on", "op", "or", "os", "ow", "ox", "oy",
+  "pa", "pe", "pi",
+  "qi",
+  "re",
+  "sh", "si", "so",
+  "ta", "te", "ti", "to",
+  "uh", "um", "un", "up", "us", "ut",
+  "we", "wo",
+  "xi", "xu",
+  "ya", "ye", "yo"
+];
+
+
+words = removeShortWords(words);
+
+words = [...twoLetterWords, ...words];
+
+console.log("words", words.length);
+
+console.log("two letter words", twoLetterWords.length);
 
 let boardColsMagnitude = 55;
 let boardRowsMagnitude = 55;
@@ -157,7 +210,7 @@ let wordLetterValues = [
   }
 ];
 
-let lettersCollection = [];
+// let lettersCollection = [];
 
 function shuffleInPlace(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -167,25 +220,26 @@ function shuffleInPlace(array) {
   return array;
 }
 
-function createLetterCollection() {
-  for (let i = 0; i < wordLetterValues.length; i++) {
-    let current = wordLetterValues[i];
-    for (let j = 0; j < current.quantity; j++) {
-      lettersCollection.push(current?.letter || "_");
-    }
-  }
-  shuffleInPlace(lettersCollection);
-  console.log(lettersCollection.length);
-}
+// function createLetterCollection() {
+//   for (let i = 0; i < wordLetterValues.length; i++) {
+//     let current = wordLetterValues[i];
+//     for (let j = 0; j < current.quantity; j++) {
+//       lettersCollection.push(current?.letter || "_");
+//     }
+//   }
+//   shuffleInPlace(lettersCollection);
+//   console.log("lettersCollection");
+//   console.log(lettersCollection.length);
+// }
 
-function getLetterFromCollection() {
-  if (lettersCollection.length <= 0) {
-    createLetterCollection();
-  }
-  return lettersCollection.shift();
-}
+// function getLetterFromCollection() {
+//   if (lettersCollection.length <= 0) {
+//     createLetterCollection();
+//   }
+//   return lettersCollection.shift();
+// }
 
-createLetterCollection();
+// createLetterCollection();
 
 function randomLetter() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_';
@@ -580,14 +634,14 @@ io.on("connection", (socket) => {
 
   });
 
-  socket.on('getLetters', (number) => {
-    let s = "";
-    for (let i = 0; i < number; i++) {
-      let t = getLetterFromCollection();
-      s += t;
-    }
-    socket.emit('gotLetters', s);
-  });
+  // socket.on('getLetters', (number) => {
+  //   let s = "";
+  //   for (let i = 0; i < number; i++) {
+  //     let t = getLetterFromCollection();
+  //     s += t;
+  //   }
+  //   socket.emit('gotLetters', s);
+  // });
 
   socket.on('getRooms', (data) => {
     // console.log(data);

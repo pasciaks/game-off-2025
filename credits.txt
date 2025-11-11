@@ -1,10 +1,33 @@
+Credits, acknowledgements and thank you!
+
+
+
+Thanks:
+
+WrongWay for the inspiration to make a Scrabble game in the tradition of the old game with something new.
+
+
+
+Resources:
+
 https://screamingbrainstudios.itch.io/2d-word-game-pack
 
 https://bdragon1727.itch.io/72-cute-pixel-character
 
+https://www.freescrabbledictionary.com/
+
+https://freesvg.org/
+
+https://freepd.com/
+
+https://cooltext.com/
 
 
-WrongWay for the inspiration to make a Scrabble game in the tradition of old games with something new.
 
- - Special tiles and special letter rack idea.
 
+Code Help:
+
+Stack Overflow , Google Search ? NOPE! => Chat GPT!
+
+
+ 

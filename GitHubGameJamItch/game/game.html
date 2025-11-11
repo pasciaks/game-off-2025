@@ -297,6 +297,7 @@
     <button class="rack-btns" id="tile5b">*</button>
     <button class="rack-btns" id="tile6b">*</button>
     <button class="rack-btns" id="tile7b">*</button> -->
+    <button class="waterButton rack-btns2" id="homeIt">Home</button>
     <button class="waterButton rack-btns2" id="cancelIt">Cancel</button>
     <button class="waterButton rack-btns2" id="sendIt">Submit</button>
 
@@ -371,7 +372,7 @@
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "block";
-    }, 300000);
+    }, 3000);
 
     function resetGameSaves() {
 
@@ -688,7 +689,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'development';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -1084,11 +1085,16 @@
 
         if (data?.theBonusWords) {
           console.log(JSON.stringify(data.theBonusWords));
-          yourScore += 50 * Math.floor(data?.theBonusWords?.length || 0);
           data.theBonusWords.forEach((w) => {
-            showToast("Bonus word found => " + w, "info");
-            waveslistEle.title = waveslistEle?.title?.replace(w, "〰️");
-            waveslistEle.innerText = waveslistEle?.innerText?.replace(w, "〰️");
+            if (waveslistEle.innerText.indexOf(w) > -1) {
+              showToast("( +$25 ) Bonus word found => " + w, "info");
+              waveslistEle.title = waveslistEle?.title?.replace(w, "〰️");
+              waveslistEle.innerText = waveslistEle?.innerText?.replace(w, "〰️");
+              yourScore += 25;
+            } else {
+              showToast("( $5 ) Bonus word again => " + w, "info");
+              yourScore += 5;
+            }
           })
         }
 
@@ -1450,13 +1456,29 @@
 
       let sendTiles = [];
 
+      let index = 0;
+      let isXdir = false;
+      let isYdir = false;
       proposedTileMap.forEach((i) => {
         if (i.letter != "_") {
           const key = tileKey(i.col, i.row);
           const updated = { ...i, col: i.col, row: i.row, ...i, myName, myRoom };
           sendTiles.push(updated);
+          if (index > 0) {
+            let diffx = sendTiles[index].col - sendTiles[index - 1].col;
+            let diffy = sendTiles[index].row - sendTiles[index - 1].row;
+            console.log({ diffx, diffy });
+            if (diffx != 0) { isXdir = true; }
+            if (diffy != 0) { isYdir = true; }
+          }
+          index++;
         }
       });
+
+      if (isXdir && isYdir) {
+        showToast("Invalid - Letters can only be placed in a single direction to make words.");
+        return;
+      }
 
       if (is_microWave) {
         if (sendTiles.length > 2) {
@@ -1595,6 +1617,10 @@
       document.getElementById("sendIt").addEventListener("click", (e) => { e.preventDefault(); submitAttempt(); });
 
       document.getElementById("cancelIt").addEventListener("click", (e) => { e.preventDefault(); cancelAttempt(); });
+
+      document.getElementById("homeIt").addEventListener("click", (e) => { e.preventDefault(); window.location = "../index.html" });
+
+
 
       document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
 
