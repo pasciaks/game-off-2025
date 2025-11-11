@@ -1074,11 +1074,11 @@
 
     socket.on("word_result", (data) => {
       console.log(data);
-
-
+      console.log(data.sendTiles);
 
       if (data?.wasInvalid) {
         // invalid
+        return;
       } else {
 
         let waveslistEle = document.getElementById('waveslist');
@@ -1126,6 +1126,7 @@
         updateCounts();
 
         // showToast(`🕵️‍♂️${crimeCount} ⚡${shockCount} 🧠${brainCount}`, "info", 9999);
+
       }
 
       for (let i = 1; i <= 7; i++) {
@@ -1459,6 +1460,7 @@
       let index = 0;
       let isXdir = false;
       let isYdir = false;
+
       proposedTileMap.forEach((i) => {
         if (i.letter != "_") {
           const key = tileKey(i.col, i.row);
@@ -1479,6 +1481,8 @@
         showToast("Invalid - Letters can only be placed in a single direction to make words.");
         return;
       }
+
+
 
       if (is_microWave) {
         if (sendTiles.length > 2) {

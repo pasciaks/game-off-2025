@@ -473,6 +473,9 @@ io.on("connection", (socket) => {
     let bonusWords = 0;
     let theBonusWords = [];
 
+    let theL = 0;
+    let wasFound = false;
+
     for (let i = 0; i < sendTiles.length; i++) {
 
       let cw = sendTiles[i];
@@ -485,7 +488,7 @@ io.on("connection", (socket) => {
 
       tempWordScore += objForScore?.points || 0;
 
-      console.log(tempWordScore);
+      console.log("tempWordScore", tempWordScore);
 
       if (currentTile?.type == 'brainwave') {
         newBrain++;
@@ -517,12 +520,19 @@ io.on("connection", (socket) => {
         hzWord += tempLetter;
       }
 
-      console.log(hzWord);
+      if (hzWord.length <= 1) {
+        // wasInvalid = true;
+        theL += hzWord.length;
+      }
+
+      console.log({ hzWord, wasInvalid, theL });
 
       if (hzWord.length > 1) {
         console.log(hzWord);
         if (words.indexOf(hzWord.toLowerCase()) > -1) {
           console.log('hzWordfound', hzWord);
+
+          wasFound = true;
 
           if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
             console.log("Found (case-insensitive)!");
@@ -536,6 +546,8 @@ io.on("connection", (socket) => {
           console.log('hzWord not found', hzWord);
           wasInvalid = true;
         }
+      } else {
+        // wasInvalid = true;
       }
 
       let vtWord = "";
@@ -549,11 +561,18 @@ io.on("connection", (socket) => {
         vtWord += tempLetter;
       }
 
-      console.log(vtWord);
+      if (vtWord.length <= 1) {
+        // wasInvalid = true;
+        theL += vtWord.length;
+      }
+      console.log({ vtWord, wasInvalid, theL });
+
       if (vtWord.length > 1) {
         console.log(vtWord);
         if (words.indexOf(vtWord.toLowerCase()) > -1) {
           console.log('vtWord found', vtWord);
+
+          wasFound = true;
 
           if (uniqueWords.some(w => w.toLowerCase() == vtWord.toLowerCase())) {
             console.log("Found (case-insensitive)!");
@@ -567,9 +586,16 @@ io.on("connection", (socket) => {
           console.log('vtWord not found', vtWord);
           wasInvalid = true;
         }
+      } else {
+        // wasInvalid = true;
       }
 
       setTile(cw.col, cw.row, mapRef, cw);
+    }
+
+    if (!wasFound) {
+      wasInvalid = true;
+      console.log({ wasFound, wasInvalid })
     }
 
     if (wasInvalid) {
