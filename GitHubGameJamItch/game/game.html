@@ -240,12 +240,12 @@
 
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-        Shining Stars</button> <span onclick="window.open('https://freepd.com/')">🎵</span>
+        Shining Stars</button> <span style="cursor:pointer;" onclick="window.open('https://freepd.com/')">🎵</span>
 
       <button class="rack-btns2"
         title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
         onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-        Advertime</button> <span onclick="window.open('https://freepd.com/')">🎵</span>
+        Advertime</button> <span style="cursor:pointer;" onclick="window.open('https://freepd.com/')">🎵</span>
 
 
 
@@ -336,7 +336,8 @@
 
     <button id="openDialog" style="background-color:black;" class="rack-btns2 rack-btns-also-hover"><span
         title="Settings menu, and instructions." style="font-size: 24px;">⚙️<img src="logo.png"
-          style="height:26px;" /></span></button>
+          style="height:14px;" /></span></button>
+
 
     <button title="Allows you to copy a letter from the board into one of your tiles."
       class="rack-btns2 rack-btns-also-hover" id="togglecanCommitCrime"><span id='crimeCount'></span><span
@@ -350,8 +351,10 @@
       id="swapLetterTiles"><span id='brainCount'></span><span style="font-size: 24px;color:red;">🧠</span>
     </button>
 
-    <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2"><span
-        id='yourScore'></span><span style="font-size: 24px;color:green;">🪙</span></button>
+
+    <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2">
+      <span style="font-size: 24px;color:green;"><img style="width:25px;height:25px;" src="player.png"></span>
+      <span id='yourScore'></span></button>
 
     <button onclick="showWaveInstructions('microWave')"
       title="(Micro Wave) Microwave mode means only 1 or 2 letters can be submitted to make words." class="rack-btns2"
