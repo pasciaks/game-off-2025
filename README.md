@@ -45,3 +45,27 @@ https://cooltext.com/
 ### Code Help:
 
 Stack Overflow , Google Search ? NOPE! => Chat GPT!
+
+---
+
+# Instructions about waves
+
+# Micro wave
+
+-When this wave is invoked, you may only submit 1 or 2 letters to create a word.
+
+# RadiO wave
+
+-When this wave is invoked, you must submit a consonant as your first letter and a vowel as your last.
+
+# SounD wave
+
+-When this wave is invoked, you must submit a consonant as your first letter and a vowel as your last.
+
+# ElectromagnetiC wave
+
+-When this wave is invoked, you must submit a vowel as your first letter and a consonant as your last.
+
+# EngerY wave
+
+-When this wave is invoked, you must submit a vowel as your first letter and a vowel as your last.

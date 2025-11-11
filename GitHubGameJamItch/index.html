@@ -12,7 +12,7 @@
       margin: 0;
       height: 100%;
       background: #05060a;
-      overflow: hidden;
+      overflow: auto;
     }
 
     canvas {
@@ -96,7 +96,7 @@
     }
 
     button {
-      padding: 10px 20px;
+      padding: 1px 2px;
       border: none;
       border-radius: 8px;
       background-color: #89aebc;
@@ -164,6 +164,54 @@
     img {
       width: 50%;
     }
+
+    #game {
+      overflow-y: auto;
+      /* allow scrolling if content is taller */
+      overflow-x: hidden;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    /* Make grid adapt better on small screens */
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      justify-items: center;
+      align-items: center;
+    }
+
+    /* Smaller buttons on narrow screens */
+    @media (max-width: 600px) {
+
+      button,
+      .game-container a {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+      }
+
+      .game-container {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 8px;
+      }
+
+      #game {
+        top: 10px;
+        bottom: 10px;
+      }
+    }
+
+    /* In landscape mode on small devices, use scrolling */
+    @media (max-height: 500px) and (orientation: landscape) {
+      #game {
+        overflow-y: scroll;
+        padding-bottom: 50px;
+      }
+    }
   </style>
 </head>
 
@@ -171,7 +219,7 @@
 
   <div id="game">
 
-    <a href="index.html"><img src='game/logo.png' /></a>
+    <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
     <a href="index.html">
       <div id="randomTitle"></div>
@@ -366,6 +414,8 @@
     }
 
     requestAnimationFrame(animate);
+
+
 
   </script>
 </body>

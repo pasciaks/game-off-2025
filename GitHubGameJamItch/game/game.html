@@ -51,7 +51,7 @@
       position: fixed;
       top: 120px;
       right: 20px;
-      z-index: 9999;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -113,6 +113,8 @@
       padding: 10px;
       width: 80%;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 9999;
+      ;
     }
 
     dialog::backdrop {
@@ -154,6 +156,25 @@
       box-shadow: 0 0 25px rgba(0, 180, 255, 0.4);
       text-shadow: 0 1px 3px rgba(0, 0, 30, 0.5);
       transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .waterButtonNo {
+      position: relative;
+      display: inline-block;
+      padding: 4px 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #e8faff;
+      /* width: 50%; */
+      background: linear-gradient(180deg, #0099ff 0%, #0066cc 100%);
+      border: 5px solid rgba(0, 0, 0, 0.3);
+      border-radius: 40px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0, 180, 255, 0.4);
+      text-shadow: 0 1px 3px rgba(0, 0, 30, 0.5);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      width: 200px;
     }
 
     /* Rippling layer */
@@ -235,29 +256,22 @@
 
     <!-- <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button> -->
 
-    <br>
-
-    <button class="waterButton" id="goHome" onclick="window.location='../index.html'"> <img
-        style="width:80%;cursor:pointer;" onclick="window.location='../index.html'" src="logo.png" />🏠</button>
+    <img onclick="window.location='../index.html'" style="width:50%;cursor:pointer;"
+      onclick="window.location='../index.html'" src="logo.png" />
 
     <!-- <h2>Instructions</h2> -->
 
     <div>
 
-      <br>
+
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Shining Stars</button>
-
-
 
       <button class="rack-btns2"
         title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
         onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Advertime</button>
-
-      <br>
-      <br>
 
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
@@ -269,8 +283,8 @@
     <button class="rack-btns2" style="display:none;" id="eraseIt">Reset</button>
 
     <!-- <p id="wavesStatus"><img src='no-waves.png' /></p> -->
-    <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves()'>〰️ Waves are Off - Click to turn
-        On Waves 〰️</button>
+    <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves(); '>〰️ Waves are Off
+        - Click to turn On Waves 〰️</button>
     </p>
 
     <button id="waveslist"
@@ -284,11 +298,13 @@
 
     <br>
 
-    <button class="waterButton" id="closeDialog">Close</button>
+    <button class="waterButtonNo" id="closeDialog">Close</button>
 
 
 
   </dialog>
+
+
 
   <!-- Keypad -->
   <div style="display:none;" id="keypad">
@@ -360,23 +376,28 @@
     <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2"><span
         id='yourScore'></span><span style="font-size: 24px;color:green;">🪙</span></button>
 
-    <button title="(Micro Wave) Microwave mode means only 1 or 2 letters can be submitted to make words."
-      class="rack-btns2" id="microWave"><span style="font-size: 24px;">📡</span>
+    <button onclick="showWaveInstructions('microWave')"
+      title="(Micro Wave) Microwave mode means only 1 or 2 letters can be submitted to make words." class="rack-btns2"
+      id="microWave"><span style="font-size: 24px;">📡</span>
     </button>
 
-    <button title="(RadiO Wave) 1st letter submitted must be a consonant and last letter must be a vowel."
-      class="rack-btns2" id="radioWave"><span style="font-size: 24px;">📻</span>
+    <button onclick="showWaveInstructions('radioWave')"
+      title="(RadiO Wave) 1st letter submitted must be a consonant and last letter must be a vowel." class="rack-btns2"
+      id="radioWave"><span style="font-size: 24px;">📻</span>
     </button>
 
-    <button title="(SounD Wave) 1st letter submitted must be a consonant and last letter must be a consonant."
+    <button onclick="showWaveInstructions('soundWave')"
+      title="(SounD Wave) 1st letter submitted must be a consonant and last letter must be a consonant."
       class="rack-btns2" id="soundWave"><span style="font-size: 24px;">🎙️</span>
     </button>
 
-    <button title="(ElectromagnetiC Wave) 1st letter submitted must be a vowel and last letter must be a consonant."
+    <button onclick="showWaveInstructions('ElectromagneticWave')"
+      title="(ElectromagnetiC Wave) 1st letter submitted must be a vowel and last letter must be a consonant."
       class="rack-btns2" id="ElectromagneticWave"><span style="font-size: 24px;">💡</span></button>
 
-    <button title="(EnergY Wave) 1st letter submitted must be a vowel and last letter must be a vowel."
-      class="rack-btns2" id="energyWave"><span style="font-size: 24px;">🔋</span>
+    <button onclick="showWaveInstructions('energyWave')"
+      title="(EnergY Wave) 1st letter submitted must be a vowel and last letter must be a vowel." class="rack-btns2"
+      id="energyWave"><span style="font-size: 24px;">🔋</span>
     </button>
 
   </div>
@@ -398,6 +419,30 @@
   </div>
 
   <script>
+
+    function showWaveInstructions(whichWave) {
+
+      console.log(whichWave);
+
+      showToast("If enabled, waves will be invoke randomly after successfully placing a word.", "info", 9999);
+
+      switch (whichWave) {
+        case "microWave":
+          break;
+        case "radioWave":
+          break;
+        case "soundWave":
+          break;
+        case "ElectromagneticWave":
+          break;
+        case "energyWave":
+          break;
+        default:
+          break;
+      }
+
+      window.open("about-waves.png");
+    }
 
     if (screen.orientation && screen.orientation.lock) {
       screen.orientation.lock('portrait').catch(() => {
@@ -427,7 +472,9 @@
       const toggleBtn = document.getElementById('toggleEnableWaves');
 
       if (wavesEnabled) {
-        showToast("Wave types activated: Microwave, RadiO, SounD, ElectromagnetiC, EnergY.", "info", 9999);
+        // showToast("Wave types activated: Microwave, RadiO, SounD, ElectromagnetiC, EnergY.", "info", 9999);
+
+
         toggleBtn.innerText = '⚡ Waves ACTIVE — Click to deactivate all wave types ⚡';
         toggleBtn.style.cssText = `
     background: linear-gradient(135deg, #0ff, #09f, #90f);
@@ -469,8 +516,12 @@
         is_soundWave = false;
         is_ElectromagneticWave = false;
         is_energyWave = false;
-        showToast("Waves are NOT enabled.", "info", 9999);
+        // showToast("Waves are NOT enabled.", "info", 9999);
         updateWaves();
+
+
+
+
       }
 
 
@@ -490,6 +541,33 @@
       //   showToast("Waves are NOT enabled.", "info", 9999);
       //   updateWaves();
       // }
+
+      if (wavesEnabled) {
+        document.getElementById('microWave').classList.add('waves');
+        document.getElementById('radioWave').classList.add('waves');
+        document.getElementById('soundWave').classList.add('waves');
+        document.getElementById('ElectromagneticWave').classList.add('waves');
+        document.getElementById('energyWave').classList.add('waves');
+
+        document.getElementById('microWave').classList.remove('noWaves');
+        document.getElementById('radioWave').classList.remove('noWaves');
+        document.getElementById('soundWave').classList.remove('noWaves');
+        document.getElementById('ElectromagneticWave').classList.remove('noWaves');
+        document.getElementById('energyWave').classList.remove('noWaves');
+
+      } else {
+        document.getElementById('microWave').classList.remove('waves');
+        document.getElementById('radioWave').classList.remove('waves');
+        document.getElementById('soundWave').classList.remove('waves');
+        document.getElementById('ElectromagneticWave').classList.remove('waves');
+        document.getElementById('energyWave').classList.remove('waves');
+
+        document.getElementById('microWave').classList.add('noWaves');
+        document.getElementById('radioWave').classList.add('noWaves');
+        document.getElementById('soundWave').classList.add('noWaves');
+        document.getElementById('ElectromagneticWave').classList.add('noWaves');
+        document.getElementById('energyWave').classList.add('noWaves');
+      }
 
     }
 
