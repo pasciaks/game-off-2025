@@ -13,30 +13,6 @@
   <link rel="stylesheet" href="./css/styles.css">
 
   <style>
-    /* Overlay only for mobile/tablet in landscape */
-    @media (orientation: landscape) and (max-width: 1024px) {
-      #landscape-warning {
-        display: flex;
-      }
-    }
-
-    #landscape-warning {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      font-size: 1.5rem;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      z-index: 9999;
-      padding: 2rem;
-    }
-
     * {
       text-align: center;
     }
@@ -246,9 +222,7 @@
 
 <body>
 
-  <div id="landscape-warning">
-    🔄 Please rotate your device to portrait mode
-  </div>
+
 
   <div id="toast-container"></div>
 
@@ -444,14 +418,10 @@
           break;
       }
 
-      window.open("https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble");
+      window.open("https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#instructions-about-waves");
     }
 
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock('portrait').catch(() => {
-        // console.log('Orientation lock not supported or requires full screen mode.');
-      });
-    }
+
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "block";
