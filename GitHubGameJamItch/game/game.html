@@ -266,12 +266,14 @@
 
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-        Shining Stars</button>
+        Shining Stars</button> <span onclick="window.open('https://freepd.com/')">🎵</span>
 
       <button class="rack-btns2"
         title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
         onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
-        Advertime</button>
+        Advertime</button> <span onclick="window.open('https://freepd.com/')">🎵</span>
+
+
 
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
@@ -298,6 +300,7 @@
 
     <br>
 
+    <button onclick="window.location='../index.html'" class="waterButtonNo" id="homeButtonLink">Home</button>
     <button class="waterButtonNo" id="closeDialog">Close</button>
 
 
@@ -441,7 +444,7 @@
           break;
       }
 
-      window.open("about-waves.png");
+      window.open("https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble");
     }
 
     if (screen.orientation && screen.orientation.lock) {
