@@ -19,10 +19,6 @@ canvas:active {
   cursor: grabbing;
 }
 
-
-
-
-
 .active {
   border: 2px solid #00f;
   /* bright blue border */
