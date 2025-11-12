@@ -474,7 +474,7 @@ io.on("connection", (socket) => {
 
   socket.on('submitWord', (data) => {
 
-    let { gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+    let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
     let theRoom = myRoom || data?.myRoom || '';
 
@@ -484,7 +484,27 @@ io.on("connection", (socket) => {
 
     let wasInvalid = false;
 
+    let isFloating = true;
+
     let oldTiles = [];
+
+    for (let i = 0; i < sendTiles.length; i++) {
+      let cw = sendTiles[i];
+      let testT;
+      testT = getTile(cw.col - 1, cw.row, mapRef, false);
+      if (testT?.letter != "_") { isFloating = false; }
+      testT = getTile(cw.col + 1, cw.row, mapRef, false);
+      if (testT?.letter != "_") { isFloating = false; }
+      testT = getTile(cw.col, cw.row - 1, mapRef, false);
+      if (testT?.letter != "_") { isFloating = false; }
+      testT = getTile(cw.col, cw.row + 1, mapRef, false);
+      if (testT?.letter != "_") { isFloating = false; }
+    }
+
+    if (isFloating && !canFloat) {
+      sendTiles = [];
+      socket.emit("floating_word", data);
+    }
 
     for (let i = 0; i < sendTiles.length; i++) {
       let cw = sendTiles[i];
@@ -492,6 +512,8 @@ io.on("connection", (socket) => {
       oldTiles.push(oldTile)
       setTile(cw.col, cw.row, mapRef, { ...oldTile, letter: cw.letter })
     }
+
+
 
     let newCrime = 0;
     let newShock = 0;

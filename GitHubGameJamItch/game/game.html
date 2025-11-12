@@ -406,6 +406,18 @@
 
   <script>
 
+    let canFloat = false;
+
+    function isPartOfMinute(start, end) {
+      const seconds = new Date().getSeconds();
+      return seconds >= start && seconds <= end;
+    }
+
+    function isPartOfHour(start, end) {
+      const minutes = new Date().getMinutes();
+      return minutes >= start && minutes <= end;
+    }
+
     let wavesWordsList = localStorage.getItem("wavesWordsList") || " ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ";
 
     wavesWordsList = wavesWordsList.toUpperCase();
@@ -456,7 +468,7 @@
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "block";
-    }, 300000);
+    }, 3000);
 
     function resetGameSaves() {
 
@@ -807,7 +819,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'development';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -1336,6 +1348,10 @@
       checkForEndOfBonus();
     });
 
+    socket.on("floating_word", (data) => {
+      showToast("Floating!", "error", 9999);
+    });
+
     socket.on("word_result", (data) => {
       // console.log(data);
       // console.log(data.sendTiles);
@@ -1855,7 +1871,7 @@
         }
       }
 
-      let submissionData = { gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
+      let submissionData = { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
 
       // console.log(submissionData);
 
@@ -2222,7 +2238,7 @@
     let nnnp = Math.floor((Math.random() * 8)) + 1;
     let thefilep = tttp + "" + nnnp + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
     // console.log(thefilep);
-    thefilep = 's2.png';
+    thefilep = 'u2.png';
     tileProoposedImage.src = thefilep;
     tileProoposedImage.onload = () => {
 
@@ -2448,6 +2464,8 @@
 
       let tempKey = e?.key?.toUpperCase();
 
+      //if (e.key == " ") { tempKey = "_" }
+
       //--------------------------------------------------
       // -- test override allow type onto letters
       let newTile = { ...getTile(playerCol, playerRow) };
@@ -2664,7 +2682,6 @@
               // Alternate filled/empty based on parity
               let isFilled = (colBlock + rowBlock) % 2 === 0;
 
-
               if (col % 10 == 0 || row % 10 == 0) { isFilled = false }
               if (col % 5 == 0 || row % 5 == 0) { isFilled = false }
 
@@ -2672,18 +2689,10 @@
                 crossPositions.push({ col, row });
               }
 
-
-
-
             }
           }
 
-
-
-
-
           break;
-
 
         case 'room9':
           // Create a thick circular ring pattern
@@ -2750,16 +2759,26 @@
       }
     }
 
+
+    let off = 0;
+    let off2 = 360;
+    let off3 = 180;
+    let freq = 10;
+
     function draw() {
 
       ctx.fillStyle = 'black';
 
-      ctx.fillRect(0, 0, canvas.width, canvas.height); // fill, not clearRect
+      // ctx.fillRect(0, 0, canvas.width, canvas.height); // fill, not clearRect
 
       //ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+
       ctx.save();
+
       ctx.scale(zoom, zoom);
+
+      ctx.fillRect(0, 0, canvas.width / zoom, canvas.height / zoom); // fill, not clearRect
 
       const startX = Math.floor(cameraX / TILE);
       const startY = Math.floor(cameraY / TILE);
@@ -2908,11 +2927,7 @@
         }
       }
 
-
-
       users.forEach((u) => {
-
-        //console.log(u);
 
         let cplayerX = u.playerCol * TILE - cameraX;
         let cplayerY = u.playerRow * TILE - cameraY;
@@ -2966,6 +2981,35 @@
       });
 
       //ctx.drawImage(playerImage, playerX - 22, playerY - 22);
+
+      off += 3; if (off > 3600) { off = 0; }
+      off2 -= 2; if (off2 < -3600) { off2 = 3600; }
+      off3 += .5; if (off3 > 36000) { off3 = -36000 }
+      freq += .05; if (freq > 6) { freq = 3; }
+
+      if (off3 < -3600) off3 = 3600;
+      if (off3 > 3600) off3 = -3600;
+
+      if (isPartOfHour(5, 10) || isPartOfHour(25, 35) || isPartOfHour(45, 50) || isPartOfHour(50, 54) || isPartOfHour(0, 1)) {
+        canFloat = true;
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = 'lightblue';
+        ctx.font = '32px verdana bold';
+        ctx.fillStyle = 'black';
+        ctx.fillText("Floating words Enabled", (canvas.width / 2) / zoom, 50);
+        ctx.fillText("Floating words Enabled", (canvas.width / 2) / zoom, 49);
+        ctx.fillStyle = 'blue';
+        ctx.fillText("Floating words Enabled", 1 + (canvas.width / 2) / zoom, 51);
+        for (let jj = 0; jj < 4096; jj++) {
+          // ctx.strokeRect(jj, (canvas.height / 2) / zoom + Math.sin((off + playerRow) / 100) * 125, 10, 1);
+          // ctx.strokeRect(jj, (canvas.height / 4) / zoom + Math.sin((off2 + jj) / (5 * freq)) * 125, 1, 1);
+
+          ctx.strokeRect(jj, (canvas.height / 4) / zoom + (canvas.height / 4) / zoom + (canvas.height / 4) / zoom + Math.sin((off3 * 5 + jj) / 125) * 125, 1, 1000);
+        }
+        // ctx.strokeRect(0, 0, canvas.width / zoom, canvas.height / zoom);
+      } else {
+        canFloat = false;
+      }
 
       ctx.restore();
     }
