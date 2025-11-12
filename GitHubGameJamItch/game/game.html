@@ -230,7 +230,7 @@
 
     <!-- <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button> -->
 
-    <img onclick="window.location='../index.html'" style="width:50%;cursor:pointer;"
+    <img onclick="window.location='../index.html'" style="height:50px;cursor:pointer;"
       onclick="window.location='../index.html'" src="logo.png" />
 
     <!-- <h2>Instructions</h2> -->
@@ -2238,13 +2238,13 @@
 
       //--------------------------------------------------
       // -- test override allow type onto letters
-      let newTile = { ...getTile(playerCol, playerRow) };
-      newTile.letter = tempKey;
-      if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
-        setProposedTile(playerCol, playerRow, newTile);
-      }
+      // let newTile = { ...getTile(playerCol, playerRow) };
+      // newTile.letter = tempKey;
+      // if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
+      //   setProposedTile(playerCol, playerRow, newTile);
+      // }
       // console.log(tempKey);
-      return; // keep this in to enable cheat mode
+      //return; // keep this in to enable cheat mode
       // -- test override allow type onto letters
       //--------------------------------------------------
 
