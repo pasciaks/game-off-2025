@@ -82,7 +82,7 @@ Stack Overflow , Google Search ? NOPE! => Chat GPT!
 
 # Game Instructions / Documentation
 
-[Scrabble Scramble PDF](ss-docs/Scrabble%20Scramble.pdf)
+[Scrabble Scramble PDF](GitHubGameJamItch/ss-docs/Scrabble%20Scramble.pdf)
 
 ---
 
