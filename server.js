@@ -21,6 +21,10 @@ console.log("uniqueWords", uniqueWords);
 let words = loadTXTSync('./words.txt');
 // console.log(words.length);
 
+function reverseWord(word) {
+  return word.split('').reverse().join('');
+}
+
 function removeShortWords(words) {
 
   let tc = 0;
@@ -253,7 +257,7 @@ function tileKey(col, row) {
 function createMap(mapRef) {
   for (let i = -boardColsMagnitude; i < boardColsMagnitude; i++) {
     for (let j = -boardRowsMagnitude; j < boardRowsMagnitude; j++) {
-      let powerUpType = ['brainwave', 'crimewave', 'shockwave'][Math.floor(Math.random() * 3)];
+      let powerUpType = ['gravitywave', 'brainwave', 'crimewave', 'shockwave'][Math.floor(Math.random() * 4)];
 
       if (Math.random() > 0.98) {
         setTile(i, j, mapRef, { letter: '_', type: powerUpType });
@@ -470,7 +474,7 @@ io.on("connection", (socket) => {
 
   socket.on('submitWord', (data) => {
 
-    let { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+    let { gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
     let theRoom = myRoom || data?.myRoom || '';
 
@@ -492,6 +496,7 @@ io.on("connection", (socket) => {
     let newCrime = 0;
     let newShock = 0;
     let newBrain = 0;
+    let newGravity = 0;
 
     let tempWordScore = 0;
     let bonusWords = 0;
@@ -499,6 +504,8 @@ io.on("connection", (socket) => {
 
     let theL = 0;
     let wasFound = false;
+
+    let wasBackwards = false;
 
     for (let i = 0; i < sendTiles.length; i++) {
 
@@ -520,6 +527,10 @@ io.on("connection", (socket) => {
 
       if (currentTile?.type == 'crimewave') {
         newCrime++;
+      }
+
+      if (currentTile?.type == 'gravitywave') {
+        newGravity++;
       }
 
       if (currentTile?.type == 'shockwave') {
@@ -552,9 +563,16 @@ io.on("connection", (socket) => {
       console.log({ hzWord, wasInvalid, theL });
 
       if (hzWord.length > 1) {
+
         console.log(hzWord);
-        if (words.indexOf(hzWord.toLowerCase()) > -1) {
+
+        if (words.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)) {
+
           console.log('hzWordfound', hzWord);
+
+          if (words.indexOf(hzWord.toLowerCase()) == -1 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
 
           wasFound = true;
 
@@ -575,8 +593,11 @@ io.on("connection", (socket) => {
       }
 
       let vtWord = "";
+
       for (let vt = top.row; vt <= bottom.row; vt++) {
+
         let tempLetter = getTile(cw.col, vt, mapRef, false)?.letter || "";
+
         if (vt == cw.row) {
           tempLetter = cw.letter;
 
@@ -593,8 +614,14 @@ io.on("connection", (socket) => {
 
       if (vtWord.length > 1) {
         console.log(vtWord);
-        if (words.indexOf(vtWord.toLowerCase()) > -1) {
+
+        if (words.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
+
           console.log('vtWord found', vtWord);
+
+          if (words.indexOf(vtWord.toLowerCase()) == -1 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
 
           wasFound = true;
 
@@ -619,7 +646,7 @@ io.on("connection", (socket) => {
 
     if (!wasFound) {
       wasInvalid = true;
-      console.log({ wasFound, wasInvalid })
+      console.log({ wasFound, wasInvalid, wasBackwards })
     }
 
     if (wasInvalid) {
@@ -645,17 +672,17 @@ io.on("connection", (socket) => {
 
     // setTile(data.col, data.row, mapRef, data);
 
-    console.log({ wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore, bonusWords, theBonusWords });
+    console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards });
 
-    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore, bonusWords, theBonusWords });
+    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards });
 
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
-      if (random == 0) { socket.emit("is_microWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
-      if (random == 1) { socket.emit("is_radioWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
-      if (random == 2) { socket.emit("is_soundWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
-      if (random == 3) { socket.emit("is_ElectromagneticWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
-      if (random == 4) { socket.emit("is_energyWave", { wasInvalid, sendTiles, newBrain, newShock, newCrime, tempWordScore }); }
+      if (random == 0) { socket.emit("is_microWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
+      if (random == 1) { socket.emit("is_radioWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
+      if (random == 2) { socket.emit("is_soundWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
+      if (random == 3) { socket.emit("is_ElectromagneticWave", { wasInvalid, sendTiles, newBrain, newGravity, newShock, newCrime, tempWordScore }); }
+      if (random == 4) { socket.emit("is_energyWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
     }
 
     sendBoardDataToRoom(theRoom);

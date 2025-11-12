@@ -338,9 +338,6 @@
         title="Settings menu, and instructions." style="font-size: 24px;">⚙️<img src="logo.png"
           style="height:14px;" /></span></button>
 
-
-
-
     <button title="Crime Wave - Allows you to copy a letter from the board into one of your tiles."
       class="rack-btns2 rack-btns-also-hover" id="togglecanCommitCrime"><span id='crimeCount'></span><span
         style="font-size: 24px;color:blue;">🕵️‍♂️</span></button>
@@ -353,7 +350,6 @@
       class="rack-btns2 rack-btns-also-hover" id="swapLetterTiles"><span id='brainCount'></span><span
         style="font-size: 24px;color:red;">🧠</span>
     </button>
-
 
     <button title="Gravitational Wave - Allows you to place words right to left or bottom to top."
       class="rack-btns2 rack-btns-also-hover" id="togglecanGravity"><span id='gravityCount'></span><span
@@ -652,12 +648,14 @@
 
 
 
+    let gravityCount = getAndSetLocal('gravityCount', 1);//1;
     let crimeCount = getAndSetLocal('crimeCount', 1);//1;
     let shockCount = getAndSetLocal('shockCount', 3);//3;
     let brainCount = getAndSetLocal('brainCount', 7);//7;
 
     function updateCounts() {
       setTimeout(() => {
+        document.getElementById('gravityCount').innerText = gravityCount;
         document.getElementById('crimeCount').innerText = crimeCount;
         document.getElementById('shockCount').innerText = shockCount;
         document.getElementById('brainCount').innerText = brainCount;
@@ -1206,9 +1204,21 @@
       // console.log(data);
       // console.log(data.sendTiles);
 
+      if (data?.wasBackwards) {
+        showToast("SDRAWKCAB", "info");
+        if (gravityCount > 0) {
+          gravityCount--;
+          updateCounts();
+        } else {
+          showToast("You have no more gravity waves!", "error");
+          //data.wasInvalid = true;
+        }
+      }
+
       if (data?.wasInvalid) {
-        // invalid
-        // return;
+
+        showToast(" Invalid Word " + "", "error");
+
       } else {
 
         let waveslistEle = document.getElementById('waveslist');
@@ -1241,24 +1251,30 @@
         if (data?.newBrain > 0) {
           brainCount += Math.floor(data?.newBrain || 0);
           justSetLocal('brainCount', brainCount);
-          showToast(`Brain Power! 🧠${brainCount}`, "info", 9999);
+          showToast(`🧠${brainCount}`, "info", 9999);
+        }
+
+        if (data?.newGravity > 0) {
+          gravityCount += Math.floor(data?.newGravity || 0);
+          justSetLocal('gravityCount', gravityCount);
+          showToast(`💫${gravityCount}`, "info", 9999);
         }
 
         if (data?.newCrime > 0) {
           crimeCount += Math.floor(data?.newCrime || 0);
           justSetLocal('crimeCount', crimeCount);
-          showToast(`Crime Pays! 🕵️‍♂️${crimeCount}`, "info", 9999);
+          showToast(`🕵️‍♂️${crimeCount}`, "info", 9999);
         }
 
         if (data?.newShock > 0) {
           shockCount += Math.floor(data?.newShock || 0);
           justSetLocal('shockCount', shockCount);
-          showToast(`Shocking! ⚡${shockCount}`, "info", 9999);
+          showToast(`⚡${shockCount}`, "info", 9999);
         }
 
         updateCounts();
 
-        // showToast(`🕵️‍♂️${crimeCount} ⚡${shockCount} 🧠${brainCount}`, "info", 9999);
+        // showToast(`🕵️‍♂️${crimeCount} ⚡${shockCount} 🧠${brainCount} ${gravityCount}`, "info", 9999);
 
       }
 
@@ -1476,6 +1492,7 @@
       } else {
         lastDirectionXY = { x: 1, y: 0 }
       }
+
       // navigateView(playerCol, playerRow);
 
       keepPlayerVisible();
@@ -1535,7 +1552,7 @@
 
     function eraseBoard() {
 
-      if (confirm("Are you sure you want to reset this board, your score, and saved crime/shock/brain wave counts ?")) {
+      if (confirm("Are you sure you want to reset this board, your score, and saved gravity/crime/shock/brain wave counts ?")) {
         localStorage.clear();
         socket.emit("eraseBoard", { myRoom, myName })
         window.location = "../index.html";
@@ -1588,12 +1605,6 @@
       if (canSwap) { updateCounts(); }
 
       // canReplace = false;
-
-      // TODO - rather than send each letter, send entire object of all proposed letters to backend
-      // have backend validate that any new letters connect to existing words and all connections are valid words
-      // then receive good or bad word back as accepted or not and appropriately clear proposed tiles, update scores on backend and get new tiles
-
-      // todo - submit whole word/letters data
 
       let sendTiles = [];
 
@@ -1708,7 +1719,7 @@
         }
       }
 
-      let submissionData = { is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
+      let submissionData = { gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
 
       // console.log(submissionData);
 
@@ -1764,9 +1775,11 @@
 
       document.getElementById("homeIt").addEventListener("click", (e) => { e.preventDefault(); window.location = "../index.html" });
 
-
-
       document.getElementById("eraseIt").addEventListener("click", (e) => { e.preventDefault(); eraseBoard(); });
+
+      document.getElementById("togglecanGravity").addEventListener("click", (e) => {
+        showToast("When you spell words bottom-top or right-left, this gravity value auto depletes until empty.", "info", 9999);
+      });
 
       document.getElementById("togglecanCommitCrime").addEventListener("click", (e) => {
         e.preventDefault();
@@ -2540,6 +2553,16 @@
 
           // if (theTile?.type != 'normal') {
           ctx.strokeStyle = 'transparent';
+
+          if (theTile?.type == 'gravitywave') {
+            ctx.strokeStyle = 'blue';
+            ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
+            ctx.lineWidth = 3;
+            ctx.strokeRect(px + 3, py + 3, TILE - 6, TILE - 6);
+            ctx.fillText("💫", px + TILE / 8, py + TILE / 8);
+          }
+
+
           if (theTile?.type == 'crimewave') {
             ctx.strokeStyle = 'blue';
             ctx.font = "26px 'Segoe UI Emoji', sans-serif"; // bigger size, specify emoji-supporting font
