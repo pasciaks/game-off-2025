@@ -387,7 +387,7 @@
   </div>
 
   <div id="connectscreen">
-    <p>Connecting...</p>
+    <p style="color:gray;">Connecting...</p>
   </div>
 
   <!-- <button onclick="getMap()" id="getMap">Get Map</button> -->
@@ -1013,13 +1013,13 @@
         break;
       case 'room2':
         boardColsMagnitude = 15;
-        boardRowsMagnitude = 5;
+        boardRowsMagnitude = 10;
         toggleEnableWaves();
         toggleEnableWaves();
         break;
       case 'room3':
-        boardColsMagnitude = 15;
-        boardRowsMagnitude = 25;
+        boardColsMagnitude = 10;
+        boardRowsMagnitude = 15;
         toggleEnableWaves();
         toggleEnableWaves();
         break;
@@ -1035,18 +1035,18 @@
         toggleEnableWaves();
         break;
       case 'room6':
-        boardColsMagnitude = 50;
-        boardRowsMagnitude = 50;
+        boardColsMagnitude = 32;
+        boardRowsMagnitude = 32;
         toggleEnableWaves();
         break;
       case 'room7':
         boardColsMagnitude = 15;
-        boardRowsMagnitude = 50;
+        boardRowsMagnitude = 30;
         toggleEnableWaves();
         break;
       case 'room8':
-        boardColsMagnitude = 50;
-        boardRowsMagnitude = 15;
+        boardColsMagnitude = 30;
+        boardRowsMagnitude = 30;
         toggleEnableWaves();
         break;
       case 'room9':
@@ -1888,7 +1888,12 @@
 
           // e.target.innerText = e.target.innerText.toLowerCase();
 
-          setProposedTile(playerCol, playerRow, newTile);
+          if (isInShape(playerCol, playerRow)) {
+            // don't allow new tile in shapes for level
+          } else {
+            setProposedTile(playerCol, playerRow, newTile);
+          }
+
 
           e.target.innerText = e.target.innerText.toLowerCase();
 
@@ -2267,9 +2272,11 @@
 
       if (!tt?.type) { tt.type = 'normal' }
 
-      setTile(col, row, tt);
       playerCol = col;
       playerRow = row;
+
+      setTile(col, row, tt);
+
       // playerUp();
       // playerDown();
       playerStand();
@@ -2481,6 +2488,117 @@
       return letters[Math.floor(Math.random() * letters.length)];
     }
 
+    let shapeCoords = [];
+
+    function isInPattern(theT) {
+      return isInShape(theT.col, theT.row);
+      return false;
+    }
+
+    // Function to check if a given (col, row) is in the array
+    function isInShape(col, row) {
+      return shapeCoords.some(point => point.col === col && point.row === row);
+    }
+
+    function createShapeCoords(type = 'wave') {
+      const crossPositions = [];
+
+
+
+      switch (type) {
+
+        case 'room8':
+          console.log("room8");
+
+          // Create a checkerboard pattern
+          const squareSize = 10;  // each square's width/height
+          const min = -50;
+          const max = 50;
+
+          for (let col = min; col <= max; col++) {
+            for (let row = min; row <= max; row++) {
+              // Determine which 15x15 square we're in
+              const colBlock = Math.floor((col - min) / squareSize);
+              const rowBlock = Math.floor((row - min) / squareSize);
+
+              // Alternate filled/empty based on parity
+              let isFilled = (colBlock + rowBlock) % 2 === 0;
+
+
+              if (col % 10 == 0 || row % 10 == 0) { isFilled = false }
+              if (col % 5 == 0 || row % 5 == 0) { isFilled = false }
+
+              if (isFilled) {
+                crossPositions.push({ col, row });
+              }
+
+
+
+
+            }
+          }
+
+
+
+
+
+          break;
+
+
+        case 'room9':
+          // Create a thick circular ring pattern
+          // Uses a center at (0, 0) and radius ~30
+          let radius = 15;
+          thickness = 3; // adjust to make the ring thicker
+          for (let col = -50; col <= 50; col++) {
+            for (let row = -50; row <= 50; row++) {
+              const distance = Math.sqrt(col * col + row * row);
+              // Keep points near the circle edge (thick ring)
+              if (distance >= radius - thickness && distance <= radius + thickness) {
+                crossPositions.push({ col, row });
+              }
+            }
+          }
+          break;
+
+        case 'room10':
+          // Create a sine wave pattern
+          // col from -50 to 50, row calculated from sine
+          for (let col = -50; col <= 50; col++) {
+            // Adjust amplitude and frequency here
+            let amplitude = 10;      // vertical height of the wave
+            let frequency = 0.25;     // wave tightness (lower = longer wave)
+            let row = Math.round(Math.sin(col * frequency) * amplitude);
+            crossPositions.push({ col, row });
+            crossPositions.push({ col, row: row + 1 });
+            crossPositions.push({ col, row: row + 2 });
+            let frequency2 = 0.15;     // wave tightness (lower = longer wave)
+            let row2 = Math.round(Math.sin(col * frequency2) * amplitude);
+            crossPositions.push({ col: col, row: row2 + 25 });
+            crossPositions.push({ col: col, row: row2 + 26 });
+            crossPositions.push({ col: col, row: row2 + 27 });
+          }
+          break;
+        case 'room7':
+          // Vertical bar (col = 0, row from -10 to 10)
+          for (let row = -10; row <= 10; row++) {
+            crossPositions.push({ col: 0, row });
+          }
+          // Horizontal bar (row = 0, col from -5 to 5)
+          for (let col = -5; col <= 5; col++) {
+            // Avoid duplicating the center cell {0,0}
+            if (col !== 0) crossPositions.push({ col, row: -5 });
+          }
+          break;
+        default:
+          break;
+      }
+
+      return crossPositions;
+    }
+
+    shapeCoords = createShapeCoords(myRoom);
+
     function setLetters() {
       for (let i = -25; i < 25; i++) {
         for (let j = -25; j < 25; j++) {
@@ -2532,7 +2650,11 @@
           if (theTile && theTile.letter !== "~" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
 
             if (theTile?.letter == "_") {
-              drawLetterTile(ctx, theTile, px, py, true);
+              if (isInPattern(theTile)) {
+                // drawLetterTile(ctx, theTile, px, py, true);
+              } else {
+                drawLetterTile(ctx, theTile, px, py, true);
+              }
             } else {
               drawLetterTile(ctx, theTile, px, py);
             }
