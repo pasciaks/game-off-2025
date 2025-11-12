@@ -221,15 +221,13 @@
     <button
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About</button>
 
-    <button onclick="window.open('maker.html')">Custom Game Maker</button>
 
-    <a href="index.html">
-      <div id="randomTitle"></div>
-    </a>
+
+
 
     <h2><span id="playerName"></span></h2>
 
-    <div>
+    <div style="display:none;">
 
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
         onclick="updateRandomName();">🎲 <span class="menuText">Random Name</span></button>
@@ -256,11 +254,61 @@
 
     <div class="game-container" id="gameLinks"></div>
 
+    <div style="max-width: 400px; margin: 20px auto; font-family: sans-serif;">
+      <label style="display: block; margin-bottom: 15px; font-size: 18px;">
+        <input type="text" id="category" placeholder="Category" required value="COLORS"
+          style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
+      </label>
+
+      <label style="display: block; margin-bottom: 20px; font-size: 18px;">
+        <input type="text" id="words" placeholder="Words To Have In Custom Category" required value="RED WHITE BLUE"
+          style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
+      </label>
+
+      <button onclick="submitCustomGame()"
+        style="width: 100%; padding: 12px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;"
+        onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+        Create Custom Game
+      </button>
+    </div>
+
+
+
   </div>
 
   <canvas id="canvas"></canvas>
 
   <script>
+
+    function submitCustomGame() {
+      let c = document.getElementById('category').value;
+      let w = document.getElementById('words').value;
+
+      c = c.trim();
+      w = w.trim();
+
+      if (!c || !w) {
+        return;
+      }
+
+
+      let url = "index.html?category=" + c + "&words=" + w;
+
+      let currentUrl = window.location.href;
+
+      console.log(currentUrl)
+
+      let adjustedUrl = currentUrl.replace('maker.html', url);
+
+      console.log(adjustedUrl)
+
+      localStorage.setItem("share-link", adjustedUrl);
+
+      window.location = adjustedUrl; // this should work for hidden url at itch
+
+      // window.location = "./index.html?category=" + c + "&words=" + w;
+
+    }
 
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\\[\\]]/g, '\\$&');
@@ -277,8 +325,6 @@
     if (cat && words) {
       // Get the select element
       const select = document.getElementById("waveWordsSelect");
-
-      select.innerHTML = '';
 
       // Create a new option
       const option = document.createElement("option");
@@ -361,27 +407,27 @@
     }
 
     // Generate 1–10 game buttons dynamically
-    const container = document.getElementById('gameLinks');
-    for (let i = 1; i <= 10; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = `Wave ${i}`;
-      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
-      btn.style.margin = '5px';
-      btn.style.padding = '10px 15px';
-      btn.style.fontSize = '16px';
-      btn.style.borderRadius = '8px';
-      btn.style.cursor = 'pointer';
-      if (cat && words) {
-        if (i == 10) {
+    // const container = document.getElementById('gameLinks');
+    // for (let i = 1; i <= 10; i++) {
+    //   const btn = document.createElement('button');
+    //   btn.textContent = `Wave ${i}`;
+    //   btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
+    //   btn.style.margin = '5px';
+    //   btn.style.padding = '10px 15px';
+    //   btn.style.fontSize = '16px';
+    //   btn.style.borderRadius = '8px';
+    //   btn.style.cursor = 'pointer';
+    //   if (cat && words) {
+    //     if (i == 10) {
 
-          btn.textContent = "Custom Game Invite for the Cateogry " + cat;
-          btn.style.width = "100%";
-          container.appendChild(btn);
-        }
-      } else {
-        container.appendChild(btn);
-      }
-    }
+    //       btn.textContent = "Custom Game Invite for the Cateogry " + cat;
+    //       btn.style.width = "100%";
+    //       container.appendChild(btn);
+    //     }
+    //   } else {
+    //     container.appendChild(btn);
+    //   }
+    // }
 
     // function invokeGame(url) {
     //   let v = document.getElementById('waveWordsSelect').value;
@@ -435,21 +481,7 @@
       document.getElementById("playerName").innerText = myName;
     }
 
-    document.addEventListener("keydown", (e) => {
 
-      if (e.key == ' ') {
-        isPaused = !isPaused;
-      }
-
-      if (e.key == 'i') {
-        showBox();
-      }
-
-      if (e.key == 'o') {
-        hideBox();
-      }
-
-    })
 
     let old;
 

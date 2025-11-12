@@ -361,6 +361,30 @@ function getUsersInRoom(room) {
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
+  socket.on("addWords", (data) => {
+    console.log(data);
+    let arrayOfWords = data?.wordsToAdd || [];
+
+    for (let i = 0; i < arrayOfWords.length; i++) {
+      let w = arrayOfWords[i];
+      let cw = w.toLowerCase().trim();
+      if (cw && cw?.length > 1 && words.indexOf(cw) == -1) {
+        console.log("added word:", cw);
+        words.push(cw);
+      }
+    }
+
+    console.log(words.length);
+
+    // note: consider just adding words to a room dictionary .. more to do it doing that though
+
+  });
+
+  socket.on("bonusWordFound", (data) => {
+    console.log('bonusWordFound', data);
+    io.to(data?.myRoom).emit('bonusWordResult', data);
+  })
+
   socket.on("eraseBoard", (data) => {
     createMap(maps[data?.myRoom]);
     console.log(data);
@@ -534,13 +558,13 @@ io.on("connection", (socket) => {
 
           wasFound = true;
 
-          if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
-            console.log("Found (case-insensitive)!");
-            if (!theBonusWords.includes(hzWord)) {
-              bonusWords++;
-              theBonusWords.push(hzWord);
-            }
+          //if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
+          console.log("Found (case-insensitive)!");
+          if (!theBonusWords.includes(hzWord)) {
+            bonusWords++;
+            theBonusWords.push(hzWord);
           }
+          //}
 
         } else {
           console.log('hzWord not found', hzWord);
@@ -574,13 +598,13 @@ io.on("connection", (socket) => {
 
           wasFound = true;
 
-          if (uniqueWords.some(w => w.toLowerCase() == vtWord.toLowerCase())) {
-            console.log("Found (case-insensitive)!");
-            if (!theBonusWords.includes(vtWord)) {
-              bonusWords++;
-              theBonusWords.push(vtWord);
-            }
+          // if (uniqueWords.some(w => w.toLowerCase() == vtWord.toLowerCase())) {
+          console.log("Found (case-insensitive)!");
+          if (!theBonusWords.includes(vtWord)) {
+            bonusWords++;
+            theBonusWords.push(vtWord);
           }
+          // }
 
         } else {
           console.log('vtWord not found', vtWord);

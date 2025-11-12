@@ -339,17 +339,25 @@
           style="height:14px;" /></span></button>
 
 
-    <button title="Allows you to copy a letter from the board into one of your tiles."
+
+
+    <button title="Crime Wave - Allows you to copy a letter from the board into one of your tiles."
       class="rack-btns2 rack-btns-also-hover" id="togglecanCommitCrime"><span id='crimeCount'></span><span
         style="font-size: 24px;color:blue;">🕵️‍♂️</span></button>
 
-    <button title="Allows you to attempt to replace letters already placed with your tiles."
+    <button title="Shock Wave - Allows you to attempt to replace letters already placed with your tiles."
       class="rack-btns2 rack-btns-also-hover" id="toggleReplacement"><span id='shockCount'></span><span
         style="font-size: 24px;color:green;">⚡</span></button>
 
-    <button title="Allows you to swap letters from your letter rack." class="rack-btns2 rack-btns-also-hover"
-      id="swapLetterTiles"><span id='brainCount'></span><span style="font-size: 24px;color:red;">🧠</span>
+    <button title="Brain Wave - Allows you to swap letters from your letter rack."
+      class="rack-btns2 rack-btns-also-hover" id="swapLetterTiles"><span id='brainCount'></span><span
+        style="font-size: 24px;color:red;">🧠</span>
     </button>
+
+
+    <button title="Gravitational Wave - Allows you to place words right to left or bottom to top."
+      class="rack-btns2 rack-btns-also-hover" id="togglecanGravity"><span id='gravityCount'></span><span
+        style="font-size: 24px;color:blue;">💫</span></button>
 
 
     <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2">
@@ -399,6 +407,13 @@
   </div>
 
   <script>
+
+    let wavesWordsList = localStorage.getItem("wavesWordsList") || " ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ";
+
+    wavesWordsList = wavesWordsList.toUpperCase();
+
+    document.getElementById("waveslist").innerText = wavesWordsList;
+    document.getElementById("waveslist").title = wavesWordsList;
 
     function showWaveInstructions(whichWave) {
 
@@ -777,7 +792,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'development';// 'production'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -1077,6 +1092,7 @@
         setTimeout(() => {
           getMap();
           playerStand();
+          submitWaveWordsList();
         }, 500)
       }, 500)
 
@@ -1160,6 +1176,14 @@
       updateWaves();
     });
 
+    socket.on("bonusWordResult", (data) => {
+      console.log('bonusWordResult', data);
+      let waveslistEle = document.getElementById('waveslist');
+      showToast("(" + (data?.myName || "Another Player") + ")" + " found " + data.bonusWord, "info");
+      waveslistEle.title = waveslistEle?.title?.replace(data.bonusWord, "〰️");
+      waveslistEle.innerText = waveslistEle?.innerText?.replace(data.bonusWord, "〰️");
+    });
+
     socket.on("word_result", (data) => {
       // console.log(data);
       // console.log(data.sendTiles);
@@ -1179,9 +1203,10 @@
               waveslistEle.title = waveslistEle?.title?.replace(w, "〰️");
               waveslistEle.innerText = waveslistEle?.innerText?.replace(w, "〰️");
               yourScore += 25;
+              socket.emit("bonusWordFound", { myRoom, myName, bonusWord: w })
             } else {
-              showToast("( $5 ) Bonus word again => " + w, "info");
-              yourScore += 5;
+              //showToast("( $5 ) Bonus word again => " + w, "info");
+              //yourScore += 5;
             }
           })
         }
@@ -1317,6 +1342,13 @@
       // console.log(users);
 
       log(data);
+    }
+
+    function submitWaveWordsList() {
+      //wavesWordsList
+      let addWordsArray = wavesWordsList.split(" ");
+      let data = { wordsToAdd: addWordsArray || [], myName, myRoom };
+      socket.emit('addWords', data);
     }
 
     function getMap(data) {
@@ -2238,13 +2270,13 @@
 
       //--------------------------------------------------
       // -- test override allow type onto letters
-      // let newTile = { ...getTile(playerCol, playerRow) };
-      // newTile.letter = tempKey;
-      // if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
-      //   setProposedTile(playerCol, playerRow, newTile);
-      // }
+      let newTile = { ...getTile(playerCol, playerRow) };
+      newTile.letter = tempKey;
+      if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
+        setProposedTile(playerCol, playerRow, newTile);
+      }
       // console.log(tempKey);
-      //return; // keep this in to enable cheat mode
+      return; // keep this in to enable cheat mode
       // -- test override allow type onto letters
       //--------------------------------------------------
 

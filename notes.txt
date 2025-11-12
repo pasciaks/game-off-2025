@@ -99,6 +99,40 @@ Sine Wave ( ? )
 
 [ ] Consider multilanguage
 
+-- ideas from middle of the night, 12 Nov 2025 --
+
+Show letters remaining to pull from bag
+
+Empty bag ? Does code refill or does game end. Maybe limit to one bag of 100 letters per day.
+
+Floating words fix
+
+Waves rules fix
+
+Save word history. See all your finds.
+
+Save boards, watch game board replay sped up
+
+Letter age and disappear like lost words
+
+Reversable words with gravitational wave power up (already have crime shock and brain)
+
+Sound effects and animation when word found or not
+
+Other languages
+
+Do not draw col row collections for patterns or zones of hidden letters. Almost minesweeper ish with letter use
+
+Find all wave words leaderboard Hall of Fame
+
+Custom (wave) words for a game board.. shareable list and ensure those words add to dictionary.. to implement possible family names puzzle
+
+Wave words (bonus words) broadcast in games to serve as race to find them among real time room players..
+
+Private shareable game room
+
+Make sure server games reset and not fill memory with 1000s if boards 
+
 
 Ideas to consider
 
