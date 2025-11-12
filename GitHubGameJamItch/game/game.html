@@ -412,8 +412,8 @@
 
     wavesWordsList = wavesWordsList.toUpperCase();
 
-    document.getElementById("waveslist").innerText = wavesWordsList;
-    document.getElementById("waveslist").title = wavesWordsList;
+    document.getElementById("waveslist").innerText = " " + wavesWordsList + " ";
+    document.getElementById("waveslist").title = " " + wavesWordsList + " ";
 
     function showWaveInstructions(whichWave) {
 
@@ -439,7 +439,22 @@
       window.open("https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#instructions-about-waves");
     }
 
+    function checkForEndOfBonus() {
 
+      let vv = document.getElementById('waveslist').value;
+      let tt = document.getElementById('waveslist').title;
+
+      console.log(vv);
+      console.log(tt);
+
+      let vv_hasNoLetters = !/[a-z]/i.test(vv);
+      let tt_hasNoLetters = !/[a-z]/i.test(tt);
+
+      if (vv_hasNoLetters && tt_hasNoLetters) {
+        showToast("All bonus words have been found!", "success");
+      }
+
+    }
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "block";
@@ -1045,6 +1060,7 @@
         boardColsMagnitude = 50;
         boardRowsMagnitude = 50;
         toggleEnableWaves();
+        toggleEnableWaves();
         break;
       default:
         boardColsMagnitude = 50;
@@ -1180,8 +1196,10 @@
       console.log('bonusWordResult', data);
       let waveslistEle = document.getElementById('waveslist');
       showToast("(" + (data?.myName || "Another Player") + ")" + " found " + data.bonusWord, "info");
-      waveslistEle.title = waveslistEle?.title?.replace(data.bonusWord, "〰️");
-      waveslistEle.innerText = waveslistEle?.innerText?.replace(data.bonusWord, "〰️");
+      data.bonusWord = data.bonusWord.trim();
+      waveslistEle.title = waveslistEle?.title?.replace(" " + data.bonusWord + " ", " 〰️ ");
+      waveslistEle.innerText = waveslistEle?.innerText?.replace(" " + data.bonusWord + " ", " 〰️ ");
+      checkForEndOfBonus();
     });
 
     socket.on("word_result", (data) => {
@@ -1196,14 +1214,16 @@
         let waveslistEle = document.getElementById('waveslist');
 
         if (data?.theBonusWords) {
-          // console.log(JSON.stringify(data.theBonusWords));
+
           data.theBonusWords.forEach((w) => {
-            if (waveslistEle.innerText.indexOf(w) > -1) {
+            w = w.trim();
+            if (waveslistEle.innerText.indexOf(" " + w + " ") > -1) {
               showToast("( +$25 ) Bonus word found => " + w, "info");
-              waveslistEle.title = waveslistEle?.title?.replace(w, "〰️");
-              waveslistEle.innerText = waveslistEle?.innerText?.replace(w, "〰️");
+              waveslistEle.title = waveslistEle?.title?.replace(" " + w + " ", " 〰️ ");
+              waveslistEle.innerText = waveslistEle?.innerText?.replace(" " + w + " ", " 〰️ ");
               yourScore += 25;
               socket.emit("bonusWordFound", { myRoom, myName, bonusWord: w })
+              checkForEndOfBonus();
             } else {
               //showToast("( $5 ) Bonus word again => " + w, "info");
               //yourScore += 5;
