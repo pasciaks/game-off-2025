@@ -278,7 +278,7 @@
       // Get the select element
       const select = document.getElementById("waveWordsSelect");
 
-      select.innerHTML = '';
+      // select.innerHTML = '';
 
       // Create a new option
       const option = document.createElement("option");
@@ -373,14 +373,13 @@
       btn.style.cursor = 'pointer';
       if (cat && words) {
         if (i == 10) {
-
           btn.textContent = "Custom Game Invite for the Cateogry " + cat;
           btn.style.width = "100%";
-          container.appendChild(btn);
+          // container.appendChild(btn);
         }
-      } else {
-        container.appendChild(btn);
       }
+      container.appendChild(btn);
+
     }
 
     // function invokeGame(url) {
