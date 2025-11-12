@@ -80,6 +80,12 @@ Stack Overflow , Google Search ? NOPE! => Chat GPT!
 
 ---
 
+# Game Instructions / Documentation
+
+[Scrabble Scramble PDF](ss-docs/Scrabble%20Scramble.pdf)
+
+---
+
 ## Here's some more info if you are interested in waves!
 
 1. Microwave
@@ -137,3 +143,5 @@ Principle: Waves carry energy without transporting matter permanently, though pa
 [x] Known 'features'
 
 Bonus words that are found when you aren't playing are marked off your bonus word list - Ideally, everyone in a game starts at the same time and this would allow for fair-play, but life isn't fair, so I'm not (for now) going to implement syncing that info when others join a game room after others have been creating words in it already.
+
+[ ] Probably more to find, investigate and report.
