@@ -300,6 +300,7 @@
 
   <!-- Scrabble rack -->
   <div id="scrabbleRack">
+    <button onclick="showLettersCollection(0)">#</button>
     <button class="rack-btn" id="tile1"></button>
     <button class="rack-btn" id="tile2"></button>
     <button class="rack-btn" id="tile3"></button>
@@ -309,6 +310,7 @@
     <button class="rack-btn" id="tile7"></button>
     <!-- <button class="rack-btn" id="tile8">_</button> -->
     <!-- <button class="rack-btn" id="sendIt">></button> -->
+    <button onclick="showLettersCollection(1)">A</button>
   </div>
 
   <div id="scrabbleRackb">
@@ -811,7 +813,6 @@
 
     let socket;
 
-    let lettersCollection = [];
 
     let wordLetterValues = [
       {
@@ -946,6 +947,18 @@
       }
     ];
 
+
+    lettersCollection = [];
+    for (let i = 0; i < wordLetterValues.length; i++) {
+      let current = wordLetterValues[i];
+      for (let j = 0; j < current.quantity; j++) {
+        lettersCollection.push(current?.letter || "_");
+      }
+    }
+    lettersCollection = shuffleInPlace(lettersCollection);
+
+
+
     function shuffleInPlace(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -955,24 +968,147 @@
     }
 
     function createLetterCollection() {
+      console.log("createLetterCollection was called...");
+      lettersCollection.length = 0; // clear previous letters
+      lettersCollection = [];
       for (let i = 0; i < wordLetterValues.length; i++) {
         let current = wordLetterValues[i];
         for (let j = 0; j < current.quantity; j++) {
           lettersCollection.push(current?.letter || "_");
         }
       }
-      shuffleInPlace(lettersCollection);
-      // console.log(lettersCollection.length);
+      lettersCollection = shuffleInPlace(lettersCollection);
+      console.log(lettersCollection.length);
+      return lettersCollection;
+    }
+
+    function generateSortedListHTML(data) {
+      // Sort entries by value descending
+
+      const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+
+      console.log(entries);
+
+      let html = `
+    <div style="
+      display:flex; 
+      flex-wrap:wrap; 
+      width:240px; 
+      font-family:sans-serif;
+      border:1px solid #ccc;
+      padding:8px;
+      border-radius:8px;
+    ">
+  `;
+
+      for (const [letter, value] of entries) {
+        html += `
+      <div style="
+        width:75px; 
+        text-align:center; 
+        padding:6px 0; 
+        box-sizing:border-box; 
+        border-bottom:1px solid #eee;
+      ">
+        <strong>${letter}</strong>: ${value}
+      </div>
+    `;
+      }
+
+      html += "</div>";
+      return html;
+    }
+
+
+    function generateListHTML(data) {
+      // const entries = Object.entries(data);
+
+      const entries = Object.entries(data).sort((a, b) => b[0] < a[0] ? 1 : -1);
+
+      console.log(entries);
+
+      let html = `
+    <div style="
+      display:flex; 
+      flex-wrap:wrap; 
+      width:240px; 
+      font-family:sans-serif;
+      border:1px solid #ccc;
+      padding:8px;
+      border-radius:8px;
+    ">
+  `;
+
+      for (const [letter, value] of entries) {
+        html += `
+      <div style="
+        width:75px; 
+        text-align:center; 
+        padding:6px 0; 
+        box-sizing:border-box; 
+        border-bottom:1px solid #eee;
+      ">
+        <strong>${letter}</strong>: ${value}
+      </div>
+    `;
+      }
+
+      html += "</div>";
+      return html;
+    }
+
+
+    showLettersCollection = (which) => {
+
+      let sum = 0;
+      let lettersAll = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let lettersAllArray =
+
+        lettersAll.split("");
+      let counting = {};
+      lettersCollection.forEach((l) => {
+        lettersAllArray.forEach((letter) => {
+
+          console.log(l);
+          if (l == letter) {
+            sum++;
+            if (counting[l]) {
+              counting[l]++;
+            } else {
+              counting[l] = 1;
+            }
+          }
+        });
+      });
+
+      console.log("sum", sum);
+
+      if (which == 0) { // #
+        showToast(generateSortedListHTML(counting), "info", 9999);
+      } else { // A
+
+        showToast(generateListHTML(counting), "info", 9999);
+      }
+
+      // console.log(JSON.stringify(counting));
+
+      //showToast(JSON.stringify(counting), "info", 9999);
     }
 
     function getLetterFromCollection() {
-      if (lettersCollection.length <= 0) {
-        createLetterCollection();
+      if (!lettersCollection || lettersCollection?.length <= 0) {
+        lettersCollection = createLetterCollection();
       }
-      return lettersCollection.shift();
+      console.log(lettersCollection.length);
+      console.log(lettersCollection)
+      let val = lettersCollection.shift();
+      console.log(val + " was picked.");
+      console.log(lettersCollection)
+      console.log(lettersCollection.length);
+      return val;
     }
 
-    createLetterCollection();
+    // createLetterCollection();
 
     function populatePlayerLetters() {
       for (let i = 1; i <= 7; i++) {
@@ -2295,6 +2431,10 @@
       // if (e.key.toUpperCase() == "S") {
       //   navigateView(playerCol, playerRow);
       // }
+
+      if (e.key == "!") {
+        showLettersCollection();
+      }
 
       if (e.key == "Enter") {
         document.getElementById("sendIt").click();
