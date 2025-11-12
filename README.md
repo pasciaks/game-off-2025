@@ -145,3 +145,13 @@ Principle: Waves carry energy without transporting matter permanently, though pa
 Bonus words that are found when you aren't playing are marked off your bonus word list - Ideally, everyone in a game starts at the same time and this would allow for fair-play, but life isn't fair, so I'm not (for now) going to implement syncing that info when others join a game room after others have been creating words in it already.
 
 [ ] Probably more to find, investigate and report.
+
+[ ] Floating words... you can float words, but only during the wave cycle. This occurs when the client time (minutes) are in the following ranges.
+
+      0-1
+      5-10
+      25-35
+      45-50
+      50-54
+
+
