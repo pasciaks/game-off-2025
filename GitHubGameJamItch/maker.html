@@ -221,11 +221,7 @@
     <button
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About</button>
 
-
-
-
-
-    <h2><span id="playerName"></span></h2>
+    <p style="display:none;"><span id="playerName"></span></p>
 
     <div style="display:none;">
 
@@ -255,19 +251,16 @@
     <div class="game-container" id="gameLinks"></div>
 
     <form>
-      <div style="max-width: 400px; margin: 20px auto; font-family: sans-serif;">
-        <label style="display: block; margin-bottom: 15px; font-size: 18px;">
-          Category/Subject
+      <div style="max-width: 400px; margin: 10px auto; font-family: sans-serif;">
+        <label style="display: block; margin-bottom: 10px; font-size: 18px;">
           <input type="text" id="category" placeholder="Category" required value="COLORS"
             style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
         </label>
 
-        <label style="display: block; margin-bottom: 20px; font-size: 18px;">
-          Words
+        <label style="display: block; margin-bottom: 10px; font-size: 18px;">
           <input type="text" id="words" placeholder="Words To Have In Custom Category" required value="RED WHITE BLUE"
             style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
         </label>
-
         <button type="button" onclick="submitCustomGame()"
           style="width: 100%; padding: 12px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;"
           onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">

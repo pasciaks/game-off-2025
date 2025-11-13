@@ -355,6 +355,13 @@
     function invokeGame(url) {
       let v = document.getElementById('waveWordsSelect').value;
       localStorage.setItem('wavesWordsList', v);
+
+      let currentUrl = window.location.href;
+      console.log(currentUrl)
+
+      let adjustedUrl = currentUrl.replace('index.html', url);
+      console.log(adjustedUrl)
+
       window.location = url;
     }
 
