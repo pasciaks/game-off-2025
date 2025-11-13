@@ -1345,7 +1345,7 @@
     });
 
     socket.on("floating_word", (data) => {
-      showToast("Floating!", "error", 9999);
+      showToast("Floating words only allowed during high tide!", "error", 9999);
     });
 
     socket.on("word_result", (data) => {
@@ -3045,10 +3045,10 @@
         ctx.strokeStyle = 'lightblue';
         ctx.font = '32px verdana bold';
         ctx.fillStyle = 'black';
-        ctx.fillText("High Tide - Floating words Enabled", (canvas.width / 2) / zoom, 50);
-        ctx.fillText("High Tide - Floating words Enabled", (canvas.width / 2) / zoom, 49);
+        ctx.fillText("High Tide", (canvas.width / 2) / zoom, 50);
+        ctx.fillText("High Tide", (canvas.width / 2) / zoom, 49);
         ctx.fillStyle = 'blue';
-        ctx.fillText("High Tide - Floating words Enabled", 1 + (canvas.width / 2) / zoom, 51);
+        ctx.fillText("High Tide", 1 + (canvas.width / 2) / zoom, 51);
         for (let jj = 0; jj < 4096; jj++) {
           // ctx.strokeRect(jj, (canvas.height / 2) / zoom + Math.sin((off + playerRow) / 100) * 125, 10, 1);
           // ctx.strokeRect(jj, (canvas.height / 4) / zoom + Math.sin((off2 + jj) / (5 * freq)) * 125, 1, 1);
