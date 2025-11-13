@@ -254,25 +254,27 @@
 
     <div class="game-container" id="gameLinks"></div>
 
-    <div style="max-width: 400px; margin: 20px auto; font-family: sans-serif;">
-      <label style="display: block; margin-bottom: 15px; font-size: 18px;">
-        <input type="text" id="category" placeholder="Category" required value="COLORS"
-          style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
-      </label>
+    <form>
+      <div style="max-width: 400px; margin: 20px auto; font-family: sans-serif;">
+        <label style="display: block; margin-bottom: 15px; font-size: 18px;">
+          Category/Subject
+          <input type="text" id="category" placeholder="Category" required value="COLORS"
+            style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
+        </label>
 
-      <label style="display: block; margin-bottom: 20px; font-size: 18px;">
-        <input type="text" id="words" placeholder="Words To Have In Custom Category" required value="RED WHITE BLUE"
-          style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
-      </label>
+        <label style="display: block; margin-bottom: 20px; font-size: 18px;">
+          Words
+          <input type="text" id="words" placeholder="Words To Have In Custom Category" required value="RED WHITE BLUE"
+            style="width: 100%; padding: 12px 10px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;" />
+        </label>
 
-      <button onclick="submitCustomGame()"
-        style="width: 100%; padding: 12px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;"
-        onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
-        Create Custom Game
-      </button>
-    </div>
-
-
+        <button type="button" onclick="submitCustomGame()"
+          style="width: 100%; padding: 12px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;"
+          onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+          Create Custom Game
+        </button>
+    </form>
+  </div>
 
   </div>
 
@@ -280,15 +282,16 @@
 
   <script>
 
-    function submitCustomGame() {
+    function submitCustomGame(e) {
+      e?.preventDefault();
       let c = document.getElementById('category').value;
       let w = document.getElementById('words').value;
 
-      c = c.trim();
-      w = w.trim();
+      c = c.trim(); document.getElementById('category').value = c;
+      w = w.trim(); document.getElementById('words').value = w;
 
       if (!c || !w) {
-        return;
+        return false;
       }
 
 
@@ -307,6 +310,8 @@
       window.location = adjustedUrl; // this should work for hidden url at itch
 
       // window.location = "./index.html?category=" + c + "&words=" + w;
+
+      return false;
 
     }
 

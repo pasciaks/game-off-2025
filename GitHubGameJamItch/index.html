@@ -221,19 +221,15 @@
     <button
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About</button>
 
-    <button onclick="window.open('maker.html')">Custom Game Maker</button>
+    <button onclick="window.open('maker.html')"> Custom Game </button>
 
     <a href="index.html">
       <div id="randomTitle"></div>
     </a>
 
-    <h2><span id="playerName"></span></h2>
+
 
     <div>
-
-      <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
-        onclick="updateRandomName();">🎲 <span class="menuText">Random Name</span></button>
-
       <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
                background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
         <option
@@ -251,7 +247,9 @@
         <option selected
           value=" ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ">
           🌊 Waves</option>
-      </select> <span class="menuText">Selected Wave Words</span>
+      </select> <span class="menuText"></span>
+      <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
+        onclick="updateRandomName();">🎲 <span class="menuText"></span></button> <span id="playerName"></span>
     </div>
 
     <div class="game-container" id="gameLinks"></div>
@@ -373,7 +371,7 @@
       btn.style.cursor = 'pointer';
       if (cat && words) {
         if (i == 10) {
-          btn.textContent = "Custom Game Invite for the Cateogry " + cat;
+          btn.textContent = "Custom Game " + cat;
           btn.style.width = "100%";
           // container.appendChild(btn);
         }

@@ -86,8 +86,8 @@
       background-color: #0099ff;
       border: none;
       border-radius: 32px;
-      padding: 10px;
-      width: 80%;
+      padding: 5px;
+      width: 95%;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       z-index: 9999;
       ;
@@ -236,27 +236,20 @@
     <!-- <h2>Instructions</h2> -->
 
     <div>
-
-
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Shining Stars</button> <span style="cursor:pointer;" onclick="window.open('https://freepd.com/')">🎵</span>
-
       <button class="rack-btns2"
         title="Written by Rafael Krux. Uplifting, positive and light track made with acoustic guitars, piano and light percussion. Perfect for commercials, advertising or generally happy moments. This music is available for commercial and non-commercial purposes."
         onclick="playAudioToggle('Advertime.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Advertime</button> <span style="cursor:pointer;" onclick="window.open('https://freepd.com/')">🎵</span>
-
-
-
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
       </label>
+      <button class="rack-btns2" style="display:none;" id="eraseIt">Reset</button>
     </div>
 
     <br>
-
-    <button class="rack-btns2" style="display:none;" id="eraseIt">Reset</button>
 
     <!-- <p id="wavesStatus"><img src='no-waves.png' /></p> -->
     <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves(); '>〰️ Waves are Off
@@ -284,7 +277,7 @@
 
 
   <!-- Keypad -->
-  <div style="display:none;" id="keypad">
+  <div style="display:block;" id="keypad">
     <div id="arrows">
       <div></div> <!-- empty -->
       <button class="arrow-btn" id="up">↑</button>
@@ -406,6 +399,8 @@
 
   <script>
 
+    let isCheatMode = false;
+
     let canFloat = false;
 
     function isPartOfMinute(start, end) {
@@ -427,7 +422,7 @@
 
     function showWaveInstructions(whichWave) {
 
-      console.log(whichWave);
+      // console.log(whichWave);
 
       showToast("If enabled, waves will be invoke randomly after successfully placing a word.", "info", 9999);
 
@@ -454,8 +449,8 @@
       let vv = document.getElementById('waveslist').value;
       let tt = document.getElementById('waveslist').title;
 
-      console.log(vv);
-      console.log(tt);
+      // console.log(vv);
+      // console.log(tt);
 
       let vv_hasNoLetters = !/[a-z]/i.test(vv);
       let tt_hasNoLetters = !/[a-z]/i.test(tt);
@@ -467,8 +462,8 @@
     }
 
     setTimeout(() => {
-      document.getElementById('eraseIt').style.display = "block";
-    }, 3000);
+      document.getElementById('eraseIt').style.display = "inline-block";
+    }, 300000);
 
     function resetGameSaves() {
 
@@ -500,7 +495,7 @@
     font-size: 1.2em;
     border: 3px solid #0ff;
     border-radius: 14px;
-    padding: 14px 28px;
+    padding: 7px 18px;
     letter-spacing: 1px;
     text-transform: uppercase;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
@@ -519,7 +514,7 @@
     font-size: 1.1em;
     border: 2px solid #555;
     border-radius: 14px;
-    padding: 14px 28px;
+    padding: 7px 18px;
     letter-spacing: 1px;
     text-transform: uppercase;
     box-shadow: 0 0 10px rgba(0,0,0,0.6);
@@ -980,7 +975,7 @@
     }
 
     function createLetterCollection() {
-      console.log("createLetterCollection was called...");
+      // console.log("createLetterCollection was called...");
       lettersCollection.length = 0; // clear previous letters
       lettersCollection = [];
       for (let i = 0; i < wordLetterValues.length; i++) {
@@ -990,7 +985,7 @@
         }
       }
       lettersCollection = shuffleInPlace(lettersCollection);
-      console.log(lettersCollection.length);
+      // console.log(lettersCollection.length);
       return lettersCollection;
     }
 
@@ -999,7 +994,7 @@
 
       const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
 
-      console.log(entries);
+      // console.log(entries);
 
       let html = `
     <div style="
@@ -1037,7 +1032,7 @@
 
       const entries = Object.entries(data).sort((a, b) => b[0] < a[0] ? 1 : -1);
 
-      console.log(entries);
+      // console.log(entries);
 
       let html = `
     <div style="
@@ -1081,7 +1076,7 @@
       lettersCollection.forEach((l) => {
         lettersAllArray.forEach((letter) => {
 
-          console.log(l);
+          // console.log(l);
           if (l == letter) {
             sum++;
             if (counting[l]) {
@@ -1093,7 +1088,7 @@
         });
       });
 
-      console.log("sum", sum);
+      // console.log("sum", sum);
 
       if (which == 0) { // #
         showToast(generateSortedListHTML(counting), "info", 9999);
@@ -1111,12 +1106,12 @@
       if (!lettersCollection || lettersCollection?.length <= 0) {
         lettersCollection = createLetterCollection();
       }
-      console.log(lettersCollection.length);
-      console.log(lettersCollection)
+      // console.log(lettersCollection.length);
+      // console.log(lettersCollection)
       let val = lettersCollection.shift();
-      console.log(val + " was picked.");
-      console.log(lettersCollection)
-      console.log(lettersCollection.length);
+      // console.log(val + " was picked.");
+      // console.log(lettersCollection)
+      // console.log(lettersCollection.length);
       return val;
     }
 
@@ -1339,7 +1334,7 @@
     });
 
     socket.on("bonusWordResult", (data) => {
-      console.log('bonusWordResult', data);
+      // console.log('bonusWordResult', data);
       let waveslistEle = document.getElementById('waveslist');
       showToast("(" + (data?.myName || "Another Player") + ")" + " found " + data.bonusWord, "info");
       data.bonusWord = data.bonusWord.trim();
@@ -1512,7 +1507,8 @@
         // console.log(o2);
         // console.log(o);
       } catch (e) {
-        console.log(e);
+        // console.log(e);
+        console.error("error:", e);
       }
     });
 
@@ -1862,11 +1858,11 @@
       for (let jj = 0; jj < sendTiles.length; jj++) {
         let cT = sendTiles[jj];
         if ((cT.col < -boardColsMagnitude) || (cT.col > boardColsMagnitude)) {
-          console.log("Out of column magnitude bounds", cT.col, boardColsMagnitude);
+          // console.log("Out of column magnitude bounds", cT.col, boardColsMagnitude);
           // console.log(cT);
         }
         if ((cT.row < -boardRowsMagnitude) || (cT.row > boardRowsMagnitude)) {
-          console.log("Out of row magnitude bounds", cT.row, boardRowsMagnitude);
+          // console.log("Out of row magnitude bounds", cT.row, boardRowsMagnitude);
           // console.log(cT);
         }
       }
@@ -1912,12 +1908,34 @@
       navigateView(playerCol, playerRow);
     }
 
+    function moveScreenDown() {
+      cameraY += 75;
+      playerDown();
+    }
+    function moveScreenUp() {
+      cameraY -= 75;
+      playerUp();
+    }
+    function moveScreenLeft() {
+      cameraX -= 75;
+      playerLeft();
+    }
+    function moveScreenRight() {
+      cameraX += 75;
+      playerRight();
+    }
+
     try {
 
-      document.getElementById("up").addEventListener("click", () => playerUp());
-      document.getElementById("down").addEventListener("click", () => playerDown());
-      document.getElementById("left").addEventListener("click", () => playerLeft());
-      document.getElementById("right").addEventListener("click", () => playerRight());
+      // document.getElementById("up").addEventListener("click", () => playerUp());
+      // document.getElementById("down").addEventListener("click", () => playerDown());
+      // document.getElementById("left").addEventListener("click", () => playerLeft());
+      // document.getElementById("right").addEventListener("click", () => playerRight());
+
+      document.getElementById("up").addEventListener("click", () => moveScreenUp());
+      document.getElementById("down").addEventListener("click", () => moveScreenDown());
+      document.getElementById("left").addEventListener("click", () => moveScreenLeft());
+      document.getElementById("right").addEventListener("click", () => moveScreenRight());
 
       document.getElementById("center").addEventListener("click", () => playerCenter());
 
@@ -1947,7 +1965,6 @@
 
           document.getElementById("scrabbleRack").style.border = 'none';
           showToast("Place your character on a blue outlined letter, then click one of the letters in your rack to steal the letter value for your use.", "info", 9999);
-          // showToast("Click one of the tiles in your rack to steal the letter value for your use.", "info", 9999);
         } else {
           showToast("You are out of crime waves.", "error", 9999);
         }
@@ -1995,7 +2012,8 @@
 
     } catch (e) {
 
-      console.log(e);
+      // console.log(e);
+      console.error("error:", e);
 
     }
 
@@ -2233,12 +2251,23 @@
     const playerImage = new Image();
     playerImage.src = "./player.png";
 
+    const tileProoposedImageAlt = new Image();
+    let tttpAlt = "stuv".charAt(Math.floor(Math.random() * 4));
+    let nnnpAlt = Math.floor((Math.random() * 8)) + 1;
+    let thefilepAlt = tttpAlt + "" + nnnpAlt + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
+    // console.log(thefilep);
+    thefilepAlt = 'u1.png';
+    tileProoposedImageAlt.src = thefilepAlt;
+    tileProoposedImageAlt.onload = () => {
+
+    };
+
     const tileProoposedImage = new Image();
     let tttp = "stuv".charAt(Math.floor(Math.random() * 4));
     let nnnp = Math.floor((Math.random() * 8)) + 1;
     let thefilep = tttp + "" + nnnp + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
     // console.log(thefilep);
-    thefilep = 'u2.png';
+    thefilep = 'v1.png';
     tileProoposedImage.src = thefilep;
     tileProoposedImage.onload = () => {
 
@@ -2272,7 +2301,7 @@
      * @param {number} x - X position on canvas
      * @param {number} y - Y position on canvas
      */
-    function drawLetterTile(ctx, theTileData, x, y, optionOverride) {
+    function drawLetterTile(ctx, theTileData, x, y, optionOverride, alternateImage) {
       let letter = theTileData.letter;
       letter = letter.toUpperCase();
       let shrink = 0;
@@ -2285,11 +2314,22 @@
 
           if (optionOverride) {
             // tileProoposedImage
-            ctx.drawImage(
-              tileProoposedImage,
-              sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
-              x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
-            );
+
+            if (alternateImage) {
+              ctx.drawImage(
+                tileProoposedImageAlt,
+                sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+                x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+              );
+
+            } else {
+              ctx.drawImage(
+                tileProoposedImage,
+                sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+                x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+              );
+
+            }
 
             // ctx.fillText(theTileData?.type, x + shrink + 15, y + shrink + 15);
 
@@ -2449,7 +2489,11 @@
       // }
 
       if (e.key == "!") {
-        showLettersCollection();
+        isCheatMode = !isCheatMode;
+        if (isCheatMode) {
+          showToast("Cheaters never win!", "error");
+        }
+        // showLettersCollection();
       }
 
       if (e.key == "Enter") {
@@ -2464,17 +2508,21 @@
 
       let tempKey = e?.key?.toUpperCase();
 
-      //if (e.key == " ") { tempKey = "_" }
 
       //--------------------------------------------------
       // -- test override allow type onto letters
+      //--------------------------------------------------
+
       let newTile = { ...getTile(playerCol, playerRow) };
       newTile.letter = tempKey;
-      if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
-        setProposedTile(playerCol, playerRow, newTile);
+
+      if (isCheatMode) {
+        if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.includes(tempKey)) {
+          setProposedTile(playerCol, playerRow, newTile);
+        }
+        return; // keep this in to enable cheat mode
       }
-      // console.log(tempKey);
-      return; // keep this in to enable cheat mode
+      //--------------------------------------------------
       // -- test override allow type onto letters
       //--------------------------------------------------
 
@@ -2666,7 +2714,7 @@
       switch (type) {
 
         case 'room8':
-          console.log("room8");
+          // console.log("room8");
 
           // Create a checkerboard pattern
           const squareSize = 10;  // each square's width/height
@@ -2912,7 +2960,7 @@
           // drawLetterTile(ctx, '_', px, py);
 
           if (theTile && theTile.letter !== "_" && theTile.col > -colBoundary && theTile.col < colBoundary && theTile.row > -rowBoundary && theTile.row < rowBoundary) { // "_"
-            drawLetterTile(ctx, theTile, px, py, true); // override draw to use proposed tile drawing image
+            drawLetterTile(ctx, theTile, px, py, true, true); // override draw to use proposed tile drawing image
             ctx.lineWidth = 3;
             ctx.strokeStyle = "white"
             if (theTile.isSelected == true) { ctx.strokeRect(px + 6, py + 6, 64 - 12, 64 - 12) }
@@ -2996,10 +3044,10 @@
         ctx.strokeStyle = 'lightblue';
         ctx.font = '32px verdana bold';
         ctx.fillStyle = 'black';
-        ctx.fillText("Floating words Enabled", (canvas.width / 2) / zoom, 50);
-        ctx.fillText("Floating words Enabled", (canvas.width / 2) / zoom, 49);
+        ctx.fillText("High Tide - Floating words Enabled", (canvas.width / 2) / zoom, 50);
+        ctx.fillText("High Tide - Floating words Enabled", (canvas.width / 2) / zoom, 49);
         ctx.fillStyle = 'blue';
-        ctx.fillText("Floating words Enabled", 1 + (canvas.width / 2) / zoom, 51);
+        ctx.fillText("High Tide - Floating words Enabled", 1 + (canvas.width / 2) / zoom, 51);
         for (let jj = 0; jj < 4096; jj++) {
           // ctx.strokeRect(jj, (canvas.height / 2) / zoom + Math.sin((off + playerRow) / 100) * 125, 10, 1);
           // ctx.strokeRect(jj, (canvas.height / 4) / zoom + Math.sin((off2 + jj) / (5 * freq)) * 125, 1, 1);

@@ -72,7 +72,7 @@ canvas:active {
 /* ----- KEYPAD ----- */
 #keypad {
   position: absolute;
-  bottom: 100px;
+  bottom: 110px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -174,15 +174,15 @@ canvas:active {
 }
 
 .rack-btn {
-  width: 45px;
-  height: 45px;
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
 }
 
 .rack-btns {
-  width: 45px;
-  height: 25px;
-  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
 }
 
 /* ----- BUTTON INTERACTION EFFECTS ----- */
