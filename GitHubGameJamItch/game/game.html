@@ -1522,18 +1522,29 @@
       watchingName = name;
     }
 
-    function renderNameList(arr) {
+    let renderNameList = (arr) => {
       const container = document.getElementById('usersList');
       container.innerHTML = ""; // clear old list
       arr = ["", ...arr];
       let id = 0;
+
       arr.forEach(name => {
+        console.log(name, myName);
+
         const div = document.createElement('div');
         div.textContent = id;
         div.style.cursor = "pointer";
-        div.title = name;
+        div.title = "Start watching/following " + name;
+
         div.style.padding = "6px 6px";
-        div.style.border = '2px solid gray';
+        // div.style.border = '2px solid gray';
+        if (name == myName) {
+          div.title = "Start watching/following yourself.";
+          div.style.color = 'blue';
+        }
+        if (name == "") {
+          div.title = 'Stop watching/following any players.';
+        }
         div.style.display = "inline-block";
         id++;
 
@@ -1627,9 +1638,9 @@
 
     function keepPlayerVisible() {
 
-      if (!watchingName) {
-        updateCameraToShowPlayer(playerCol, playerRow);
-      }
+      // if (!watchingName) {
+      //   updateCameraToShowPlayer(playerCol, playerRow);
+      // }
 
       updatePlayerPosition({ playerCol, playerRow, myName, myRoom })
 
