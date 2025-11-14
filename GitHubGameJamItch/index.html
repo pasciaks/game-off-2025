@@ -356,15 +356,17 @@
       let v = document.getElementById('waveWordsSelect').value;
       localStorage.setItem('wavesWordsList', v);
 
-      let currentUrl = window.location.href;
-      console.log(currentUrl)
+      // let currentUrl = window.location.href;
+      // console.log(currentUrl)
 
-      let adjustedUrl = currentUrl.replace('index.html', url);
-      console.log(adjustedUrl)
+      // let adjustedUrl = currentUrl.replace('index.html', url);
+      // console.log(adjustedUrl)
 
-      window.location = adjustedUrl;
+      // window.location = adjustedUrl;
 
-      // window.open(adjustedUrl);
+      // window.open(url);
+
+      window.location = url;
     }
 
     // Generate 1–10 game buttons dynamically
