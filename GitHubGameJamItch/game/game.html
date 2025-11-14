@@ -227,6 +227,8 @@
 
   <div id="toast-container"></div>
 
+
+
   <dialog id="myDialog">
 
     <!-- <button title="Reset saved values." class="rack-btns2" id='reset' onclick='resetGameSaves();'>*</button> -->
@@ -329,6 +331,7 @@
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
 
     <!-- <span><a href="../index.html"><img src="logo.png" style="height:15px;" /></a></span> -->
+    <span id="usersList" style="color:white;"></span>
 
     <button id="openDialog" style="background-color:black;" class="rack-btns2 rack-btns-also-hover"><span
         title="Settings menu, and instructions." style="font-size: 24px;">⚙️<img src="favicon.png"
@@ -399,6 +402,8 @@
   </div>
 
   <script>
+
+    let watchingName;
 
     let isCheatMode = false;
 
@@ -1513,18 +1518,51 @@
       }
     });
 
+    function startWatchingName(name) {
+      watchingName = name;
+    }
+
+    function renderNameList(arr) {
+      const container = document.getElementById('usersList');
+      container.innerHTML = ""; // clear old list
+      arr = ["", ...arr];
+      let id = 0;
+      arr.forEach(name => {
+        const div = document.createElement('div');
+        div.textContent = id;
+        div.style.cursor = "pointer";
+        div.title = name;
+        div.style.padding = "6px 6px";
+        div.style.border = '2px solid gray';
+        div.style.display = "inline-block";
+        id++;
+
+        div.onclick = () => { updatePlayers(); startWatchingName(name); }
+
+        container.appendChild(div);
+      });
+    }
+
     function updatePlayers(data) {
-      // console.log('-----------------------------');
-      // console.log('update players');
-      // console.log('-----------------------------');
-      // console.log(data.data);
 
-      let users2 = data.users;
-      // console.log("USERS", users2);
+      // let users2 = data.users;
 
-      users.set(data.data.myName, { dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+      if (data) {
+        users.set(data.data.myName, { dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+      }
 
-      // console.log(users);
+      let names = [];
+      for (const [name, info] of users.entries()) {
+        // console.log(name, info.playerCol, info.playerRow);
+        console.log(name);
+        names.push(name);
+        if (name == watchingName) {
+          updateCameraToShowPlayer(info.playerCol, info.playerRow);
+        }
+
+      }
+
+      renderNameList(names);
 
       log(data);
     }
@@ -1580,7 +1618,18 @@
 
     let proposedLetterUse = {};
 
+    function updateCameraToShowPlayer(col, row) {
+      if (!isDragging) {
+        cameraX = col * TILE - (canvas.width / 2) / zoom;
+        cameraY = row * TILE - (canvas.height / 2) / zoom;
+      }
+    }
+
     function keepPlayerVisible() {
+
+      if (!watchingName) {
+        updateCameraToShowPlayer(playerCol, playerRow);
+      }
 
       updatePlayerPosition({ playerCol, playerRow, myName, myRoom })
 
