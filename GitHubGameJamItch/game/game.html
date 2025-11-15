@@ -820,7 +820,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'production'; // production  // development
+    let mode = 'production';// 'development'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -1529,7 +1529,7 @@
       let id = 0;
 
       arr.forEach(name => {
-        console.log(name, myName);
+        //console.log(name, myName);
 
         const div = document.createElement('div');
         div.textContent = id;
@@ -1565,7 +1565,7 @@
       let names = [];
       for (const [name, info] of users.entries()) {
         // console.log(name, info.playerCol, info.playerRow);
-        console.log(name);
+        // console.log(name);
         names.push(name);
         if (name == watchingName) {
           updateCameraToShowPlayer(info.playerCol, info.playerRow);
@@ -1638,11 +1638,11 @@
 
     function keepPlayerVisible() {
 
-      // if (!watchingName) {
-      //   updateCameraToShowPlayer(playerCol, playerRow);
-      // }
+      if (watchingName != "" && watchingName != myName) {
+        updateCameraToShowPlayer(playerCol, playerRow);
+      }
 
-      updatePlayerPosition({ playerCol, playerRow, myName, myRoom })
+      updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
 
       // visible world bounds (top-left and bottom-right in world coordinates)
       const visibleLeft = cameraX;
@@ -1703,7 +1703,7 @@
       }
 
       // navigateView(playerCol, playerRow);
-
+      //updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
       keepPlayerVisible();
     }
 
@@ -1716,7 +1716,7 @@
       let temp = getTile(playerCol, playerRow);
       if (allowAutomove) if (temp.letter != "_") { playerLeft(allowAutomove); }
       /////////////////////////////////////////////
-
+      //updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
       keepPlayerVisible();
     }
 
@@ -1729,7 +1729,7 @@
       let temp = getTile(playerCol, playerRow);
       if (allowAutomove) if (temp.letter != "_") { playerRight(allowAutomove); }
       /////////////////////////////////////////////
-
+      //updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
       keepPlayerVisible();
     }
 
@@ -1742,7 +1742,7 @@
       let temp = getTile(playerCol, playerRow);
       if (allowAutomove) if (temp.letter != "_") { playerUp(allowAutomove); }
       /////////////////////////////////////////////
-
+      //updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
       keepPlayerVisible();
     }
 
@@ -1755,7 +1755,7 @@
       let temp = getTile(playerCol, playerRow);
       if (allowAutomove) if (temp.letter != "_") { playerDown(allowAutomove); }
       /////////////////////////////////////////////
-
+      //updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
       keepPlayerVisible();
     }
 
@@ -1928,7 +1928,7 @@
         }
       }
 
-      let submissionData = { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
+      let submissionData = { myTime: new Date().toUTCString(), yourScore, canSwap, canCommitCrime, canReplace, canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom }
 
       // console.log(submissionData);
 
@@ -2320,7 +2320,6 @@
     thefilepAlt = 'u1.png';
     tileProoposedImageAlt.src = thefilepAlt;
     tileProoposedImageAlt.onload = () => {
-
     };
 
     const tileProoposedImage = new Image();
@@ -2331,7 +2330,6 @@
     thefilep = 'v1.png';
     tileProoposedImage.src = thefilep;
     tileProoposedImage.onload = () => {
-
     };
 
     const tilePower = new Image();
@@ -2339,7 +2337,7 @@
     thefilepower = 'u7.png';
     tilePower.src = thefilepower;
     tilePower.onload = () => {
-      //
+      startTheGame();
     };
 
     const tileImage = new Image();
@@ -2352,7 +2350,7 @@
     tileImage.onload = () => {
       // setLetters(); // <-- add this line before starting the draw loop
       navigateView(0, 0);
-      requestAnimationFrame(loop);
+      //requestAnimationFrame(loop);
     };
 
     /**
@@ -3123,11 +3121,18 @@
       ctx.restore();
     }
 
+    setTimeout(() => {
+      startWatchingName("");
+    }, 500)
 
     // --- Animation loop ---
     function loop() {
       updateCamera();
       draw();
+      requestAnimationFrame(loop);
+    }
+
+    function startTheGame() {
       requestAnimationFrame(loop);
     }
 

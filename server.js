@@ -1,7 +1,9 @@
 import dotenv from 'dotenv'; // if using ES modules
 dotenv.config();
 
-import fs from "fs";
+import fs from "fs/promises";
+import fsSync from "fs";     // <-- add this
+
 import path from "path";
 
 import https from "https";
@@ -19,7 +21,7 @@ const uniqueWords = [...new Set(Object.values(waves).flatMap(c => c.words))];
 console.log("uniqueWords", uniqueWords);
 
 let words = loadTXTSync('./words.txt');
-// console.log(words.length);
+console.log(words.length);
 
 function reverseWord(word) {
   return word.split('').reverse().join('');
@@ -69,6 +71,14 @@ const twoLetterWords = [
   "ya", "ye", "yo"
 ];
 
+function toSafeFilename(str) {
+  return str
+    .trim()
+    .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")  // remove illegal chars
+    .replace(/\s+/g, "_")                   // replace spaces with underscores
+    .replace(/\.+$/g, "")                   // remove trailing dots
+    || "untitled";                          // fallback if empty
+}
 
 words = removeShortWords(words);
 
@@ -259,13 +269,13 @@ function createMap(mapRef) {
     for (let j = -boardRowsMagnitude; j < boardRowsMagnitude; j++) {
       let powerUpType = ['gravitywave', 'brainwave', 'crimewave', 'shockwave'][Math.floor(Math.random() * 4)];
 
-      if (Math.random() > 0.98) {
+      if (Math.random() > 0.97) {
         setTile(i, j, mapRef, { letter: '_', type: powerUpType });
       } else {
         setTile(i, j, mapRef, { letter: '_', type: 'normal' });
       }
 
-      if (Math.random() > .98) {
+      if (Math.random() > .97) {
         setTile(i, j, mapRef, { letter: randomLetter(), type: Math.random() < .58 ? 'normal' : powerUpType });
       }
     }
@@ -322,13 +332,22 @@ let server;
 let privateKey;// = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/privkey.pem");
 let certificate;// = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchain.pem");
 
+// try {
+//   privateKey = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/privkey.pem");
+//   certificate = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchain.pem");
+//   // --- Create HTTPS server ---
+//   server = https.createServer({ key: privateKey, cert: certificate }, app);
+// } catch (err) {
+//   //console.error("❌ Failed to load SSL certs. Falling back to HTTP:", err);
+//   server = http.createServer(app);
+// }
+
 try {
-  privateKey = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/privkey.pem");
-  certificate = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchain.pem");
-  // --- Create HTTPS server ---
+  privateKey = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com/privkey.pem");
+  certificate = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchain.pem");
+
   server = https.createServer({ key: privateKey, cert: certificate }, app);
 } catch (err) {
-  //console.error("❌ Failed to load SSL certs. Falling back to HTTP:", err);
   server = http.createServer(app);
 }
 
@@ -472,9 +491,32 @@ io.on("connection", (socket) => {
   }
 
 
+
+
   socket.on('submitWord', (data) => {
 
-    let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+    // let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+
+    let { myTime, yourScore, canSwap, canCommitCrime, canReplace, canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+
+    let fileName = toSafeFilename("" + myName + ".txt");
+    let filePath = "./_submissionHistory/" + fileName;
+
+    data.dateTime = new Date().toUTCString();
+    data.timeStamp = Date.now();
+
+    const dir = path.dirname(filePath);         // extract folder path
+    const line = JSON.stringify(data) + "\n"; // prepare line
+
+    try {
+      console.log(line);
+
+      // fs.mkdir(dir, { recursive: true });  // ensure the folder exists
+      // fs.appendFile(filePath, line);       // append one line safely
+
+    } catch (err) {
+      console.error("File write error:", err);
+    }
 
     let theRoom = myRoom || data?.myRoom || '';
 
@@ -783,6 +825,7 @@ io.on("connection", (socket) => {
 
   socket.on('joinRoom', ({ roomName, nickname }) => {
     console.log("joinRom");
+
     //console.log(tileMap)
     let obj;
 
