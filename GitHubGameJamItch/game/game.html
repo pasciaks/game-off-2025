@@ -249,7 +249,7 @@
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
       </label>
-      <button class="rack-btns2" style="display:none;" id="eraseIt">Reset</button>
+      <button class="rack-btns2" style="display:none;" id="eraseIt">*Challenge the room!</button>
     </div>
 
     <br>
@@ -331,7 +331,9 @@
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
 
     <!-- <span><a href="../index.html"><img src="logo.png" style="height:15px;" /></a></span> -->
-    <span id="usersList" style="color:white;"></span>
+    <span title="Show players and scores."
+      style="border:2px solid lightgreen;cursor:pointer;margin:2px;padding:2px;color:green;"
+      onclick="showPlayersAndScores()">$</span><span id="usersList" style="color:white;"></span>
 
     <button id="openDialog" style="background-color:black;" class="rack-btns2 rack-btns-also-hover"><span
         title="Settings menu, and instructions." style="font-size: 24px;">⚙️<img src="favicon.png"
@@ -403,6 +405,8 @@
 
   <script>
 
+    let playerScores = {};
+
     let watchingName;
 
     let isCheatMode = false;
@@ -469,7 +473,7 @@
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "inline-block";
-    }, 300000);
+    }, 3000);
 
     function resetGameSaves() {
 
@@ -826,7 +830,6 @@
 
     let socket;
 
-
     let wordLetterValues = [
       {
         "letter": "A",
@@ -1155,8 +1158,8 @@
 
     switch (myRoom) {
       case 'room1':
-        boardColsMagnitude = 5;
-        boardRowsMagnitude = 5;
+        boardColsMagnitude = 9;
+        boardRowsMagnitude = 9;
         toggleEnableWaves();
         toggleEnableWaves();
         break;
@@ -1173,7 +1176,7 @@
         toggleEnableWaves();
         break;
       case 'room4':
-        boardColsMagnitude = 15;
+        boardColsMagnitude = 25;
         boardRowsMagnitude = 25;
         toggleEnableWaves();
         toggleEnableWaves();
@@ -1189,13 +1192,13 @@
         toggleEnableWaves();
         break;
       case 'room7':
-        boardColsMagnitude = 15;
-        boardRowsMagnitude = 30;
+        boardColsMagnitude = 25;
+        boardRowsMagnitude = 35;
         toggleEnableWaves();
         break;
       case 'room8':
-        boardColsMagnitude = 30;
-        boardRowsMagnitude = 30;
+        boardColsMagnitude = 35;
+        boardRowsMagnitude = 25;
         toggleEnableWaves();
         break;
       case 'room9':
@@ -1264,10 +1267,25 @@
     });
 
     socket.on("tileMap", (data) => {
-
       // not used
-
     });
+
+    socket.on("extraData", (data) => {
+      console.log("extraData", data);
+      let t = JSON.parse(data);
+      playerScores[t.who.myName] = t.who.myScore;
+      console.log(playerScores);
+    });
+
+    socket.on("resetScores", (data) => {
+      console.log(data);
+      localStorage.clear();
+      showToast("The room has been challenged.", "info");
+      showToast("Game starts in 5 seconds.", "error");
+      setTimeout(() => {
+        window.location = "game.html?room=" + myRoom;
+      }, 5000);
+    })
 
     // let is_microWave = false;
     socket.on("is_microWave", (data) => {
@@ -1452,9 +1470,13 @@
     })
 
     socket.on("data", (data) => {
-      // console.log(data);
+      console.log(data);
 
       updatePlayers(data);
+
+      console.log(data.data.myName);
+      playerScores[data.data.myName] = data.data.yourScore;
+      console.log(playerScores);
 
       log("received data: " + data);
     });
@@ -1523,6 +1545,7 @@
     }
 
     let renderNameList = (arr) => {
+
       const container = document.getElementById('usersList');
       container.innerHTML = ""; // clear old list
       arr = ["", ...arr];
@@ -1558,8 +1581,10 @@
 
       // let users2 = data.users;
 
+      console.log(playerScores);
+
       if (data) {
-        users.set(data.data.myName, { dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+        users.set(data.data.myName, { ...data, dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
       }
 
       let names = [];
@@ -1642,7 +1667,7 @@
         updateCameraToShowPlayer(playerCol, playerRow);
       }
 
-      updatePlayerPosition({ playerCol, playerRow, myName, myRoom });
+      updatePlayerPosition({ playerCol, playerRow, myName, myRoom, yourScore });
 
       // visible world bounds (top-left and bottom-right in world coordinates)
       const visibleLeft = cameraX;
@@ -1761,11 +1786,13 @@
 
     function eraseBoard() {
 
-      if (confirm("Are you sure you want to reset this board, your score, and saved gravity/crime/shock/brain wave counts ?")) {
-        localStorage.clear();
-        socket.emit("eraseBoard", { myRoom, myName })
-        window.location = "../index.html";
-      }
+      dialog.close();
+
+      // if (confirm("Start new wave members challenge ?")) { // reset this board, other players scores, and saved gravity/crime/shock/brain wave counts ?")) {
+      localStorage.clear();
+      socket.emit("eraseBoard", { myRoom, myName })
+      //window.location = "../index.html";
+      // }
 
     }
 
@@ -2538,10 +2565,43 @@
     // Track which arrow keys are currently pressed
     const keysPressed = {};
 
+    function generateListHTMLPlayers(obj, sortDesc = true) {
+      // Convert object to array of [name, value]
+      let entries = Object.entries(obj);
+
+      // Sort descending by value if requested
+      if (sortDesc) {
+        entries.sort((a, b) => Math.floor(b[1]) - Math.floor(a[1]));
+      }
+
+      // Build HTML
+      let html = `<ul>`;
+      for (const [name, value] of entries) {
+        html += `
+      <li style="list-style:none;margin-bottom: 6px;">
+        <span style="display:inline-block; width:250px;">${name}</span> 
+        <strong>${value}</strong>
+      </li>`;
+      }
+      html += `</ul>`;
+
+      return html;
+    }
+
+    function showPlayersAndScores() {
+      // alert(JSON.stringify(playerScores));
+      let htmlList = generateListHTMLPlayers(playerScores);
+      showToast(htmlList, "info");
+    }
+
     // Key down → mark as pressed
     window.addEventListener("keydown", (e) => {
 
       // console.log(e.key);
+
+      if (e.key == "$") {
+        showPlayersAndScores();
+      }
 
       // if (e.key.toUpperCase() == "S") {
       //   navigateView(playerCol, playerRow);

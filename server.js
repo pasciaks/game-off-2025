@@ -414,6 +414,7 @@ io.on("connection", (socket) => {
     const obj2 = Object.fromEntries(maps[data?.myRoom]); // Map → Object
     const json = JSON.stringify(obj2); // Object → JSON string
     io.to(data?.myRoom).emit('tileObjects', json);
+    io.to(data?.myRoom).emit('resetScores', { data });
   })
 
   socket.on('proposedTile', (data) => {
@@ -437,7 +438,7 @@ io.on("connection", (socket) => {
 
   });
 
-  function sendBoardDataToRoom(theRoom) {
+  function sendBoardDataToRoom(theRoom, extraData) {
     console.log("------sendBoardDataToRoom------");
     // const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
     // const json = JSON.stringify(obj2); // Object → JSON string
@@ -452,6 +453,8 @@ io.on("connection", (socket) => {
     const obj2 = Object.fromEntries(filtered); // Map → Object
     const json = JSON.stringify(obj2); // Object → JSON string
     io.to(theRoom).emit('tileObjects', json);
+    io.to(theRoom).emit('extraData', JSON.stringify(extraData));
+
   }
 
   function findLeft(col, row, mapRef) {
@@ -494,6 +497,13 @@ io.on("connection", (socket) => {
 
 
   socket.on('submitWord', (data) => {
+
+    let myScore = 0;
+    users.forEach((u) => {
+      if (u.nickname == data?.myName) {
+        myScore = data.yourScore;
+      }
+    });
 
     // let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
@@ -554,8 +564,6 @@ io.on("connection", (socket) => {
       oldTiles.push(oldTile)
       setTile(cw.col, cw.row, mapRef, { ...oldTile, letter: cw.letter })
     }
-
-
 
     let newCrime = 0;
     let newShock = 0;
@@ -749,7 +757,7 @@ io.on("connection", (socket) => {
       if (random == 4) { socket.emit("is_energyWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
     }
 
-    sendBoardDataToRoom(theRoom);
+    sendBoardDataToRoom(theRoom, { who: { myScore, myName } });
 
     //const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
     //const json = JSON.stringify(obj2); // Object → JSON string
