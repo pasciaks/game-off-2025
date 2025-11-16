@@ -14,14 +14,20 @@ import { Server } from "socket.io";
 import { loadJSONSync } from './loadJSONSync.js';
 import { loadTXTSync } from './loadTXTSync.js';
 
-const waves = loadJSONSync('./waves.json');
-console.log("waves", waves);
+// const waves = loadJSONSync('./waves.json');
+// console.log("waves", waves);
 
-const uniqueWords = [...new Set(Object.values(waves).flatMap(c => c.words))];
-console.log("uniqueWords", uniqueWords);
+// const uniqueWords = [...new Set(Object.values(waves).flatMap(c => c.words))];
+// console.log("uniqueWords", uniqueWords);
 
 let words = loadTXTSync('./words.txt');
 console.log(words.length);
+
+let spanish = loadTXTSync('./spanish.txt');
+console.log(spanish.length);
+
+let german = loadTXTSync('./german.txt');
+console.log(german.length);
 
 function reverseWord(word) {
   return word.split('').reverse().join('');
@@ -29,19 +35,18 @@ function reverseWord(word) {
 
 function removeShortWords(words) {
 
-  let tc = 0;
-  words.forEach((w) => {
-    if (w.length == 2) {
-      tc++;
-      if (twoLetterWords.includes(w)) {
-      } else {
-        console.log("missing:", w)
-      }
-    }
-  });
-  console.log("two letter words original", tc)
+  // let tc = 0;
+  // words.forEach((w) => {
+  //   if (w.length == 2 && fixTwoLetterWords) {
+  //     tc++;
+  //     if (twoLetterWords.includes(w)) {
+  //     } else {
+  //       console.log("missing:", w)
+  //     }
+  //   }
+  // });
 
-  return words.filter(word => word.length > 2);
+  return words.filter(word => word.length >= 2);
 
 }
 
@@ -80,13 +85,24 @@ function toSafeFilename(str) {
     || "untitled";                          // fallback if empty
 }
 
+// ENGLISH
+words = words.filter(word => word.length > 2);
 words = removeShortWords(words);
-
 words = [...twoLetterWords, ...words];
+
+// SPANISH
+spanish = removeShortWords(spanish);
+
+// GERMAN
+german = removeShortWords(german);
 
 console.log("words", words.length);
 
-console.log("two letter words", twoLetterWords.length);
+console.log("spanish", spanish.length);
+
+console.log("german", german.length);
+
+// console.log("two letter words", twoLetterWords.length);
 
 let boardColsMagnitude = 55;
 let boardRowsMagnitude = 55;
@@ -234,27 +250,6 @@ function shuffleInPlace(array) {
   return array;
 }
 
-// function createLetterCollection() {
-//   for (let i = 0; i < wordLetterValues.length; i++) {
-//     let current = wordLetterValues[i];
-//     for (let j = 0; j < current.quantity; j++) {
-//       lettersCollection.push(current?.letter || "_");
-//     }
-//   }
-//   shuffleInPlace(lettersCollection);
-//   console.log("lettersCollection");
-//   console.log(lettersCollection.length);
-// }
-
-// function getLetterFromCollection() {
-//   if (lettersCollection.length <= 0) {
-//     createLetterCollection();
-//   }
-//   return lettersCollection.shift();
-// }
-
-// createLetterCollection();
-
 function randomLetter() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_';
   return letters[Math.floor(Math.random() * letters.length)];
@@ -307,17 +302,17 @@ function setTile(col, row, mapRef, tileObj) {
   mapRef.set(key, updated);
 }
 
-let keys = Object.keys(waves);
+// let keys = Object.keys(waves);
 
 let maps = {};
 
-keys.forEach((k) => {
-  // console.log(waves[k].description);
-  let words = waves[k].words;
-  for (let i = 0; i < words.length; i++) {
-    // console.log(i + " " + " : " + words[i]);
-  }
-});
+// keys.forEach((k) => {
+// console.log(waves[k].description);
+// let words = waves[k].words;
+// for (let i = 0; i < words.length; i++) {
+// console.log(i + " " + " : " + words[i]);
+// }
+// });
 
 const NODE_ENV = process.env.NODE_ENV || '';
 
@@ -385,7 +380,7 @@ io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
   socket.on("addWords", (data) => {
-    console.log(data);
+
     let arrayOfWords = data?.wordsToAdd || [];
 
     for (let i = 0; i < arrayOfWords.length; i++) {
@@ -507,7 +502,7 @@ io.on("connection", (socket) => {
 
     // let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
-    let { myTime, yourScore, canSwap, canCommitCrime, canReplace, canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
+    let { allowEnglish, allowSpanish, allowGerman, myTime, yourScore, canSwap, canCommitCrime, canReplace, canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
     let fileName = toSafeFilename("" + myName + ".txt");
     let filePath = "./_submissionHistory/" + fileName;
@@ -579,6 +574,12 @@ io.on("connection", (socket) => {
 
     let wasBackwards = false;
 
+    let wasEnglish = false;
+
+    let wasSpanish = false;
+
+    let wasGerman = false;
+
     for (let i = 0; i < sendTiles.length; i++) {
 
       let cw = sendTiles[i];
@@ -638,9 +639,35 @@ io.on("connection", (socket) => {
 
         console.log(hzWord);
 
-        if (words.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)) {
+        if (
+          (allowEnglish && (words.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)))
+          ||
+          (allowSpanish && (spanish.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && spanish.indexOf(reverseWord(hzWord.toLowerCase())) > -1)))
+          ||
+          (allowGerman && (german.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)))
+        ) {
 
           console.log('hzWordfound', hzWord);
+
+          if (words.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)) {
+            wasEnglish = true
+          }
+
+          if (spanish.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && spanish.indexOf(reverseWord(hzWord.toLowerCase())) > -1)) {
+            wasSpanish = true
+          }
+
+          if (german.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)) {
+            wasGerman = true;
+          }
+
+          if (spanish.indexOf(hzWord.toLowerCase()) == -1 && spanish.indexOf(reverseWord(hzWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
+
+          if (german.indexOf(hzWord.toLowerCase()) == -1 && german.indexOf(reverseWord(hzWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
 
           if (words.indexOf(hzWord.toLowerCase()) == -1 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1) {
             wasBackwards = true;
@@ -648,13 +675,13 @@ io.on("connection", (socket) => {
 
           wasFound = true;
 
-          //if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
+          // if (uniqueWords.some(w => w.toLowerCase() == hzWord.toLowerCase())) {
           console.log("Found (case-insensitive)!");
           if (!theBonusWords.includes(hzWord)) {
             bonusWords++;
             theBonusWords.push(hzWord);
           }
-          //}
+          // }
 
         } else {
           console.log('hzWord not found', hzWord);
@@ -687,9 +714,35 @@ io.on("connection", (socket) => {
       if (vtWord.length > 1) {
         console.log(vtWord);
 
-        if (words.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
+        if (
+          (allowEnglish && (words.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1)))
+          ||
+          (allowSpanish && (spanish.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && spanish.indexOf(reverseWord(vtWord.toLowerCase())) > -1)))
+          ||
+          (allowGerman && (german.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && german.indexOf(reverseWord(vtWord.toLowerCase())) > -1)))
+        ) {
 
           console.log('vtWord found', vtWord);
+
+          if (words.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
+            wasEnglish = true;
+          }
+
+          if (spanish.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && spanish.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
+            wasSpanish = true;
+          }
+
+          if (german.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && german.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
+            wasGerman = true;
+          }
+
+          if (spanish.indexOf(vtWord.toLowerCase()) == -1 && spanish.indexOf(reverseWord(vtWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
+
+          if (german.indexOf(vtWord.toLowerCase()) == -1 && german.indexOf(reverseWord(vtWord.toLowerCase())) > -1) {
+            wasBackwards = true;
+          }
 
           if (words.indexOf(vtWord.toLowerCase()) == -1 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1) {
             wasBackwards = true;
@@ -714,11 +767,32 @@ io.on("connection", (socket) => {
       }
 
       setTile(cw.col, cw.row, mapRef, cw);
+
     }
+
+    // if (wasSpanish) {
+    //   if (!allowSpanish) {
+    //     wasSpanish = false;
+    //   }
+    // }
+    // if (wasGerman) {
+    //   if (!allowGerman) {
+    //     wasGerman = false;
+    //   }
+    // }
+    // if (wasEnglish) {
+    //   if (!allowEnglish) {
+    //     wasEnglish = false;
+    //   }
+    // }
+
+    // if (!wasEnglish || !wasSpanish || !wasGerman) {
+    //   wasFound = false;
+    // }
 
     if (!wasFound) {
       wasInvalid = true;
-      console.log({ wasFound, wasInvalid, wasBackwards })
+      console.log({ wasFound, wasInvalid, wasBackwards, wasEnglish, wasSpanish, wasGerman })
     }
 
     if (wasInvalid) {
@@ -744,9 +818,9 @@ io.on("connection", (socket) => {
 
     // setTile(data.col, data.row, mapRef, data);
 
-    console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards });
+    console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
 
-    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards });
+    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
 
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
@@ -755,6 +829,10 @@ io.on("connection", (socket) => {
       if (random == 2) { socket.emit("is_soundWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
       if (random == 3) { socket.emit("is_ElectromagneticWave", { wasInvalid, sendTiles, newBrain, newGravity, newShock, newCrime, tempWordScore }); }
       if (random == 4) { socket.emit("is_energyWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
+    }
+
+    if (wasInvalid) {
+      console.log("How did it get here?");
     }
 
     sendBoardDataToRoom(theRoom, { who: { myScore, myName } });

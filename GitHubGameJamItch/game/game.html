@@ -237,6 +237,12 @@
       onclick="window.location='../index.html'" src="logo.png" />
 
     <!-- <h2>Instructions</h2> -->
+    <button class="rack-btns2" onclick="canFindEnglishWord=!canFindEnglishWord;updateCounts();">Allow English <span
+        id="showCanEnglish"></span></button>
+    <button class="rack-btns2" onclick="canFindSpanishWord=!canFindSpanishWord;updateCounts();">Allow Spanish <span
+        id="showCanSpanish"></span></button>
+    <button class="rack-btns2" onclick="canFindGermanWord=!canFindGermanWord;updateCounts();">Allow German <span
+        id="showCanGerman"></span></button>
 
     <div>
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
@@ -405,6 +411,10 @@
 
   <script>
 
+    let canFindEnglishWord = true;
+    let canFindSpanishWord = false;
+    let canFindGermanWord = false;
+
     let playerScores = {};
 
     let watchingName;
@@ -412,6 +422,10 @@
     let isCheatMode = false;
 
     let canFloat = false;
+
+    function reverseWord(word) {
+      return word.split('').reverse().join('');
+    }
 
     function isPartOfMinute(start, end) {
       const seconds = new Date().getSeconds();
@@ -679,6 +693,10 @@
         document.getElementById('shockCount').innerText = shockCount;
         document.getElementById('brainCount').innerText = brainCount;
         document.getElementById('yourScore').innerText = yourScore;
+
+        document.getElementById('showCanEnglish').innerText = canFindEnglishWord;
+        document.getElementById('showCanSpanish').innerText = canFindSpanishWord;
+        document.getElementById('showCanGerman').innerText = canFindGermanWord;
       }, 500);
     }
 
@@ -824,7 +842,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'development'; // production  // development
+    let mode = 'development';// 'development'; // production  // development
 
     // mode = prompt("Which mode?", mode);
 
@@ -1372,8 +1390,30 @@
     });
 
     socket.on("word_result", (data) => {
+
       // console.log(data);
       // console.log(data.sendTiles);
+
+      let wasSpanish = false;
+      let wasGerman = false;
+      let wasEnglish = false;
+
+      if (data?.wasEnglish && !data?.wasInvalid) {
+        showToast("English word found", "info");
+        wasEnglish = true;
+      }
+
+      if (data?.wasSpanish && !data?.wasInvalid) {
+        showToast("Spanish word found", "info");
+        wasSpanish = true;
+      }
+
+      if (data?.wasGerman && !data?.wasInvalid) {
+        showToast("German word found", "info");
+        wasGerman = true;
+      }
+
+      console.log({ wasEnglish, wasSpanish, wasGerman, inValid: data.wasInvalid });
 
       if (data?.wasBackwards) {
         showToast("SDRAWKCAB", "info");
@@ -1386,7 +1426,7 @@
         }
       }
 
-      if (data?.wasInvalid) {
+      if (data.wasInvalid) {
 
         showToast(" Invalid Word " + "", "error");
 
@@ -1398,6 +1438,7 @@
 
           data.theBonusWords.forEach((w) => {
             w = w.trim();
+            if (data?.wasBackwards) { w = reverseWord(w) }
             if (waveslistEle.innerText.indexOf(" " + w + " ") > -1) {
               showToast("( +$25 ) Bonus word found => " + w, "info");
               waveslistEle.title = waveslistEle?.title?.replace(" " + w + " ", " 〰️ ");
@@ -1409,10 +1450,11 @@
               //showToast("( $5 ) Bonus word again => " + w, "info");
               //yourScore += 5;
             }
-          })
+          });
+
         }
 
-        showToast("Word(s) Score: " + data?.tempWordScore || 0, "info", 9999);
+        showToast("Word Score: " + data?.tempWordScore || 0, "info", 9999);
 
         yourScore += Math.floor(data?.tempWordScore || 0);
 
@@ -1869,8 +1911,6 @@
         return;
       }
 
-
-
       if (is_microWave) {
         if (sendTiles.length > 2) {
           showToast("Microwave mode means only 1 or 2 letters can be submitted to make words.", "error");
@@ -1960,6 +2000,10 @@
       // console.log(submissionData);
 
       // Consider use of power-up to replace existing letter on backend
+
+      submissionData.allowEnglish = canFindEnglishWord;
+      submissionData.allowSpanish = canFindSpanishWord;
+      submissionData.allowGerman = canFindGermanWord;
 
       socket.emit("submitWord", submissionData);
 
@@ -3177,6 +3221,8 @@
       } else {
         canFloat = false;
       }
+
+      if (isCheatMode) { canFloat = true; }
 
       ctx.restore();
     }
