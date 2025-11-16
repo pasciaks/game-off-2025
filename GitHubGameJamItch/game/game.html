@@ -237,6 +237,7 @@
       onclick="window.location='../index.html'" src="logo.png" />
 
     <!-- <h2>Instructions</h2> -->
+    <br>
     <button class="rack-btns2" onclick="canFindEnglishWord=!canFindEnglishWord;updateCounts();">Allow English <span
         id="showCanEnglish"></span></button>
     <button class="rack-btns2" onclick="canFindSpanishWord=!canFindSpanishWord;updateCounts();">Allow Spanish <span
@@ -255,10 +256,9 @@
       <label style="text-wrap-mode:nowrap;border:0px solid yellow;color:white;">🔊
         <input id="currentVol" type="range" min="0" max="1" step="0.01" value="1" oninput="setAudioVolume(this.value)">
       </label>
-      <button class="rack-btns2" style="display:none;" id="eraseIt">*Challenge the room!</button>
     </div>
 
-    <br>
+    <br><button class="rack-btns2" style="display:none;" id="eraseIt">*Challenge the room!</button>
 
     <!-- <p id="wavesStatus"><img src='no-waves.png' /></p> -->
     <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves(); '>〰️ Waves are Off
@@ -1289,14 +1289,14 @@
     });
 
     socket.on("extraData", (data) => {
-      console.log("extraData", data);
+      // console.log("extraData", data);
       let t = JSON.parse(data);
       playerScores[t.who.myName] = t.who.myScore;
-      console.log(playerScores);
+      // console.log(playerScores);
     });
 
     socket.on("resetScores", (data) => {
-      console.log(data);
+      // console.log(data);
       localStorage.clear();
       showToast("The room has been challenged.", "info");
       showToast("Game starts in 5 seconds.", "error");
@@ -1413,7 +1413,7 @@
         wasGerman = true;
       }
 
-      console.log({ wasEnglish, wasSpanish, wasGerman, inValid: data.wasInvalid });
+      // console.log({ wasEnglish, wasSpanish, wasGerman, inValid: data.wasInvalid });
 
       if (data?.wasBackwards) {
         showToast("SDRAWKCAB", "info");
@@ -1512,13 +1512,13 @@
     })
 
     socket.on("data", (data) => {
-      console.log(data);
+      // console.log(data);
 
       updatePlayers(data);
 
-      console.log(data.data.myName);
+      // console.log(data.data.myName);
       playerScores[data.data.myName] = data.data.yourScore;
-      console.log(playerScores);
+      // console.log(playerScores);
 
       log("received data: " + data);
     });
@@ -1623,7 +1623,7 @@
 
       // let users2 = data.users;
 
-      console.log(playerScores);
+      // console.log(playerScores);
 
       if (data) {
         users.set(data.data.myName, { ...data, dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
