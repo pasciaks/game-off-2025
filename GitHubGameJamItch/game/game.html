@@ -337,9 +337,17 @@
     <!-- <button onclick="showToast('Warning! Check this out', 'warning')">Warning</button> -->
 
     <!-- <span><a href="../index.html"><img src="logo.png" style="height:15px;" /></a></span> -->
-    <span title="Show players and scores."
-      style="border:2px solid lightgreen;cursor:pointer;margin:2px;padding:2px;color:green;"
-      onclick="showPlayersAndScores()">$</span><span id="usersList" style="color:white;"></span>
+
+
+    <ul style='list-style:none;display:inline-block;color:white;margin:0;padding:0' id="usersListStart"
+      style="color:white;">
+      <li title="Show players and scores." style="cursor:pointer;margin:2px;padding:2px;color:green;"
+        onclick="showPlayersAndScores()">?</li>
+    </ul>
+
+
+
+    <ul style='display:inline-block;color:white;margin:0;padding:0' id="usersList" style="color:white;"></ul>
 
     <button id="openDialog" style="background-color:black;" class="rack-btns2 rack-btns-also-hover"><span
         title="Settings menu, and instructions." style="font-size: 24px;">⚙️<img src="favicon.png"
@@ -1596,26 +1604,31 @@
       arr.forEach(name => {
         //console.log(name, myName);
 
-        const div = document.createElement('div');
-        div.textContent = id;
-        div.style.cursor = "pointer";
-        div.title = "Start watching/following " + name;
+        const liElement = document.createElement('li');
+        liElement.textContent = id;
+        liElement.style.cursor = "pointer";
+        liElement.title = "Start watching/following " + name;
 
-        div.style.padding = "6px 6px";
-        // div.style.border = '2px solid gray';
+        liElement.style.padding = "6px 6px";
+
         if (name == myName) {
-          div.title = "Start watching/following yourself.";
-          div.style.color = 'blue';
+          liElement.title = "Start watching/following yourself.";
+          liElement.style.color = 'blue';
         }
         if (name == "") {
-          div.title = 'Stop watching/following any players.';
+          liElement.title = 'Stop watching/following any players.';
         }
-        div.style.display = "inline-block";
+        liElement.style.display = "inline-block";
         id++;
 
-        div.onclick = () => { updatePlayers(); startWatchingName(name); }
+        liElement.style.border = "2px solid gray";
+        liElement.style.margin = "2px";
 
-        container.appendChild(div);
+        // liElement.style.backgroundColor = "white";
+
+        liElement.onclick = () => { updatePlayers(); startWatchingName(name); }
+
+        container.appendChild(liElement);
       });
     }
 
