@@ -421,6 +421,8 @@
 
   <script>
 
+    let canReset = false;
+
     const soundFiles = [
       // "8_bit_chime_positive.wav",
       // "8_bit_chime_quick.wav",
@@ -914,9 +916,12 @@
 
     }
 
+
+    let delayUntilResetButton = 150000;
+
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "inline-block";
-    }, 150000);
+    }, delayUntilResetButton);
 
     function resetGameSaves() {
 
@@ -1275,7 +1280,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'development'; // production  // development
+    let mode = 'production';// 'development'; // production  // production
 
     // mode = prompt("Which mode?", mode);
 
@@ -1600,14 +1605,44 @@
     let test = getParameterByName("room");
 
     if (test) {
-
+      //
     } else {
-      test = "room1";
+      canReset = true;
+      test = prompt("Which room?", "room" + Math.floor(11 + Math.random() * 100)); "room1";
+    }
+
+    if (test == 'room11') {
+      canReset = true;
+      test = prompt("Which room?", "room" + Math.floor(11 + Math.random() * 100)); "room1";
+    }
+
+    try {
+      test = test.replace(/[^a-zA-Z0-9]/g, "");
+      test = test.trim();
+      if (!test) {
+        showToast("Invalid private room name!");
+        window.location = "../index.html";
+      }
+    } catch (e) {
+      console.log(e);
+      window.location = "../index.html";
     }
 
     let myRoom = `${test}`;
 
+    console.log({ myRoom, canReset })
+
+    if (canReset) {
+      document.getElementById('eraseIt').style.display = "inline-block";
+    }
+
     switch (myRoom) {
+      case 'room0':
+        boardColsMagnitude = 5;
+        boardRowsMagnitude = 5;
+        toggleEnableWaves();
+        toggleEnableWaves();
+        break;
       case 'room1':
         boardColsMagnitude = 9;
         boardRowsMagnitude = 9;
@@ -1664,8 +1699,10 @@
         toggleEnableWaves();
         break;
       default:
-        boardColsMagnitude = 50;
-        boardRowsMagnitude = 50;
+        boardColsMagnitude = 5;
+        boardRowsMagnitude = 5;
+        toggleEnableWaves();
+        toggleEnableWaves();
         break;
     }
 

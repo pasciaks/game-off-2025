@@ -922,6 +922,11 @@ io.on("connection", (socket) => {
     //   //
     // }
 
+    if (!availableRooms.includes(roomName)) {
+      availableRooms.push(roomName);
+      maps[roomName] = new Map();
+      createMap(maps[roomName]);
+    }
 
     if (!availableRooms.includes(roomName)) {
       socket.emit('message', `Room "${roomName}" does not exist.`);

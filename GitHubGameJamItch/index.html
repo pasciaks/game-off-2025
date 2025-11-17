@@ -371,7 +371,7 @@
 
     // Generate 1–10 game buttons dynamically
     const container = document.getElementById('gameLinks');
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 11; i++) {
       const btn = document.createElement('button');
       btn.textContent = `Wave ${i}`;
       btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
@@ -380,11 +380,12 @@
       btn.style.fontSize = '16px';
       btn.style.borderRadius = '8px';
       btn.style.cursor = 'pointer';
+      if (i == 11) {
+        btn.textContent = "Private Game";
+      }
       if (cat && words) {
         if (i == 10) {
           btn.textContent = "Custom Game " + cat;
-          btn.style.width = "100%";
-          // container.appendChild(btn);
         }
       }
       container.appendChild(btn);
