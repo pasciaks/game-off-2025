@@ -10,6 +10,8 @@ WrongWay for the inspiration to make a Scrabble game in the tradition of the old
 
 Resources:
 
+(( Do not redistribute these assets, they are for this game only. ))
+
 https://screamingbrainstudios.itch.io/2d-word-game-pack
 
 https://bdragon1727.itch.io/72-cute-pixel-character
@@ -21,6 +23,9 @@ https://freesvg.org/
 https://freepd.com/
 
 https://cooltext.com/
+
+(( Do not redistribute the .wav files included, they are for this game only. ))
+https://ci.itch.io/400-sounds-pack
 
 
 
