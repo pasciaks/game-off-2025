@@ -7,6 +7,11 @@
   <link rel="icon" type="image/png" href="./game/player.png">
   <title>Scrabble Scramble</title>
   <style>
+    #keyboard button {
+      padding: 5px;
+      margin: 5px;
+    }
+
     html,
     body {
       margin: 0;
@@ -14,6 +19,7 @@
       background: #05060a;
       overflow: auto;
       color: blue;
+
     }
 
     canvas {
@@ -86,6 +92,7 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      user-select: none;
     }
 
     h1,
@@ -97,6 +104,7 @@
     }
 
     button {
+
       padding: 1px 2px;
       border: none;
       border-radius: 8px;
@@ -234,15 +242,22 @@
       <div id="randomTitle"></div>
     </a>
 
-    <p>Type the name you like, A-Z, (Space) and (BackSpace) can be used.</p>
+    <p tabindex="-1">Type the name you like, A-Z, (Space) and (BackSpace) can be used.</p>
 
 
     <div>
 
+      <button id="s"></button>
+
       <span class="menuText"></span>
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
-        onclick="updateRandomName();">🎲 <span class="menuText"></span></button><br> <span style="font:32px verdana;"
-        id="playerName"></span>
+        onclick="updateRandomName();">🎲 <button id="p"></button><span class="menuText"></span></button><br> <span
+        style="font:32px verdana;" id="playerName"></span>
+
+      <div style="text-align: center;">
+        <div id="keyboard"></div>
+      </div>
+
     </div>
 
     <div class="game-container" id="gameLinks"></div>
@@ -412,10 +427,9 @@
     function updateRandomName() {
       myName = generateAuthorName();
 
-      positions = [];
-      for (let i = 0; i < howMany; i++) {
-        positions.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
-      }
+      updatePositions();
+
+      document.getElementById("s").focus();
 
       localStorage.clear();
       localStorage.setItem("myName", myName);
@@ -436,26 +450,37 @@
       return str.slice(0, -1);
     }
 
+    function handleBack() {
+      myName = removeLastChar(myName);
+      document.getElementById("playerName").innerText = myName;
+      updatePositions();
+    }
+
+    function handleEnter() {
+      localStorage.setItem("myName", myName);
+      window.location = "index.html";
+    }
 
     document.addEventListener("keydown", (e) => {
 
       if (e.key == "Backspace") {
-        myName = removeLastChar(myName);
-        document.getElementById("playerName").innerText = myName;
-
+        handleBack();
+        return;
       }
+
+
+      if (e.key == "Enter") {
+        handleEnter();
+        return;
+      }
+
 
       if (/^[a-zA-Z ]$/.test(e.key)) {
         if (e.key == " ") { e.key = "_" }
         // it's A-Z, a-z, or space
         myName = appendChar(myName, e.key);
         document.getElementById("playerName").innerText = myName;
-
-      }
-
-      if (e.key == "Enter") {
-        localStorage.setItem("myName", myName);
-        window.location = "index.html";
+        updatePositions();
       }
 
 
@@ -472,9 +497,80 @@
     let timerAngle = 0.0;
 
     let positions = [];
-    let howMany = 25;
-    for (let i = 0; i < howMany; i++) {
-      positions.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+
+    let howMany = 35;
+
+    function updatePositions() {
+      positions = [];
+      for (let i = 0; i < howMany; i++) {
+        positions.push({ x: Math.random() * (canvas.width * 1.25) - 100, y: Math.random() * canvas.height });
+      }
+    }
+
+    updatePositions();
+
+    // ----------- CREATE BUTTONS -----------
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const keyboard = document.getElementById("keyboard");
+
+    // Create A..Z buttons
+    letters.forEach(letter => {
+      const btn = document.createElement("button");
+      btn.textContent = letter;
+      btn.onclick = () => handleKey(letter);
+      keyboard.appendChild(btn);
+    });
+
+    // Space
+    const spaceBtn = document.createElement("button");
+    spaceBtn.textContent = "(space)";
+    spaceBtn.onclick = () => handleKey(" ");
+    keyboard.appendChild(spaceBtn);
+
+    // Backspace
+    const backBtn = document.createElement("button");
+    backBtn.textContent = "(backspace)";
+    backBtn.onclick = () => handleKey("BACKSPACE");
+    keyboard.appendChild(backBtn);
+
+    // Enter
+    const enterBtn = document.createElement("button");
+    enterBtn.textContent = "(enter)";
+    enterBtn.onclick = () => handleKey("ENTER");
+    keyboard.appendChild(enterBtn);
+
+
+    // ----------- NEVER LET BUTTONS KEEP FOCUS -----------
+    document.addEventListener("mousedown", e => {
+      if (e.target.tagName === "BUTTON") {
+        e.preventDefault(); // prevents the focus from happening
+      }
+    });
+
+
+    // ----------- YOUR KEY HANDLER -----------
+    function handleKey(key) {
+      console.log("Pressed:", key);
+
+      // key = key.toLowerCase();
+
+      if (key == "BACKSPACE") {
+        handleBack();
+        return;
+      }
+
+      if (key == "ENTER") {
+        handleEnter();
+        return;
+      }
+
+      // if (key == " ") { key = "_" }
+      // it's A-Z, a-z, or space
+      myName = appendChar(myName, key);
+      document.getElementById("playerName").innerText = myName;
+      updatePositions();
+
+
     }
 
     function animate(now) {
