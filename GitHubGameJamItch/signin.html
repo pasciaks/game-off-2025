@@ -13,6 +13,7 @@
       height: 100%;
       background: #05060a;
       overflow: auto;
+      color: blue;
     }
 
     canvas {
@@ -44,7 +45,7 @@
       }
 
       to {
-        opacity: 1;
+        opacity: .75;
       }
     }
 
@@ -209,6 +210,10 @@
       font: 12px courier;
       color: white;
     }
+
+    body {
+      color: blue;
+    }
   </style>
 </head>
 
@@ -229,34 +234,15 @@
       <div id="randomTitle"></div>
     </a>
 
+    <p>Type the name you like, A-Z, (Space) and (BackSpace) can be used.</p>
 
 
     <div>
-      <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
-               background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
-        <option
-          value=" Dog Cat Horse Cow Pig Sheep Goat Elephant Lion Tiger Bear Monkey Rabbit Mouse Deer Fox Wolf Chicken Duck Goose Turkey Crow Pigeon Sparrow Eagle Owl Parrot Penguin Flamingo Goldfish Salmon Tuna Trout Shark Clownfish Catfish Snake Lizard Crocodile Alligator Turtle Chameleon Frog Toad Salamander Newt Butterfly Bee Ant Spider Fly Mosquito Beetle Worm Snail Crab ">
-          🐾 Animals</option>
-        <option
-          value=" Aaron Abigail Abraham Adam Amos Andrew Anna Apollos Bartholomew Benjamin Caleb Daniel David Deborah Eli Elijah Elisha Elizabeth Esther Eve Ezekiel Gabriel Gideon Hannah Isaac Isaiah Ishmael Israel James Jeremiah Jesse Joel John Jonah Jonathan Joseph Joshua Josiah Judah Jesus Levi Luke Mark Mary Matthew Micah Moses Naomi Nathan Peter Philip Rachel Rebecca Ruth Samuel Saul Simon Solomon Stephen Thomas Timothy Zachariah Zechariah ">
-          🙏 Bible Names</option>
-        <option
-          value=" Adams Arthur Biden Buchanan Bush Bush Carter Cleveland Clinton Coolidge Eisenhower Fillmore Ford Garfield Grant Harding Harrison Harrison Hayes Hoover Jackson Jefferson Johnson Johnson Kennedy Lincoln Madison McKinley Monroe Nixon Obama Pierce Polk Reagan Roosevelt Roosevelt Taft Taylor Truman Trump Tyler VanBuren Washington Wilson ">
-          🏛️ Presidents</option>
-        <!-- <option value="cloud">☁️ Cloud</option>
-        <option value="rain">🌧️ Rain</option>
-        <option value="snow">❄️ Snow</option> -->
-        <option selected
-          value=" ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ">
-          🌊 Waves</option>
-      </select> <span class="menuText"></span>
-      <br>
+
+      <span class="menuText"></span>
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
-        title="Random Player Name and reset saved scores." onclick="updateRandomName();">🎲 <span
-          class="menuText"></span></button><span id="playerName"></span>
-      <button title="Set/Edit your player name."
-        style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
-        onclick="window.location='signin.html'">🏷️</button>
+        onclick="updateRandomName();">🎲 <span class="menuText"></span></button><br> <span style="font:32px verdana;"
+        id="playerName"></span>
     </div>
 
     <div class="game-container" id="gameLinks"></div>
@@ -267,6 +253,60 @@
 
   <script>
 
+    const TILE_SIZE = 64;
+    const TILE_COLS = 8;
+    const TILE_ROWS = 4;
+    const TILE_ORDER = [
+      "ABCDEFGH",
+      "IJKLMNOP",
+      "QRSTUVWX",
+      "YZ_"
+    ];
+
+    const tileImage = new Image();
+    let ttt = "stuv".charAt(Math.floor(Math.random() * 4));
+    let nnn = Math.floor((Math.random() * 8)) + 1;
+    let thefile = ttt + "" + nnn + ".png";// prompt("filename?", ttt + "" + nnn + ".png");//'t1.png';
+    thefile = "./game/" + 't8.png';
+    tileImage.src = thefile;
+    // console.log(thefile)
+    tileImage.onload = () => {
+      requestAnimationFrame(animate);
+    };
+
+    /**
+     * Draw a single letter tile from the sprite sheet.
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {string} letter - One of A–Z or "_"
+     * @param {number} x - X position on canvas
+     * @param {number} y - Y position on canvas
+     */
+    function drawLetterTile(ctx, theTileData, x, y) {
+      let letter = theTileData.letter;
+      letter = letter.toUpperCase();
+      let shrink = 20;
+      // Find tile position in grid
+      for (let row = 0; row < TILE_ROWS; row++) {
+        const col = TILE_ORDER[row].indexOf(letter);
+        if (col !== -1) { // this is regarding tile sprite images only
+          const sx = col * TILE_SIZE;
+          const sy = row * TILE_SIZE;
+          ctx.drawImage(
+            tileImage,
+            sx + 1, sy + 1, TILE_SIZE - 2, TILE_SIZE - 2,
+            x + shrink, y + shrink, TILE_SIZE - shrink * 2, TILE_SIZE - shrink * 2
+          );
+
+          return;
+
+        }
+      }
+
+      console.warn('Letter not found:', letter);
+
+    }
+
+
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\\[\\]]/g, '\\$&');
       const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
@@ -274,25 +314,6 @@
       if (!results) return null;
       if (!results[2]) return '';
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
-
-    let cat = getParameterByName('category');
-    let words = getParameterByName('words');
-
-    if (cat && words) {
-      // Get the select element
-      const select = document.getElementById("waveWordsSelect");
-
-      // select.innerHTML = '';
-
-      // Create a new option
-      const option = document.createElement("option");
-      option.value = words;        // set the value
-      option.textContent = cat;    // set the display text
-      option.selected = true;      // optional: make it selected
-
-      // Add the option to the select
-      select.appendChild(option);
     }
 
     function showBox() {
@@ -353,67 +374,11 @@
       });
     }
 
-    createWave();
+    // createWave();
 
     setTimeout(() => {
       showBox();
     }, 750);
-
-    function invokeGame(url) {
-      let v = document.getElementById('waveWordsSelect').value;
-      localStorage.setItem('wavesWordsList', v);
-
-      // let currentUrl = window.location.href;
-      // console.log(currentUrl)
-
-      // let adjustedUrl = currentUrl.replace('index.html', url);
-      // console.log(adjustedUrl)
-
-      // window.location = adjustedUrl;
-
-      // window.open(url);
-
-      window.location = url;
-    }
-
-    // Generate 1–10 game buttons dynamically
-    const container = document.getElementById('gameLinks');
-    for (let i = 1; i <= 11; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = `Wave ${i}`;
-      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
-      btn.style.margin = '5px';
-      btn.style.padding = '10px 15px';
-      btn.style.fontSize = '16px';
-      btn.style.borderRadius = '8px';
-      btn.style.cursor = 'pointer';
-      if (i == 11) {
-        btn.textContent = "Private Game";
-      }
-      if (cat && words) {
-        if (i == 10) {
-          btn.textContent = "Custom Game " + cat;
-        }
-      }
-      container.appendChild(btn);
-
-    }
-
-    // function invokeGame(url) {
-    //   let v = document.getElementById('waveWordsSelect').value;
-    //   localStorage.setItem('wavesWordsList', v);
-    //   window.location = url;
-    // }
-
-    // // Generate 1-99 game links dynamically
-    // const container = document.getElementById('gameLinks');
-    // for (let i = 1; i <= 10; i++) {
-    //   const a = document.createElement('a');
-    //   a.href = `game/game.html?room=room${i}`;
-    //   a.textContent = `Wave ${i}`;
-    //   a.onclick = "invokeGame(`game/game.html?room=room${i}`)"
-    //   container.appendChild(a);
-    // }
 
     // Author name generator
     function generateAuthorName() {
@@ -446,18 +411,71 @@
 
     function updateRandomName() {
       myName = generateAuthorName();
+
+      positions = [];
+      for (let i = 0; i < howMany; i++) {
+        positions.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+      }
+
       localStorage.clear();
       localStorage.setItem("myName", myName);
       document.getElementById("playerName").innerText = myName;
     }
 
+    function appendChar(str, char) {
+      if (typeof str !== "string") str = String(str ?? "");
+      if (typeof char !== "string") char = String(char ?? "");
 
+      return str + char;
+    }
+
+    function removeLastChar(str) {
+      if (typeof str !== "string") str = String(str ?? "");
+      if (str.length === 0) return "";
+
+      return str.slice(0, -1);
+    }
+
+
+    document.addEventListener("keydown", (e) => {
+
+      if (e.key == "Backspace") {
+        myName = removeLastChar(myName);
+        document.getElementById("playerName").innerText = myName;
+
+      }
+
+      if (/^[a-zA-Z ]$/.test(e.key)) {
+        if (e.key == " ") { e.key = "_" }
+        // it's A-Z, a-z, or space
+        myName = appendChar(myName, e.key);
+        document.getElementById("playerName").innerText = myName;
+
+      }
+
+      if (e.key == "Enter") {
+        localStorage.setItem("myName", myName);
+        window.location = "index.html";
+      }
+
+
+    })
 
     let old;
 
     let isPaused = false;
 
-    setInterval(createWave, SPAWN_INTERVAL);
+    // setInterval(createWave, SPAWN_INTERVAL);
+
+    let originalTimerAngle = 0.0;
+
+    let timerAngle = 0.0;
+
+    let positions = [];
+    let howMany = 25;
+    for (let i = 0; i < howMany; i++) {
+      positions.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+    }
 
     function animate(now) {
 
@@ -469,6 +487,27 @@
 
       ctx.fillStyle = 'rgba(5,6,10,0.3)'; // faint fade trail
       ctx.fillRect(0, 0, width, height);
+
+      for (let i = 0; i < myName.length; i++) {
+        timerAngle += .125;
+        // drawLetterTile(ctx, { letter: currentName.charAt(i) }, canvas.width / 2 - (currentName.length / 2) * 25 + i * 25, 100);
+
+        for (let j = 0; j < positions.length; j++) {
+          drawLetterTile(ctx, { letter: myName.charAt(i) }, positions[j].x + i * 15, positions[j].y - Math.cos(timerAngle + j * .25) * 50);
+        }
+
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 15 + i * 15, 100 - Math.cos(timerAngle) * 50);
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 150 + i * 15, 200 - Math.cos(timerAngle + .25) * 50);
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 300 + i * 15, 300 - Math.cos(timerAngle + .5) * 50);
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 15 + i * 15, 600 - Math.cos(timerAngle) * 50);
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 150 + i * 15, 500 - Math.cos(timerAngle + .25) * 50);
+        // drawLetterTile(ctx, { letter: myName.charAt(i) }, 300 + i * 15, 400 - Math.cos(timerAngle + .5) * 50);
+      }
+
+      originalTimerAngle += .05;
+      timerAngle = originalTimerAngle;
+
+
 
       ctx.globalCompositeOperation = 'lighter';
       ctx.shadowColor = 'rgba(130,210,255,0.8)';
@@ -503,7 +542,7 @@
       requestAnimationFrame(animate);
     }
 
-    requestAnimationFrame(animate);
+
 
 
 
