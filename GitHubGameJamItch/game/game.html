@@ -17,6 +17,17 @@
       text-align: center;
     }
 
+    .my-li:hover {
+      background-color: teal;
+    }
+
+    .my-li:active {
+      background-color: lightblue;
+      /* when clicked */
+      transform: scale(0.77);
+      /* optional "press" effect */
+    }
+
     #waveslist {
       display: block;
       width: 100%;
@@ -25,7 +36,7 @@
     /* Toast container */
     #toast-container {
       position: fixed;
-      top: 120px;
+      top: 100px;
       right: 20px;
       z-index: 1000;
       display: flex;
@@ -237,17 +248,11 @@
       onclick="window.location='../index.html'" src="logo.png" />
 
     <!-- <h2>Instructions</h2> -->
-    <br>
-    <button class="rack-btns2" onclick="canSounds=!canSounds;updateCounts();">Allow Sounds <span
-        id="toggleCanSounds"></span></button>
-    <button class="rack-btns2" onclick="canFindEnglishWord=!canFindEnglishWord;updateCounts();">Allow English <span
-        id="showCanEnglish"></span></button>
-    <button class="rack-btns2" onclick="canFindSpanishWord=!canFindSpanishWord;updateCounts();">Allow Spanish <span
-        id="showCanSpanish"></span></button>
-    <button class="rack-btns2" onclick="canFindGermanWord=!canFindGermanWord;updateCounts();">Allow German <span
-        id="showCanGerman"></span></button>
+
 
     <div>
+      <button class="rack-btns2" onclick="canSounds=!canSounds;updateCounts();">🎵 Allow Sounds <span
+          id="toggleCanSounds"></span></button>
       <button class="rack-btns2" title="Written by Rafael Krux. Soft, evolving and uplifting track made with soft voices, gentle and warm piano and orchestra. This music is available for commercial and non-commercial purposes.
 " onclick="playAudioToggle(' Shining Stars.mp3');setAudioVolume(document.getElementById('currentVol').value);">🎵
         Shining Stars</button> <span style="cursor:pointer;" onclick="window.open('https://freepd.com/')">🎵</span>
@@ -266,6 +271,16 @@
     <p><button class="rack-btns2" id='toggleEnableWaves' onclick='toggleEnableWaves(); '>〰️ Waves are Off
         - Click to turn On Waves 〰️</button>
     </p>
+
+
+    <button class="rack-btns2" onclick="canFindEnglishWord=!canFindEnglishWord;updateCounts();">Allow English <span
+        id="showCanEnglish"></span></button>
+    <button class="rack-btns2" onclick="canFindSpanishWord=!canFindSpanishWord;updateCounts();">Allow Spanish <span
+        id="showCanSpanish"></span></button>
+    <button class="rack-btns2" onclick="canFindGermanWord=!canFindGermanWord;updateCounts();">Allow German <span
+        id="showCanGerman"></span></button>
+
+    <br>
 
     <button id="waveslist"
       title=" ABYSS   AMPLITUDE   BAY   BLUE   BREAKER   BRINE   CASCADE   COASTLINE   CORAL   CREST   CURRENT   CURL   CYCLONE   DEEP   DRIFT   DRIFTWOOD   EBB   ECHO   EMOTION   FLOOD   FLOW   FLUCTUATE   FLUCTUATION   FLUID   FOAM   FREQUENCY   FROTH   GLIDE   GUST   HORIZON   HUM   INTERFERENCE   KELP   LAGOON   MAELSTROM   MEANDER   MODULATION   MONSOON   MOMENTUM   MOVEMENT   OCEAN   OSCILLATE   OSCILLATION   PEARL   PHASE   PROPAGATION   PULSE   RADIATION   REEF   RESONANCE   RIPPLE   ROLL   SALT   SEA   SHELL   SIGNAL   SLIDE   SPECTRUM   SPLASH   SPLASHDOWN   STORM   STATIC   SURF   SURGE   SWAY   SWEEP   SWELL   TEMPEST   TIDAL   TIDE   TONE   TREND   TROUGH   TRANSMISSION   TRANSMIT   TSUNAMI   UNDULATE   VIBE   VIBRATION   WASH   WAVE   WAVELENGTH   WAVY   WHIRLPOOL ">
@@ -1468,7 +1483,7 @@
       width:240px; 
       font-family:sans-serif;
       border:1px solid #ccc;
-      padding:8px;
+      padding:2px;
       border-radius:8px;
     ">
   `;
@@ -1479,8 +1494,7 @@
         width:75px; 
         text-align:center; 
         padding:6px 0; 
-        box-sizing:border-box; 
-        border-bottom:1px solid #eee;
+        box-sizing:border-box;  
       ">
         <strong>${letter}</strong>: ${value}
       </div>
@@ -1506,7 +1520,7 @@
       width:240px; 
       font-family:sans-serif;
       border:1px solid #ccc;
-      padding:8px;
+         padding:2px;
       border-radius:8px;
     ">
   `;
@@ -1517,8 +1531,7 @@
         width:75px; 
         text-align:center; 
         padding:6px 0; 
-        box-sizing:border-box; 
-        border-bottom:1px solid #eee;
+        box-sizing:border-box;  
       ">
         <strong>${letter}</strong>: ${value}
       </div>
@@ -1868,17 +1881,17 @@
       let wasGerman = false;
       let wasEnglish = false;
 
-      if (data?.wasEnglish && !data?.wasInvalid) {
+      if (data?.wasEnglish && !data?.wasInvalid && canFindEnglishWord) {
         showToast("English word found", "info");
         wasEnglish = true;
       }
 
-      if (data?.wasSpanish && !data?.wasInvalid) {
+      if (data?.wasSpanish && !data?.wasInvalid && canFindSpanishWord) {
         showToast("Spanish word found", "info");
         wasSpanish = true;
       }
 
-      if (data?.wasGerman && !data?.wasInvalid) {
+      if (data?.wasGerman && !data?.wasInvalid && canFindGermanWord) {
         showToast("German word found", "info");
         wasGerman = true;
       }
@@ -2076,6 +2089,9 @@
         liElement.title = "Start watching/following " + name;
 
         liElement.style.padding = "6px 6px";
+        liElement.style.borderRadius = "5px";
+        liElement.classList.add("my-li");
+
 
         if (name == myName) {
           liElement.title = "Start watching/following yourself.";

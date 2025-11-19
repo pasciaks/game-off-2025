@@ -99,7 +99,7 @@
       padding: 1px 2px;
       border: none;
       border-radius: 8px;
-      background-color: transparent;
+      background-color: #aed1dd;
       color: rgb(95, 76, 204);
       font-size: 1rem;
       cursor: pointer;
@@ -108,8 +108,8 @@
     }
 
     button:hover {
-      background-color: transparent;
-      transform: scale(1.35);
+      background-color: #31a9a7;
+      transform: scale(1.05);
     }
 
     .game-container {
@@ -209,15 +209,6 @@
       font: 12px courier;
       color: white;
     }
-
-    li {
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    li:hover {
-      color: gold;
-    }
   </style>
 </head>
 
@@ -225,15 +216,14 @@
 
   <div id="game">
 
-    <a href="menu.html"><img src='game/logo.png' style="width:100%" /></a>
+    <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
-    <!-- <button
-      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button> -->
+    <button
+      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button>
 
-    <!-- <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button> -->
-
-    <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
-      onclick="window.open('index.html')">📲</button> -->
+    <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button>
+    <button title="Open for mobile phone friendly view that enables portrait mode."
+      onclick="window.open('index.html')">📲</button>
 
     <a href="index.html">
       <div id="randomTitle"></div>
@@ -241,7 +231,7 @@
 
 
 
-    <div style="display:none;">
+    <div>
       <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
                background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
         <option
@@ -271,34 +261,11 @@
 
     <div class="game-container" id="gameLinks"></div>
 
-    <button onclick="window.location='menu.html'"><img src="play.png" /></button>
-
-    <div>
-      <p>Credits for assets used:</p>
-
-      <p style="color:gold;">The assets included in this repository are not for redistribution.</p>
-
-      <ul style="list-style: none;margin:0;padding:0;">
-        <li onclick="openLink(this)">https://screamingbrainstudios.itch.io/2d-word-game-pack</li>
-        <li onclick="openLink(this)">https://www.freescrabbledictionary.com/</li>
-        <li onclick="openLink(this)">https://freepd.com/</li>
-        <li onclick="openLink(this)">https://cooltext.com/</li>
-        <li onclick="openLink(this)">https://freesvg.org/</li>
-        <li onclick="openLink(this)">https://ci.itch.io/400-sounds-pack</li>
-        <li onclick="openLink(this)">https://bdragon1727.itch.io/72-cute-pixel-character</li>
-
-      </ul>
-    </div>
-
   </div>
 
   <canvas id="canvas"></canvas>
 
   <script>
-
-    function openLink(el) {
-      window.open(el.innerText);
-    }
 
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\\[\\]]/g, '\\$&');
@@ -428,7 +395,7 @@
           btn.textContent = "Custom Game " + cat;
         }
       }
-      //container.appendChild(btn);
+      container.appendChild(btn);
 
     }
 
