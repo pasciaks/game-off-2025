@@ -1904,14 +1904,31 @@
       // console.log({ wasEnglish, wasSpanish, wasGerman, inValid: data.wasInvalid });
 
       if (data?.wasBackwards) {
-        showToast("SDRAWKCAB", "info");
-        if (gravityCount > 0) {
-          gravityCount--;
-          updateCounts();
+
+        let { wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt } = data;
+
+        if (
+          ((wasForwardEnglishHz && allowEnglish) || (wasForwardEnglishVt && allowEnglish)) ||
+          ((wasForwardSpanishHz && allowSpanish) || (wasForwardSpanishVt && allowSpanish)) ||
+          ((wasForwardGermanHz && allowGerman) || (wasForwardGermanVt && allowGerman))) {
+          // don't charge for backwardsness
+
+
         } else {
-          showToast("You have no more gravity waves!", "error");
-          //data.wasInvalid = true;
+
+          // charge for backwardsness
+
+          showToast("SDRAWKCAB", "info");
+          if (gravityCount > 0) {
+            gravityCount--;
+            updateCounts();
+          } else {
+            showToast("You have no more gravity waves!", "error");
+            //data.wasInvalid = true;
+          }
+
         }
+
       }
 
       if (data.wasInvalid) {

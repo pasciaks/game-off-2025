@@ -632,12 +632,17 @@ io.on("connection", (socket) => {
     let wasFound = false;
 
     let wasBackwards = false;
-
     let wasEnglish = false;
-
     let wasSpanish = false;
-
     let wasGerman = false;
+
+    let wasForwardEnglishHz = false;
+    let wasForwardSpanishHz = false;
+    let wasForwardGermanHz = false;
+
+    let wasForwardEnglishVt = false;
+    let wasForwardSpanishVt = false;
+    let wasForwardGermanVt = false;
 
     for (let i = 0; i < sendTiles.length; i++) {
 
@@ -705,6 +710,18 @@ io.on("connection", (socket) => {
           ||
           (allowGerman && (german.indexOf(hzWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(hzWord.toLowerCase())) > -1)))
         ) {
+
+          if (allowEnglish && (words.indexOf(hzWord.toLowerCase()) > -1)) {
+            wasForwardEnglishHz = true;
+          }
+
+          if (allowSpanish && (spanish.indexOf(hzWord.toLowerCase()) > -1)) {
+            wasForwardSpanishHz = true;
+          }
+
+          if (allowGerman && (german.indexOf(hzWord.toLowerCase()) > -1)) {
+            wasForwardGermanHz = true;
+          }
 
           console.log('hzWordfound', hzWord);
 
@@ -782,6 +799,19 @@ io.on("connection", (socket) => {
         ) {
 
           console.log('vtWord found', vtWord);
+
+
+          if (allowEnglish && (words.indexOf(vtWord.toLowerCase()) > -1)) {
+            wasForwardEnglishVt = true;
+          }
+
+          if (allowSpanish && (spanish.indexOf(vtWord.toLowerCase()) > -1)) {
+            wasForwardSpanishVt = true;
+          }
+
+          if (allowGerman && (german.indexOf(vtWord.toLowerCase()) > -1)) {
+            wasForwardGermanVt = true;
+          }
 
           if (words.indexOf(vtWord.toLowerCase()) > -1 || (gravityCount > 0 && words.indexOf(reverseWord(vtWord.toLowerCase())) > -1)) {
             wasEnglish = true;
@@ -879,7 +909,7 @@ io.on("connection", (socket) => {
 
     console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
 
-    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
+    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
 
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
