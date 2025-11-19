@@ -86,7 +86,7 @@ function toSafeFilename(str) {
 }
 
 // ENGLISH
-words = words.filter(word => word.length > 2);
+words = words.filter(word => word.length >= 2);
 words = removeShortWords(words);
 words = [...twoLetterWords, ...words];
 
