@@ -320,6 +320,7 @@
 
   <!-- Scrabble rack -->
   <div id="scrabbleRack">
+
     <button onclick="showLettersCollection(0)">#</button>
     <button class="rack-btn" id="tile1"></button>
     <button class="rack-btn" id="tile2"></button>
@@ -331,6 +332,7 @@
     <!-- <button class="rack-btn" id="tile8">_</button> -->
     <!-- <button class="rack-btn" id="sendIt">></button> -->
     <button onclick="showLettersCollection(1)">A</button>
+
   </div>
 
   <div id="scrabbleRackb">
@@ -341,9 +343,11 @@
     <button class="rack-btns" id="tile5b">*</button>
     <button class="rack-btns" id="tile6b">*</button>
     <button class="rack-btns" id="tile7b">*</button> -->
+    <button onclick="makeZoom(-.125)">-</button>
     <button class="waterButton rack-btns2" id="homeIt">Home</button>
     <button class="waterButton rack-btns2" id="cancelIt">Cancel</button>
     <button class="waterButton rack-btns2" id="sendIt">Submit</button>
+    <button onclick="makeZoom(+.125)">+</button>
 
   </div>
 
@@ -3077,6 +3081,10 @@
     let zoom = .75;
 
 
+    function makeZoom(i) {
+      zoom += i;
+      playerCenter();
+    }
 
     // --- Mouse drag handling ---
     let isDragging = false;
