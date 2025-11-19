@@ -3776,6 +3776,41 @@
       requestAnimationFrame(loop);
     }
 
+    if ("wakeLock" in navigator) {
+      console.log("WakeLock supported");
+
+      keepAwake();
+
+    } else {
+      console.log("WakeLock NOT supported");
+    }
+
+
+    let wakeLock = null;
+
+    async function keepAwake() {
+      try {
+        wakeLock = await navigator.wakeLock.request("screen");
+        console.log("Wake lock active");
+
+        // Re-acquire lock if it is released (e.g., when tab loses focus)
+        document.addEventListener("visibilitychange", async () => {
+          if (wakeLock !== null && document.visibilityState === "visible") {
+            wakeLock = await navigator.wakeLock.request("screen");
+          }
+        });
+      } catch (err) {
+        console.error(`Wake lock failed: ${err.name}, ${err.message}`);
+      }
+    }
+
+
+
+
+
+
+
+
   </script>
 </body>
 
