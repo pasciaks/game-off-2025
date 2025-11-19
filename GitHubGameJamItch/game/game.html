@@ -2151,6 +2151,7 @@
     function exportAll() {
       if (prompt("?", "") == "42") {
         socket.emit('exportAll', { myName, myRoom });
+        window.open("https://pasciak.com/display.html?room=" + myRoom + ".txt");
       }
     }
 

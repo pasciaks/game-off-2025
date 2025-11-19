@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tile Grid Renderer</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    }
+
+    .app {
+      display: flex;
+      height: 100%;
+      gap: 12px;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .left {
+      width: 380px;
+      max-width: 40%;
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 52vh;
+      resize: vertical;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    label {
+      font-size: 13px
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .controls>* {
+      margin: 2px 0;
+    }
+
+    button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f3f6fb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: linear-gradient(180deg, #fbfdff, #eef6ff);
+    }
+
+    .info {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 8px 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      font-size: 13px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .legend .swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: inline-block;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .clickhint {
+      font-size: 12px;
+      color: #444;
+      margin-top: 6px;
+    }
+
+    .tile-details {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .footer {
+      font-size: 12px;
+      color: #666;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="left">
+      <label for="dataInput"><strong>Line-by-line JSON data</strong></label>
+      <textarea id="dataInput" spellcheck="false">
+
+      </textarea>
+
+      <div class="controls">
+        <div>
+          <label>Cell size: <span id="cellSizeLabel">48</span>px</label><br>
+          <input id="cellSize" type="range" min="2" max="120" value="48">
+        </div>
+
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button id="renderBtn">Render</button>
+          <button id="clearBtn">Clear</button>
+          <button id="fitBtn">Fit to view</button>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="swatch" id="normalSw"></div> normal tile
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="swatch" id="specialSw"></div> special tile (type != normal)
+        </div>
+      </div>
+
+      <div class="clickhint">Click a tile on the canvas to see details below.</div>
+      <div class="tile-details" id="tileDetails">No tile selected.</div>
+      <div class="footer">Coordinates use integer col, row from the JSON. Grid auto-centers and scales by cell size.
+      </div>
+
+      <div style="display:inline-block">
+        <a href="https://pasciak.com/display.html?room=sheldon.txt">sheldon.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room1.txt">room1.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room2.txt">room2.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room3.txt">room3.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room4.txt">room4.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room5.txt">room5.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room6.txt">room6.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room7.txt">room7.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room8.txt">room8.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room9.txt">room9.txt</a> |
+        <a href="https://pasciak.com/display.html?room=room10.txt">room10.txt</a>
+
+      </div>
+
+    </div>
+
+    <div class="canvas-wrap">
+      <div style="flex:1; position:relative;">
+        <canvas id="boardCanvas"></canvas>
+        <div class="info" id="infoBox">
+          <div><strong>Board</strong></div>
+          <div id="boundsLine">No data</div>
+          <div style="margin-top:6px"><button id="downloadPNG">Download PNG</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    (() => {
+      const textarea = document.getElementById('dataInput');
+      const renderBtn = document.getElementById('renderBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const fitBtn = document.getElementById('fitBtn');
+      const cellSizeInput = document.getElementById('cellSize');
+      const cellSizeLabel = document.getElementById('cellSizeLabel');
+      const tileDetails = document.getElementById('tileDetails');
+      const boundsLine = document.getElementById('boundsLine');
+      const downloadPNG = document.getElementById('downloadPNG');
+
+      const normalSw = document.getElementById('normalSw');
+      const specialSw = document.getElementById('specialSw');
+      normalSw.style.background = "#ffffff";
+      normalSw.style.boxShadow = "inset 0 0 0 2px rgba(0,0,0,0.05)";
+      specialSw.style.background = "#ffe4a3";
+
+      const canvas = document.getElementById('boardCanvas');
+      const ctx = canvas.getContext('2d');
+
+      let dpr = Math.max(1, window.devicePixelRatio || 1);
+      let boardMap = new Map(); // key "col,row" => tile object
+      let bounds = { minC: 0, maxC: 0, minR: 0, maxR: 0 };
+      let cellSize = parseInt(cellSizeInput.value, 10);
+      let offset = { x: 0, y: 0 }; // pixel offset from canvas origin for col=0,row=0
+      let originCell = { col: 0, row: 0 }; // used for panning if needed
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale drawing for DPR
+        render();
+      }
+
+      window.addEventListener('resize', () => {
+        dpr = Math.max(1, window.devicePixelRatio || 1);
+        resizeCanvas();
+      });
+
+      cellSizeInput.addEventListener('input', () => {
+        cellSize = parseInt(cellSizeInput.value, 10);
+        cellSizeLabel.textContent = cellSize;
+        computeOffsets();
+        render();
+      });
+
+      function parseLinesToMap(text) {
+        boardMap.clear();
+        bounds = { minC: Infinity, maxC: -Infinity, minR: Infinity, maxR: -Infinity };
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        for (const line of lines) {
+          try {
+            const obj = JSON.parse(line);
+            if (obj && Array.isArray(obj.sendTiles)) {
+              obj.sendTiles.forEach(tile => {
+                if (tile && typeof tile.col === 'number' && typeof tile.row === 'number') {
+                  const key = `${tile.col},${tile.row}`;
+                  // last write wins - but we keep the tile object (you can tweak merge logic)
+                  boardMap.set(key, Object.assign({}, tile));
+                  bounds.minC = Math.min(bounds.minC, tile.col);
+                  bounds.maxC = Math.max(bounds.maxC, tile.col);
+                  bounds.minR = Math.min(bounds.minR, tile.row);
+                  bounds.maxR = Math.max(bounds.maxR, tile.row);
+                }
+              });
+            }
+          } catch (err) {
+            // ignore bad line but continue
+            console.warn('bad json line, skipping', line, err);
+          }
+        }
+
+        if (bounds.minC === Infinity) {
+          bounds = { minC: 0, maxC: 0, minR: 0, maxR: 0 };
+        }
+
+        return { boardMap, bounds };
+      }
+
+      function computeOffsets() {
+        // center the bounding box in the canvas
+        const canvasRect = canvas.getBoundingClientRect();
+        const visibleW = canvasRect.width;
+        const visibleH = canvasRect.height;
+
+        const cols = bounds.maxC - bounds.minC + 1;
+        const rows = bounds.maxR - bounds.minR + 1;
+        const gridW = cols * cellSize;
+        const gridH = rows * cellSize;
+
+        // center the grid
+        offset.x = Math.round((visibleW - gridW) / 2 - bounds.minC * cellSize);
+        offset.y = Math.round((visibleH - gridH) / 2 - bounds.minR * cellSize);
+      }
+
+      function render() {
+        // clear
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        // draw grid background
+        ctx.save();
+        ctx.fillStyle = '#f8fbff';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        ctx.restore();
+
+        // draw grid lines and tiles
+        const cols = bounds.maxC - bounds.minC + 1;
+        const rows = bounds.maxR - bounds.minR + 1;
+
+        // draw faint gridlines
+        ctx.save();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+        for (let c = bounds.minC; c <= bounds.maxC; c++) {
+          const x = offset.x + c * cellSize;
+          ctx.beginPath();
+          ctx.moveTo(x + 0.5, 0);
+          ctx.lineTo(x + 0.5, rect.height);
+          ctx.stroke();
+        }
+        for (let r = bounds.minR; r <= bounds.maxR; r++) {
+          const y = offset.y + r * cellSize;
+          ctx.beginPath();
+          ctx.moveTo(0, y + 0.5);
+          ctx.lineTo(rect.width, y + 0.5);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // draw tiles
+        boardMap.forEach((tile, key) => {
+          const [colStr, rowStr] = key.split(',');
+          const col = Number(colStr), row = Number(rowStr);
+          const x = offset.x + col * cellSize;
+          const y = offset.y + row * cellSize;
+
+          // tile background
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x + 4, y + 4, cellSize - 8, cellSize - 8);
+          if (!tile.type || tile.type === 'normal') {
+            ctx.fillStyle = 'white';
+          } else {
+            ctx.fillStyle = '#fff3db';
+          }
+          ctx.fill();
+          // border
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+          ctx.stroke();
+          ctx.restore();
+
+          // letter
+          ctx.save();
+          const fontSize = Math.floor(cellSize * 0.55);
+          ctx.font = `bold ${fontSize}px system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#0b2540';
+          ctx.fillText(String(tile.letter || '').toUpperCase(), x + cellSize / 2, y + cellSize / 2 + 1);
+          ctx.restore();
+
+          // small coord in corner
+          ctx.save();
+          ctx.font = `10px system-ui, monospace`;
+          ctx.fillStyle = 'rgba(0,0,0,0.35)';
+          ctx.fillText(`${col},${row}`, x + 6, y + cellSize - 8);
+          ctx.restore();
+        });
+
+        // draw outer bounds rectangle
+        ctx.save();
+        const left = offset.x + bounds.minC * cellSize;
+        const top = offset.y + bounds.minR * cellSize;
+        const w = (bounds.maxC - bounds.minC + 1) * cellSize;
+        const h = (bounds.maxR - bounds.minR + 1) * cellSize;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(40,60,120,0.08)';
+        ctx.strokeRect(left + 2, top + 2, w - 4, h - 4);
+        ctx.restore();
+
+        // update info text
+        boundsLine.textContent = `cols ${bounds.minC} → ${bounds.maxC}  rows ${bounds.minR} → ${bounds.maxR}  (cells ${cols}×${rows})`;
+      }
+
+      // compute tile under pixel
+      function tileAtPixel(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const px = (clientX - rect.left);
+        const py = (clientY - rect.top);
+        // convert to col,row
+        const col = Math.floor((px - offset.x) / cellSize);
+        const row = Math.floor((py - offset.y) / cellSize);
+        const key = `${col},${row}`;
+        return { key, tile: boardMap.get(key), col, row };
+      }
+
+      canvas.addEventListener('click', (ev) => {
+        const r = tileAtPixel(ev.clientX, ev.clientY);
+        if (r.tile) {
+          tileDetails.innerHTML = `<strong>Tile</strong><br>letter: <b>${r.tile.letter}</b><br>col,row: <b>${r.col},${r.row}</b><br>type: <b>${r.tile.type || 'normal'}</b><br>owner: <b>${r.tile.myName || ''}</b>`;
+        } else {
+          tileDetails.textContent = `No tile at ${r.col},${r.row}.`;
+        }
+      });
+
+      let parsed;
+
+      renderBtn.addEventListener('click', () => {
+        parsed = parseLinesToMap(textarea.value);
+        computeOffsets();
+        resizeCanvas();
+        render();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        textarea.value = '';
+        boardMap.clear();
+        bounds = { minC: 0, maxC: 0, minR: 0, maxR: 0 };
+        computeOffsets();
+        resizeCanvas();
+        render();
+        tileDetails.textContent = 'Cleared.';
+      });
+
+      fitBtn.addEventListener('click', () => {
+        // Fit grid by adjusting cell size to fit canvas if possible
+        const rect = canvas.getBoundingClientRect();
+        const cols = Math.max(1, bounds.maxC - bounds.minC + 1);
+        const rows = Math.max(1, bounds.maxR - bounds.minR + 1);
+        const pad = 24;
+        const maxCellW = Math.floor((rect.width - pad) / cols);
+        const maxCellH = Math.floor((rect.height - pad) / rows);
+        const newSize = Math.max(12, Math.min(maxCellW, maxCellH));
+        cellSize = newSize;
+        cellSizeInput.value = newSize;
+        cellSizeLabel.textContent = newSize;
+        computeOffsets();
+        render();
+      });
+
+      downloadPNG.addEventListener('click', () => {
+        // create an export canvas with same drawing
+        const exportCanvas = document.createElement('canvas');
+        const rect = canvas.getBoundingClientRect();
+        exportCanvas.width = Math.round(rect.width * dpr);
+        exportCanvas.height = Math.round(rect.height * dpr);
+        const exCtx = exportCanvas.getContext('2d');
+        exCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // copy visible region by calling same render logic but to exCtx
+        // We'll reuse render steps but draw onto exCtx by temporarily swapping.
+        const saveCtx = ctx;
+        const saveCanvas = window._tempCanvas;
+        // Quick approach: draw the onscreen canvas into the export canvas
+        exCtx.drawImage(canvas, 0, 0, rect.width, rect.height);
+        const url = exportCanvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'board.png';
+        a.click();
+      });
+
+      // initial render
+      parseLinesToMap(textarea.value);
+      computeOffsets();
+      // ensure canvas gets a proper size
+      window.setTimeout(resizeCanvas, 40);
+
+
+      async function fetchGameData(filename) {
+        const url = `https://pasciak.com/_data/${filename}`;
+
+        const res = await fetch(url);
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch ${url}: ${res.status}`);
+        }
+
+        const text = await res.text();
+
+        // Split into lines and parse JSON per line
+        const lines = text
+          .split("\n")
+          .map(line => line.trim())
+          .filter(line => line.length > 0) // remove empty lines
+          .map(line => JSON.parse(line));  // convert to objects
+
+        return lines;
+      }
+
+      function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\\[\\]]/g, '\\$&');
+        const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+        const results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
+
+      function f(filename) {
+        fetchGameData(filename)
+          .then(data => {
+            let text = "";
+            console.log("Loaded", data.length, "entries");
+            console.log(data);
+            for (let i = 0; i < data.length; i++) {
+              text += JSON.stringify(data[i]) + "\n";
+            }
+            // document.getElementById('dataInput').innerText = text;
+            document.getElementById('dataInput').value = text;
+
+            parsed = parseLinesToMap(textarea.value);
+            computeOffsets();
+            resizeCanvas();
+            render();
+
+          })
+          .catch(err => console.error(err));
+      }
+
+
+      let filename = prompt("What file?", getParameterByName("room") || "sheldon.txt");
+
+      f(filename);
+
+
+    })();
+  </script>
+</body>
+
+</html>
