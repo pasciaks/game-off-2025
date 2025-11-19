@@ -251,12 +251,15 @@
 
       <span class="menuText"></span>
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
-        onclick="updateRandomName();">🎲 <button id="p"></button><span class="menuText"></span></button><br> <span
-        style="font:32px verdana;" id="playerName"></span>
+        onclick="updateRandomName();">🎲 <button id="p"></button><span class="menuText"></span></button><br>
 
       <div style="text-align: center;">
         <div id="keyboard"></div>
       </div>
+
+      <span style="font:32px verdana;" id="playerName"></span>
+
+
 
     </div>
 
@@ -450,6 +453,12 @@
       return str.slice(0, -1);
     }
 
+    function clearName() {
+      myName = "";
+      document.getElementById("playerName").innerText = myName;
+      updatePositions();
+    }
+
     function handleBack() {
       myName = removeLastChar(myName);
       document.getElementById("playerName").innerText = myName;
@@ -462,6 +471,11 @@
     }
 
     document.addEventListener("keydown", (e) => {
+
+      if (e.key == 'Clear') {
+        clearName();
+        return;
+      }
 
       if (e.key == "Backspace") {
         handleBack();
@@ -522,6 +536,12 @@
     });
 
     // Space
+    const clearButton = document.createElement("button");
+    clearButton.textContent = "(clear)";
+    clearButton.onclick = () => handleKey("CLEAR");
+    keyboard.appendChild(clearButton);
+
+    // Space
     const spaceBtn = document.createElement("button");
     spaceBtn.textContent = "(space)";
     spaceBtn.onclick = () => handleKey(" ");
@@ -553,6 +573,11 @@
       console.log("Pressed:", key);
 
       // key = key.toLowerCase();
+
+      if (key == "CLEAR") {
+        clearName();
+        return;
+      }
 
       if (key == "BACKSPACE") {
         handleBack();
