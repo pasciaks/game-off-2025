@@ -309,33 +309,46 @@ let mapDateTimes = {};
 
 let memory = {};
 
-function exportAll(data) {
+
+async function exportAll(data) {
   console.log(data);
   console.log(memory);
 
-  let keys = Object.keys(memory);
-  console.log(keys);
-  keys.forEach((k) => {
-    let aa = memory[k];
-    // if (data?.myRoom == aa) {
-    for (let i = 0; i < aa.length; i++) {
-      console.log(aa[i]);
-      let filePath = "_data/" + aa[i].whereAmI;
-      let dir = path.dirname(filePath);         // extract folder path
-      let line = JSON.stringify(aa[i]) + "\n"; // prepare line
+  const basePath = "/var/www/pasciak.com/public/_data/";
+
+  for (const key of Object.keys(memory)) {
+    const arr = memory[key];
+    if (!Array.isArray(arr) || arr.length === 0) continue;
+
+    console.log("Exporting key:", key);
+
+    for (const entry of arr) {
       try {
+        console.log(entry);
+
+        const filePath = path.join(basePath, entry.whereAmI + ".txt");
+        const dir = path.dirname(filePath);
+        const line = JSON.stringify(entry) + "\n";
+
+        console.log("Writing:", filePath);
         console.log(line);
-        fs.mkdir(dir, { recursive: true });  // ensure the folder exists
-        fs.appendFile(filePath, line);       // append one line safely
-      }
-      catch (e) {
-        console.log(e);
+
+        // Ensure directory exists
+        await fs.mkdir(dir, { recursive: true });
+
+        // Append the line
+        await fs.appendFile(filePath, line);
+
+      } catch (e) {
+        console.error("Error writing entry:", e);
       }
     }
-    memory[k] = [];
-    // }
-  });
+
+    // Clear memory for this key only after finishing writes
+    memory[key] = [];
+  }
 }
+
 
 // setInterval(() => {
 //   exportAll();
