@@ -305,6 +305,41 @@ function setTile(col, row, mapRef, tileObj) {
 // let keys = Object.keys(waves);
 
 let maps = {};
+let mapDateTimes = {};
+
+let memory = {};
+
+function exportAll(data) {
+  console.log(data);
+  console.log(memory);
+
+  let keys = Object.keys(memory);
+  console.log(keys);
+  keys.forEach((k) => {
+    let aa = memory[k];
+    // if (data?.myRoom == aa) {
+    for (let i = 0; i < aa.length; i++) {
+      console.log(aa[i]);
+      let filePath = "_data/" + aa[i].whereAmI;
+      let dir = path.dirname(filePath);         // extract folder path
+      let line = JSON.stringify(aa[i]) + "\n"; // prepare line
+      try {
+        console.log(line);
+        fs.mkdir(dir, { recursive: true });  // ensure the folder exists
+        fs.appendFile(filePath, line);       // append one line safely
+      }
+      catch (e) {
+        console.log(e);
+      }
+    }
+    memory[k] = [];
+    // }
+  });
+}
+
+// setInterval(() => {
+//   exportAll();
+// }, 10000);
 
 // keys.forEach((k) => {
 // console.log(waves[k].description);
@@ -366,6 +401,7 @@ const availableRooms = ['room1', 'room2', 'room3', 'room4', 'room5', 'room6', 'r
 
 availableRooms.forEach((r) => {
   maps[r] = new Map();
+  mapDateTimes[r] = Date.now();
   createMap(maps[r]);
 })
 
@@ -378,6 +414,10 @@ function getUsersInRoom(room) {
 // --- Handle socket connections ---
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
+
+  socket.on("exportAll", (data) => {
+    exportAll(data);
+  });
 
   socket.on("addWords", (data) => {
 
@@ -494,11 +534,17 @@ io.on("connection", (socket) => {
   socket.on('submitWord', (data) => {
 
     let myScore = 0;
+    let whoAmI = "";
+    let whereAmI = "";
     users.forEach((u) => {
       if (u.nickname == data?.myName) {
         myScore = data.yourScore;
+        whoAmI = data.myName;
+        whereAmI = data.myRoom;
       }
     });
+
+    console.log({ whoAmI, whereAmI, myScore });
 
     // let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
@@ -835,6 +881,14 @@ io.on("connection", (socket) => {
       console.log("How did it get here?");
     }
 
+    if (memory[whereAmI] && Array.isArray(memory[whereAmI])) {
+      //
+    } else {
+      memory[whereAmI] = [];
+    }
+
+    memory[whereAmI].push({ serverNow: Date.now(), whoAmI, whereAmI, myScore, wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman })
+
     sendBoardDataToRoom(theRoom, { who: { myScore, myName } });
 
     //const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
@@ -925,6 +979,7 @@ io.on("connection", (socket) => {
     if (!availableRooms.includes(roomName)) {
       availableRooms.push(roomName);
       maps[roomName] = new Map();
+      mapDateTimes[roomName] = Date.now();
       createMap(maps[roomName]);
     }
 

@@ -272,6 +272,7 @@
         - Click to turn On Waves 〰️</button>
     </p>
 
+    <button onclick="exportAll()">?</button>
 
     <button class="rack-btns2" onclick="canFindEnglishWord=!canFindEnglishWord;updateCounts();">Allow English <span
         id="showCanEnglish"></span></button>
@@ -2145,6 +2146,12 @@
       let addWordsArray = wavesWordsList.split(" ");
       let data = { wordsToAdd: addWordsArray || [], myName, myRoom };
       socket.emit('addWords', data);
+    }
+
+    function exportAll() {
+      if (prompt("?", "") == "42") {
+        socket.emit('exportAll', { myName, myRoom });
+      }
     }
 
     function getMap(data) {
