@@ -1789,12 +1789,12 @@
         if (i > 100) {
           iter++;
           i = 0;
-          showToast(html, "info", 4444 + iter * 4000);
+          showToast(html, "info", 9999 + iter * 5555);
           html = "";
         }
       });
       i = 0;
-      showToast(html, "info", 4444 + iter * 4000);
+      showToast(html, "info", 9999 + iter * 5555);
       html = "";
     })
 
@@ -2236,9 +2236,10 @@
     }
 
     function wordLookup() {
-      let filter = "*at";
+      let filter = "?at*ly";
       filter = prompt("Filter ?", filter);
       socket.emit("wordLookup", { filter });
+      dialog.close();
     }
 
     let playerX, playerY;
