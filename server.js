@@ -311,8 +311,8 @@ let memory = {};
 
 
 async function exportAll(data) {
-  console.log(data);
-  console.log(memory);
+  // console.log(data);
+  // console.log(memory);
 
   const basePath = "/var/www/pasciak.com/public/_data/";
 
@@ -320,18 +320,18 @@ async function exportAll(data) {
     const arr = memory[key];
     if (!Array.isArray(arr) || arr.length === 0) continue;
 
-    console.log("Exporting key:", key);
+    // console.log("Exporting key:", key);
 
     for (const entry of arr) {
       try {
-        console.log(entry);
+        // console.log(entry);
 
         const filePath = path.join(basePath, entry.whereAmI + ".txt");
         const dir = path.dirname(filePath);
         const line = JSON.stringify(entry) + "\n";
 
-        console.log("Writing:", filePath);
-        console.log(line);
+        // console.log("Writing:", filePath);
+        // console.log(line);
 
         // Ensure directory exists
         await fs.mkdir(dir, { recursive: true });
@@ -440,7 +440,7 @@ io.on("connection", (socket) => {
       let w = arrayOfWords[i];
       let cw = w.toLowerCase().trim();
       if (cw && cw?.length > 1 && words.indexOf(cw) == -1) {
-        console.log("added word:", cw);
+        // console.log("added word:", cw);
         words.push(cw);
       }
     }
@@ -458,7 +458,7 @@ io.on("connection", (socket) => {
 
   socket.on("eraseBoard", (data) => {
     createMap(maps[data?.myRoom]);
-    console.log(data);
+    // console.log(data);
     const obj2 = Object.fromEntries(maps[data?.myRoom]); // Map → Object
     const json = JSON.stringify(obj2); // Object → JSON string
     io.to(data?.myRoom).emit('tileObjects', json);
@@ -466,15 +466,15 @@ io.on("connection", (socket) => {
   })
 
   socket.on('proposedTile', (data) => {
-    console.log("----proposedTile------");
-    console.log("data");
-    console.log(data);
+    // console.log("----proposedTile------");
+    // console.log("data");
+    // console.log(data);
 
     let theRoom = data?.myRoom || '';
 
     let mapRef = maps[theRoom];
 
-    console.log(data.myRoom);
+    // console.log(data.myRoom);
 
     setTile(data.col, data.row, mapRef, data);
 
@@ -487,17 +487,17 @@ io.on("connection", (socket) => {
   });
 
   function sendBoardDataToRoom(theRoom, extraData) {
-    console.log("------sendBoardDataToRoom------");
+    // console.log("------sendBoardDataToRoom------");
     // const obj2 = Object.fromEntries(maps[theRoom]); // Map → Object
     // const json = JSON.stringify(obj2); // Object → JSON string
     // io.to(theRoom).emit('tileObjects', json);
     // return;
     // Filter the Map first before converting it to an object
-    console.log(Array.from(maps[theRoom]).length);
+    // console.log(Array.from(maps[theRoom]).length);
     const filtered = Array.from(maps[theRoom]).filter(
       ([key, value]) => value.letter !== "_"
     );
-    console.log(filtered.length);
+    // console.log(filtered.length);
     const obj2 = Object.fromEntries(filtered); // Map → Object
     const json = JSON.stringify(obj2); // Object → JSON string
     io.to(theRoom).emit('tileObjects', json);
@@ -557,7 +557,7 @@ io.on("connection", (socket) => {
       }
     });
 
-    console.log({ whoAmI, whereAmI, myScore });
+    // console.log({ whoAmI, whereAmI, myScore });
 
     // let { canFloat, gravityCount, is_microWave, is_radioWave, is_soundWave, is_ElectromagneticWave, is_energyWave, sendTiles, myName, myRoom } = data;
 
@@ -573,7 +573,7 @@ io.on("connection", (socket) => {
     const line = JSON.stringify(data) + "\n"; // prepare line
 
     try {
-      console.log(line);
+      // console.log(line);
 
       // fs.mkdir(dir, { recursive: true });  // ensure the folder exists
       // fs.appendFile(filePath, line);       // append one line safely
@@ -650,13 +650,13 @@ io.on("connection", (socket) => {
 
       let currentTile = getTile(cw.col, cw.row, mapRef, false);
 
-      console.log({ currentTile });
+      // console.log({ currentTile });
 
       let objForScore = wordLetterValues.find((i) => i?.letter == currentTile?.letter?.toUpperCase());
 
-      tempWordScore += objForScore?.points || 0;
+      // tempWordScore += objForScore?.points || 0;
 
-      console.log("tempWordScore", tempWordScore);
+      // console.log("tempWordScore", tempWordScore);
 
       if (currentTile?.type == 'brainwave') {
         newBrain++;
@@ -683,10 +683,17 @@ io.on("connection", (socket) => {
 
       let hzWord = "";
       for (let hz = left.col; hz <= right.col; hz++) {
-        let tempLetter = getTile(hz, cw.row, mapRef, false)?.letter || "";
+        let tempLetter = getTile(hz, cw.row, mapRef, false)?.letter?.toUpperCase() || "";
         if (hz == cw.col) {
           tempLetter = cw.letter;
-
+        } else {
+          try {
+            let gl = wordLetterValues.find((i) => i?.letter == getTile(hz, cw.row, mapRef, false).letter?.toUpperCase());
+            tempWordScore += gl.points;
+            console.log("tempWordScore", tempWordScore);
+          } catch {
+            //
+          }
         }
         if (tempLetter == "_") { tempLetter = "" };
         hzWord += tempLetter;
@@ -697,7 +704,7 @@ io.on("connection", (socket) => {
         theL += hzWord.length;
       }
 
-      console.log({ hzWord, wasInvalid, theL });
+      // console.log({ hzWord, wasInvalid, theL });
 
       if (hzWord.length > 1) {
 
@@ -770,12 +777,17 @@ io.on("connection", (socket) => {
       let vtWord = "";
 
       for (let vt = top.row; vt <= bottom.row; vt++) {
-
-        let tempLetter = getTile(cw.col, vt, mapRef, false)?.letter || "";
-
+        let tempLetter = getTile(cw.col, vt, mapRef, false)?.letter?.toUpperCase() || "";
         if (vt == cw.row) {
           tempLetter = cw.letter;
-
+        } else {
+          try {
+            let gt = wordLetterValues.find((i) => i?.letter == getTile(cw.col, vt, mapRef, false).letter?.toUpperCase());
+            tempWordScore += gt.points;
+            console.log("tempWordScore", tempWordScore);
+          } catch {
+            //
+          }
         }
         if (tempLetter == "_") { tempLetter = "" };
         vtWord += tempLetter;
@@ -785,7 +797,7 @@ io.on("connection", (socket) => {
         // wasInvalid = true;
         theL += vtWord.length;
       }
-      console.log({ vtWord, wasInvalid, theL });
+      // console.log({ vtWord, wasInvalid, theL });
 
       if (vtWord.length > 1) {
         console.log(vtWord);
@@ -881,7 +893,7 @@ io.on("connection", (socket) => {
 
     if (!wasFound) {
       wasInvalid = true;
-      console.log({ wasFound, wasInvalid, wasBackwards, wasEnglish, wasSpanish, wasGerman })
+      // console.log({ wasFound, wasInvalid, wasBackwards, wasEnglish, wasSpanish, wasGerman })
     }
 
     if (wasInvalid) {
@@ -907,7 +919,7 @@ io.on("connection", (socket) => {
 
     // setTile(data.col, data.row, mapRef, data);
 
-    console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
+    // console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
 
     socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
 
@@ -942,7 +954,7 @@ io.on("connection", (socket) => {
 
   socket.on('getMap', (data) => {
 
-    console.log("------getMap------");
+    // console.log("------getMap------");
     let theUser;
     users.forEach((u) => {
       if (u.id == socket.id) {
@@ -970,9 +982,9 @@ io.on("connection", (socket) => {
   socket.on('getRooms', (data) => {
     // console.log(data);
     if (data?.data?.command == 'updatePlayer') {
-      console.log("--updatePlayer--");
+      // console.log("--updatePlayer--");
       users.forEach((u) => {
-        console.log("user found: ", u);
+        // console.log("user found: ", u);
 
         if (u.nickname == data?.data?.myName) {
           u.playerCol = data?.data?.playerCol;
@@ -986,7 +998,7 @@ io.on("connection", (socket) => {
 
     io.to(data?.data?.myRoom).emit('data', data);
 
-    console.log({ availableRooms, users })
+    // console.log({ availableRooms, users })
     // socket.emit('roomsList', availableRooms); // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   });
 
@@ -1007,7 +1019,7 @@ io.on("connection", (socket) => {
   // });
 
   socket.on('joinRoom', ({ roomName, nickname }) => {
-    console.log("joinRom");
+    // console.log("joinRom");
 
     //console.log(tileMap)
     let obj;
@@ -1034,9 +1046,9 @@ io.on("connection", (socket) => {
     //room = roomName;
 
     if (maps[roomName]) {
-      console.log('roomName...', roomName);
-      console.log("maps... line ~ 203 ")
-      console.log(Object.keys(maps));
+      // console.log('roomName...', roomName);
+      // console.log("maps... line ~ 203 ");
+      // console.log(Object.keys(maps));
     } else {
       //maps[roomName] = tileMap;
       //console.log('roomName...', roomName);
@@ -1064,7 +1076,7 @@ io.on("connection", (socket) => {
 
     socket.join(roomName);
 
-    console.log(`${nickname} joined room: ${roomName}`);
+    // console.log(`${nickname} joined room: ${roomName}`);
 
     socket.emit('message', `You joined room: ${roomName}`);
 
@@ -1085,7 +1097,7 @@ io.on("connection", (socket) => {
     const user = users.get(socket.id);
     if (!user || user.room !== room) return;
 
-    console.log(`Message from ${user.nickname} in room ${room}: ${msg}`);
+    // console.log(`Message from ${user.nickname} in room ${room}: ${msg}`);
 
     // Private message syntax: /pm nickname message
     if (msg.startsWith('/pm ')) {
@@ -1118,7 +1130,7 @@ io.on("connection", (socket) => {
   socket.on('disconnect', () => {
     const user = users.get(socket.id);
     if (user) {
-      console.log(`${user.nickname} disconnected`);
+      // console.log(`${user.nickname} disconnected`);
       users.delete(socket.id);
 
       // Notify others in the room and update user list
