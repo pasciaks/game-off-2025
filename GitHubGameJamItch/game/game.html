@@ -281,6 +281,8 @@
     <button class="rack-btns2" onclick="canFindGermanWord=!canFindGermanWord;updateCounts();">Allow German <span
         id="showCanGerman"></span></button>
 
+    <button onclick="wordLookup()">W?rd L*up</button>
+
     <br>
 
     <button id="waveslist"
@@ -1300,7 +1302,7 @@
 
     let myName = testName || generateAuthorName(); // Math.random();
 
-    let mode = 'production';// 'development'; // production  // production
+    let mode = 'development';// 'development'; // production  // production
 
     // mode = prompt("Which mode?", mode);
 
@@ -1776,6 +1778,26 @@
       // not used
     });
 
+    socket.on("lookupWords", (data) => {
+      console.log(data);
+      let html = "";
+      let i = 0;
+      let iter = 0;
+      data.forEach((w) => {
+        i++;
+        html += "<span>" + w + "</span> &nbsp;";
+        if (i > 100) {
+          iter++;
+          i = 0;
+          showToast(html, "info", 4444 + iter * 4000);
+          html = "";
+        }
+      });
+      i = 0;
+      showToast(html, "info", 4444 + iter * 4000);
+      html = "";
+    })
+
     socket.on("extraData", (data) => {
       // console.log("extraData", data);
       let t = JSON.parse(data);
@@ -2211,6 +2233,12 @@
 
     function joinRoom(roomName, nickname) {
       socket.emit("joinRoom", { roomName, nickname });
+    }
+
+    function wordLookup() {
+      let filter = "*at";
+      filter = prompt("Filter ?", filter);
+      socket.emit("wordLookup", { filter });
     }
 
     let playerX, playerY;

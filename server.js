@@ -33,6 +33,37 @@ function reverseWord(word) {
   return word.split('').reverse().join('');
 }
 
+// tiny regex-escape for single characters (used only for non-wildcards)
+const singleEscape = (ch) => ch.replace(/[\\^$+?.()|[\]{}]/g, "\\$&");
+
+const regexCache = new Map();
+
+function wildcardToRegex(pattern, caseInsensitive = true) {
+  const cacheKey = pattern + (caseInsensitive ? "|i" : "|");
+  if (regexCache.has(cacheKey)) return regexCache.get(cacheKey);
+
+  let regexStr = "^";
+  for (let ch of pattern) {
+    if (ch === "*") regexStr += ".*";
+    else if (ch === "?") regexStr += ".";
+    else regexStr += singleEscape(ch);
+  }
+  regexStr += "$";
+
+  const flags = caseInsensitive ? "i" : "";
+  const rx = new RegExp(regexStr, flags);
+  regexCache.set(cacheKey, rx);
+  return rx;
+}
+
+function wildcardFilter(words, pattern, { caseInsensitive = true } = {}) {
+  if (!pattern || pattern === "") return [];
+  const rx = wildcardToRegex(pattern, caseInsensitive);
+  return words.filter(w => rx.test(w));
+}
+
+console.log(wildcardFilter(words, "c???"));
+
 function removeShortWords(words) {
 
   // let tc = 0;
@@ -430,6 +461,11 @@ io.on("connection", (socket) => {
 
   socket.on("exportAll", (data) => {
     exportAll(data);
+  });
+
+  socket.on("wordLookup", (data) => {
+    let result = wildcardFilter(words, data.filter);
+    socket.emit("lookupWords", result);
   });
 
   socket.on("addWords", (data) => {
