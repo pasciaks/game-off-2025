@@ -12,6 +12,27 @@ https://github.com/pasciaks/game-off-2025
 
 Game Off is an annual game jam challenging individuals and teams to build a game during the month of November.
 
+## WAVES
+
+(W)e (A)ll (V)alue (E)nglish (S)crabble
+
+PowerUps (special tiles)
+CRIME WAVE ( allows you to get a letter from the board and replace it for a letter on your rack )
+SHOCK WAVE ( allows you to place letters on the board over existing letters )
+BRAIN WAVE ( allows you to swap a letter in your rack for a random letter from your sack )
+
+WAVE modes
+RadiO wave ( words must start with consonant and end with vowel )
+SounD wave ( words must start with a consonant and end with a consonant )
+ElectromagnetiC ( words must start with a vowel and end with a consonant )
+EnergY ( words must start with a vowel and end with a vowel )
+
+High Tide
+During regular timed cycles (Minutes of the Hour), if waves are on the screen you can place floating words.
+
+0-1 5-10 25-35 45-50 50-54
+​
+
 # Asset license, etc
 
 The assets included in this repo are the property of their respective owners and cannot be sold or re-published for other use. The are provided here free of charge for this game implementation. Some assets that may or may not be used are from the following itch and other locations.
@@ -153,5 +174,3 @@ Bonus words that are found when you aren't playing are marked off your bonus wor
       25-35
       45-50
       50-54
-
-
