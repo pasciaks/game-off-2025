@@ -644,6 +644,11 @@ io.on("connection", (socket) => {
     let wasForwardSpanishVt = false;
     let wasForwardGermanVt = false;
 
+    // let allColsRowsCollection = [];
+    // for (let i = 0; i < sendTiles.length; i++) {
+    //   allColsRowsCollection.push({ col: sendTiles[i].col, row: sendTiles[i].row });
+    // }
+
     for (let i = 0; i < sendTiles.length; i++) {
 
       let cw = sendTiles[i];
@@ -688,9 +693,27 @@ io.on("connection", (socket) => {
           tempLetter = cw.letter;
         } else {
           try {
+            // let tempTile = getTile(hz, cw.row, mapRef, false);
             let gl = wordLetterValues.find((i) => i?.letter == getTile(hz, cw.row, mapRef, false).letter?.toUpperCase());
             tempWordScore += gl.points;
             console.log("tempWordScore", tempWordScore);
+
+            // if (tempTile?.type == 'brainwave') {
+            //   newBrain++;
+            // }
+
+            // if (tempTile?.type == 'crimewave') {
+            //   newCrime++;
+            // }
+
+            // if (tempTile?.type == 'gravitywave') {
+            //   newGravity++;
+            // }
+
+            // if (tempTile?.type == 'shockwave') {
+            //   newShock++;
+            // }
+
           } catch {
             //
           }
@@ -782,9 +805,29 @@ io.on("connection", (socket) => {
           tempLetter = cw.letter;
         } else {
           try {
+
+            // let tempTile = getTile(cw.col, vt, mapRef, false);
+
             let gt = wordLetterValues.find((i) => i?.letter == getTile(cw.col, vt, mapRef, false).letter?.toUpperCase());
             tempWordScore += gt.points;
             console.log("tempWordScore", tempWordScore);
+
+            // if (tempTile?.type == 'brainwave') {
+            //   newBrain++;
+            // }
+
+            // if (tempTile?.type == 'crimewave') {
+            //   newCrime++;
+            // }
+
+            // if (tempTile?.type == 'gravitywave') {
+            //   newGravity++;
+            // }
+
+            // if (tempTile?.type == 'shockwave') {
+            //   newShock++;
+            // }
+
           } catch {
             //
           }
