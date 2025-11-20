@@ -32,6 +32,11 @@ During regular timed cycles (Minutes of the Hour), if waves are on the screen yo
 
 0-1 5-10 25-35 45-50 50-54
 ​
+Gravity Wave power allows you to use non-scrabble directions to spell words from Bottom-to-Top or Right-to-Left!
+
+There is also the ability to choose either or all, English, Spanish or German dictionaries.
+
+I hope the game is 'wave-worthy' and I'm 'stoked' to hear about any other comments or bug fixes!
 
 # Asset license, etc
 
