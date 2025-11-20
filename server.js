@@ -693,10 +693,11 @@ io.on("connection", (socket) => {
           tempLetter = cw.letter;
         } else {
           try {
+
             // let tempTile = getTile(hz, cw.row, mapRef, false);
-            let gl = wordLetterValues.find((i) => i?.letter == getTile(hz, cw.row, mapRef, false).letter?.toUpperCase());
-            tempWordScore += gl.points;
-            console.log("tempWordScore", tempWordScore);
+            // let gl = wordLetterValues.find((i) => i?.letter == getTile(hz, cw.row, mapRef, false).letter?.toUpperCase());
+            // tempWordScore += gl.points;
+            // console.log("tempWordScore", tempWordScore);
 
             // if (tempTile?.type == 'brainwave') {
             //   newBrain++;
@@ -808,9 +809,9 @@ io.on("connection", (socket) => {
 
             // let tempTile = getTile(cw.col, vt, mapRef, false);
 
-            let gt = wordLetterValues.find((i) => i?.letter == getTile(cw.col, vt, mapRef, false).letter?.toUpperCase());
-            tempWordScore += gt.points;
-            console.log("tempWordScore", tempWordScore);
+            // let gt = wordLetterValues.find((i) => i?.letter == getTile(cw.col, vt, mapRef, false).letter?.toUpperCase());
+            // tempWordScore += gt.points;
+            // console.log("tempWordScore", tempWordScore);
 
             // if (tempTile?.type == 'brainwave') {
             //   newBrain++;
