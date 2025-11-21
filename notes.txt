@@ -79,15 +79,15 @@ Brain Wave ( Must spell right to left or bottom to top - backwards )
 
 Sine Wave ( ? )
  
-[ ] DOWN and RIGHT, like scrabble
+[x] DOWN and RIGHT, like scrabble
  
-[ ] What about unusable spaces  ( water )
+[x] What about unusable spaces  ( water )
 
-[ ] Option to allow bottom to up and right to left ( or as a power up )
+[x] Option to allow bottom to up and right to left ( or as a power up )
 
-[ ] Mobile zoom does not work
+[x] Mobile zoom does not work
 
-[ ] Backend server must do a lot of the work
+[x] Backend server must do a lot of the work
 
 [x] Gear front end to use sockets for all moves, etc
 
@@ -95,9 +95,21 @@ Sine Wave ( ? )
 
 [x] Front end should just be an updated view of the game running at the server by game #, room #, etc.
 
-[ ] Allow front end user to follow either yourself or other players. (watch mode)
+[x] Allow front end user to follow either yourself or other players. (watch mode)
 
-[ ] Consider multilanguage
+[x] Consider multilanguage
+
+[x] In room at each 5 mins for certain rooms
+
+[x] Make it reset board and reset scores
+
+[x] Show scores at end before reset
+
+[x] Leaderboard 
+
+[x] Fix backwards letter words count for bonus words 
+
+[x] Other dictionaries.. German, Spanish, but only work in specific room?
 
 -- ideas from middle of the night, 12 Nov 2025 --
 
