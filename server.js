@@ -695,7 +695,7 @@ io.on("connection", (socket) => {
 
       let objForScore = wordLetterValues.find((i) => i?.letter == currentTile?.letter?.toUpperCase());
 
-      // tempWordScore += objForScore?.points || 0;
+      tempWordScore += objForScore?.points || 0;
 
       // console.log("tempWordScore", tempWordScore);
 

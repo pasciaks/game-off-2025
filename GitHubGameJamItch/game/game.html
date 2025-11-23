@@ -1901,7 +1901,7 @@
 
     socket.on("word_result", (data) => {
 
-      // console.log(data);
+      console.log(data);
       // console.log(data.sendTiles);
 
       let wasSpanish = false;
@@ -1985,9 +1985,9 @@
 
         }
 
-        showToast("Word Score: " + data?.tempWordScore || 0, "info", 9999);
+        showToast("Word Score: " + Math.floor(data?.tempWordScore) || 0, "info", 9999);
 
-        yourScore += Math.floor(data?.tempWordScore || 0);
+        yourScore += Math.floor(data?.tempWordScore) || 0;
 
         localStorage.setItem("yourScore", Math.floor(yourScore));
 
