@@ -1,6 +1,12 @@
-## SCRABBLE SCRAMBLE
+# (W)e (A)ll (V)alue (E)nglish (S)crabble
 
-![](GitHubGameJamItch/title.png)
+## WAVES
+
+## -aka- SCRABBLE SCRAMBLE
+
+- Is a real-time multi-player scrabble type game that implements a WAVE theme for the GitHub Game Off 2025 game jam hosted at https://Itch.io.
+
+![](GitHubGameJamItch/game/logo.png)
 
 https://lostwords.itch.io/scrabblescramble
 
@@ -16,27 +22,49 @@ Game Off is an annual game jam challenging individuals and teams to build a game
 
 (W)e (A)ll (V)alue (E)nglish (S)crabble
 
-PowerUps (special tiles)
-CRIME WAVE ( allows you to get a letter from the board and replace it for a letter on your rack )
-SHOCK WAVE ( allows you to place letters on the board over existing letters )
-BRAIN WAVE ( allows you to swap a letter in your rack for a random letter from your sack )
+At my nephew’s encouragement, I had already started planning a Scrabble-style game before the jam began. When the theme WAVE was announced, I didn’t have a wave-themed idea I liked more—so I decided to stick with the Scrabble concept and build it around a strong wave aesthetic.
 
-WAVE modes
-RadiO wave ( words must start with consonant and end with vowel )
-SounD wave ( words must start with a consonant and end with a consonant )
-ElectromagnetiC ( words must start with a vowel and end with a consonant )
-EnergY ( words must start with a vowel and end with a vowel )
+This game is mosly a traditional scrabble game, but with several differences.
 
-High Tide
+- Any/all players in a room play at the same time.
+
+- There are powerups and rules themed on waves that affect game play.
+
+### PowerUps (special tiles)
+
+- CRIME WAVE : allows you to get a letter from the board and replace it for a letter on your rack
+- SHOCK WAVE : allows you to place letters on the board over existing letters
+- BRAIN WAVE : allows you to swap a letter in your rack for a random letter from your sack
+- GRAVITY WAVE : allows you to place letters bottom-top or right-left
+
+### WAVE modes
+
+- RadiO wave : words must start with consonant and end with vowel
+- SounD wave : words must start with a consonant and end with a consonant
+- ElectromagnetiC : words must start with a vowel and end with a consonant
+- EnergY : words must start with a vowel and end with a vowel
+
+### High Tide
+
 During regular timed cycles (Minutes of the Hour), if waves are on the screen you can place floating words.
 
-0-1 5-10 25-35 45-50 50-54
-​
-Gravity Wave power allows you to use non-scrabble directions to spell words from Bottom-to-Top or Right-to-Left!
+- 0-1 5-10 25-35 45-50 50-54
 
-There is also the ability to choose either or all, English, Spanish or German dictionaries.
+### Misc updates and additions (it was a month long game jam afterall!)
 
-I hope the game is 'wave-worthy' and I'm 'stoked' to hear about any other comments or bug fixes!
+- There is also the ability to choose either or all, English, Spanish or German dictionaries.
+
+- Letter rack persists between wave rooms and sesssions.
+
+- Ability to adjust your name instead of random one.
+
+- Look up possible words using a filter/query.
+
+---
+
+## I hope the game is 'wave-worthy' and I'm 'stoked' to hear about any other comments or bug fixes needed.
+
+---
 
 # Asset license, etc
 
@@ -165,17 +193,3 @@ Could be mechanical energy (like a water wave) or electromagnetic energy (like s
 Principle: Waves carry energy without transporting matter permanently, though particles in the medium may oscillate.
 
 ---
-
-[x] Known 'features'
-
-Bonus words that are found when you aren't playing are marked off your bonus word list - Ideally, everyone in a game starts at the same time and this would allow for fair-play, but life isn't fair, so I'm not (for now) going to implement syncing that info when others join a game room after others have been creating words in it already.
-
-[ ] Probably more to find, investigate and report.
-
-[ ] Floating words... you can float words, but only during the wave cycle. This occurs when the client time (minutes) are in the following ranges.
-
-      0-1
-      5-10
-      25-35
-      45-50
-      50-54
