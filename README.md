@@ -10,6 +10,8 @@
 
 # PLAY IT HERE! --> https://lostwords.itch.io/scrabblescramble
 
+## WATCH HOW TO PLAY HERE! --> [![Watch the video](https://img.youtube.com/vi/-iW2rwKkzQQ/0.jpg)](https://youtu.be/-iW2rwKkzQQ)
+
 https://lostwords.itch.io/scrabblescramble
 
 https://github.com/pasciaks/game-off-2025
