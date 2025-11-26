@@ -8,6 +8,8 @@
 
 ![](GitHubGameJamItch/game/logo.png)
 
+# PLAY IT HERE! --> https://lostwords.itch.io/scrabblescramble
+
 https://lostwords.itch.io/scrabblescramble
 
 https://github.com/pasciaks/game-off-2025
