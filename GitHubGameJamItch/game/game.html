@@ -281,7 +281,8 @@
     <button class="rack-btns2" onclick="canFindGermanWord=!canFindGermanWord;updateCounts();">Allow German <span
         id="showCanGerman"></span></button>
 
-    <button onclick="wordLookup()">W?rd L*up</button>
+    <button title="See possible words based on filter/wildcards." onclick="wordLookup()">W?rd L*up</button>
+    <button title="Claim your letter in the world." onclick="getGPS()">[+]</button>
 
     <br>
 
@@ -442,6 +443,27 @@
   </div>
 
   <script>
+
+    const geoSuccess = (navPosObj) => {
+      const { latitude, longitude } = navPosObj.coords;
+      const newPosition = [longitude, latitude]; // [lng, lat]
+      const newPositionForMap = [latitude, longitude];
+      console.log(newPosition);
+      // showToast(JSON.stringify(newPosition), "info");
+      showToast("This feature will be implemented in future worlds!", "info")
+    };
+
+    const geoError = function (error) {
+      console.log(error);
+    }
+
+    function getGPS() {
+      navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {
+        timeout: 10000, // 10 seconds
+        maximumAge: 0,
+        enableHighAccuracy: true,
+      });
+    }
 
     let canReset = false;
 
