@@ -253,8 +253,8 @@
         for (const line of lines) {
           try {
             const obj = JSON.parse(line);
-            if (obj && Array.isArray(obj.theBonusWordTiles)) { // obj.sendTiles
-              obj.theBonusWordTiles.forEach(tile => { // obj.sendTiles
+            if (obj && Array.isArray(obj.sendTiles)) { // obj.sendTiles
+              obj.sendTiles.forEach(tile => { // obj.sendTiles
                 if (tile && typeof tile.col === 'number' && typeof tile.row === 'number') {
                   const key = `${tile.col},${tile.row}`;
                   // last write wins - but we keep the tile object (you can tweak merge logic)
