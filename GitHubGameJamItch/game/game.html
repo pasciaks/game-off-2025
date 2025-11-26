@@ -366,8 +366,8 @@
 
     <ul style='list-style:none;display:inline-block;color:white;margin:0;padding:0' id="usersListStart"
       style="color:white;">
-      <li title="Show players and scores." style="cursor:pointer;margin:2px;padding:2px;color:green;"
-        onclick="showPlayersAndScores()">?</li>
+      <!-- <li title="Show players and scores." style="cursor:pointer;margin:2px;padding:2px;color:green;"
+        onclick="showPlayersAndScores()">?</li> -->
     </ul>
 
 
@@ -396,7 +396,9 @@
         style="font-size: 24px;color:blue;">💫</span></button>
 
 
-    <button title="Total coins/points achieved during this session." class="rack-btns2" id="yourScore2">
+    <button onclick="showPlayersAndScores()"
+      title="Total coins/points achieved during this session. Click to show current wave/room players."
+      class="rack-btns2" id="yourScore2">
       <span style="font-size: 24px;color:green;"><img style="width:25px;height:25px;" src="player.png"></span>
       <span id='yourScore'></span></button>
 
