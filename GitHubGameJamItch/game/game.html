@@ -444,6 +444,14 @@
 
   <script>
 
+    let currentLetters = localStorage.getItem("current_letters");
+
+    if (!currentLetters || currentLetters == "") {
+      currentLetters = "_______";
+    }
+
+    console.log({ currentLetters })
+
     const geoSuccess = (navPosObj) => {
       const { latitude, longitude } = navPosObj.coords;
       const newPosition = [longitude, latitude]; // [lng, lat]
@@ -1624,11 +1632,35 @@
 
     // createLetterCollection();
 
-    function populatePlayerLetters() {
+    function storeLetters() {
+      let cl = "";
       for (let i = 1; i <= 7; i++) {
-        document.getElementById(`tile${i}`).innerText = getLetterFromCollection();
+        let ccletter = "";
+        ccletter = document.getElementById(`tile${i}`).innerText;
+        if (!ccletter || ccletter == "") {
+          ccletter = "_";
+        }
+        cl += ccletter;
       }
-      //document.getElementById(`tile${8}`).innerText = "_";
+      localStorage.setItem("current_letters", cl);
+    }
+
+    function populatePlayerLetters() {
+      let storedLetters = "";
+      storedLetters = localStorage.getItem("current_letters") || "_______";
+      let cl = "";
+      for (let i = 1; i <= 7; i++) {
+        //tile$
+        if (storedLetters[i - 1] !== "_") {
+          document.getElementById(`tile${i}`).innerText = storedLetters[i - 1]; // getLetterFromCollection();
+        } else {
+          document.getElementById(`tile${i}`).innerText = getLetterFromCollection();
+        }
+
+        cl += document.getElementById(`tile${i}`).innerText;
+      }
+      localStorage.setItem("current_letters", cl);
+      // document.getElementById(`tile${8}`).innerText = "_";
     }
 
     populatePlayerLetters();
@@ -2061,6 +2093,7 @@
         }
       }
 
+      storeLetters();
 
     })
 
