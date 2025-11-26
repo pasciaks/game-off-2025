@@ -1930,9 +1930,9 @@
         let { wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt } = data;
 
         if (
-          ((wasForwardEnglishHz && allowEnglish) || (wasForwardEnglishVt && allowEnglish)) ||
-          ((wasForwardSpanishHz && allowSpanish) || (wasForwardSpanishVt && allowSpanish)) ||
-          ((wasForwardGermanHz && allowGerman) || (wasForwardGermanVt && allowGerman))) {
+          ((wasForwardEnglishHz && canFindEnglishWord) || (wasForwardEnglishVt && canFindEnglishWord)) ||
+          ((wasForwardSpanishHz && canFindSpanishWord) || (wasForwardSpanishVt && canFindSpanishWord)) ||
+          ((wasForwardGermanHz && canFindGermanWord) || (wasForwardGermanVt && canFindGermanWord))) {
           // don't charge for backwardsness
 
 

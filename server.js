@@ -577,9 +577,6 @@ io.on("connection", (socket) => {
     return testCase?.letter != '_' ? findBottom(col, row + 1, mapRef) : { col, row };
   }
 
-
-
-
   socket.on('submitWord', (data) => {
 
     let myScore = 0;
@@ -662,7 +659,10 @@ io.on("connection", (socket) => {
 
     let tempWordScore = 0;
     let bonusWords = 0;
+
     let theBonusWords = [];
+
+    let theBonusWordTiles = [];
 
     let theL = 0;
     let wasFound = false;
@@ -720,10 +720,17 @@ io.on("connection", (socket) => {
       let top = (findTop(cw.col, cw.row - 1, mapRef));
       let bottom = (findBottom(cw.col, cw.row + 1, mapRef));
 
+      let tempLetterTiles = [];
+
       // console.log({ left, right, top, bottom })
 
+      let tempLetterTile;
+
       let hzWord = "";
+      tempLetterTiles = [];
+
       for (let hz = left.col; hz <= right.col; hz++) {
+        tempLetterTile = getTile(hz, cw.row, mapRef, false);
         let tempLetter = getTile(hz, cw.row, mapRef, false)?.letter?.toUpperCase() || "";
         if (hz == cw.col) {
           tempLetter = cw.letter;
@@ -755,6 +762,7 @@ io.on("connection", (socket) => {
         }
         if (tempLetter == "_") { tempLetter = "" };
         hzWord += tempLetter;
+        tempLetterTiles.push(tempLetterTile);
       }
 
       if (hzWord.length <= 1) {
@@ -821,20 +829,24 @@ io.on("connection", (socket) => {
           if (!theBonusWords.includes(hzWord)) {
             bonusWords++;
             theBonusWords.push(hzWord);
+            theBonusWordTiles.push(tempLetterTiles);
           }
           // }
 
         } else {
           console.log('hzWord not found', hzWord);
           wasInvalid = true;
+          theBonusWordTiles = [];
         }
       } else {
         // wasInvalid = true;
       }
 
       let vtWord = "";
+      tempLetterTiles = [];
 
       for (let vt = top.row; vt <= bottom.row; vt++) {
+        tempLetterTile = getTile(cw.col, vt, mapRef, false);
         let tempLetter = getTile(cw.col, vt, mapRef, false)?.letter?.toUpperCase() || "";
         if (vt == cw.row) {
           tempLetter = cw.letter;
@@ -866,6 +878,7 @@ io.on("connection", (socket) => {
         }
         if (tempLetter == "_") { tempLetter = "" };
         vtWord += tempLetter;
+        tempLetterTiles.push(tempLetterTile);
       }
 
       if (vtWord.length <= 1) {
@@ -931,12 +944,14 @@ io.on("connection", (socket) => {
           if (!theBonusWords.includes(vtWord)) {
             bonusWords++;
             theBonusWords.push(vtWord);
+            theBonusWordTiles.push(tempLetterTiles);
           }
           // }
 
         } else {
           console.log('vtWord not found', vtWord);
           wasInvalid = true;
+          theBonusWordTiles = [];
         }
       } else {
         // wasInvalid = true;
@@ -996,7 +1011,7 @@ io.on("connection", (socket) => {
 
     // console.log({ wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman });
 
-    socket.emit("word_result", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
+    socket.emit("word_result", { wasInvalid, sendTiles, theBonusWordTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
 
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
@@ -1017,7 +1032,7 @@ io.on("connection", (socket) => {
       memory[whereAmI] = [];
     }
 
-    memory[whereAmI].push({ serverNow: Date.now(), whoAmI, whereAmI, myScore, wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman })
+    memory[whereAmI].push({ serverNow: Date.now(), whoAmI, whereAmI, myScore, wasInvalid, theBonusWordTiles, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman })
 
     sendBoardDataToRoom(theRoom, { who: { myScore, myName } });
 
