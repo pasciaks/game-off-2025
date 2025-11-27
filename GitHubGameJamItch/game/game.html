@@ -339,10 +339,13 @@
   </div>
 
   <div id="bookmarks" style="position:absolute;top:110px;left:10px;">
-    <button title="Toggle tool buttons." onclick="toggleMenu()">☷</button>
-    <button class="menuitem" title="Move to next bookmark if any are set." onclick="nextBookmark()">➡</button>
-    <button class="menuitem" title="Add Bookmark to your location." onclick="addBookmark()">★</button>
-    <button class="menuitem" title="Remove current Bookmark of your location." onclick="removeBookmark()">☆</button>
+    <button title="Toggle tool buttons." style="width:40px;height:40px;" onclick="toggleMenu()">☷</button>
+    <button class="menuitem" style="width:40px;height:40px;" title="Move to next bookmark if any are set."
+      onclick="nextBookmark()">➡</button>
+    <button class="menuitem" style="width:40px;height:40px;" title="Add Bookmark to your location."
+      onclick="addBookmark()">★</button>
+    <button class="menuitem" style="width:40px;height:40px;" title="Remove current Bookmark of your location."
+      onclick="removeBookmark()">☆</button>
   </div>
 
   <div id="scrabbleRackb">
@@ -3296,7 +3299,7 @@
 
     function showBookmarksMessages() {
       showToast("You have " + JSON.stringify(bookmarks.length) + " saved bookmarks.");
-      showToast("Click '@' to add one.<br> Click '^' to remove one.<br> Click '~' to move between bookmarks.", "info", 15000);
+      showToast("Click '@' to add one.<br> Click '^' to remove one.<br> Click '~' to move between bookmarks.", "info", 9999);
     }
 
     function addBookmark() {
@@ -3323,7 +3326,7 @@
       let items = document.getElementsByClassName('menuitem');
 
       for (let i = 0; i < items.length; i++) {
-        items[i].style.display = isMenu ? 'inline-block' : 'none';
+        items[i].style.display = isMenu ? 'block' : 'none';
       }
     }
 
