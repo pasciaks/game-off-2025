@@ -324,7 +324,7 @@
   <!-- Scrabble rack -->
   <div id="scrabbleRack">
 
-    <button onclick="showLettersCollection(0)">#</button>
+    <button class="menuitem" onclick="showLettersCollection(0)">#</button>
     <button class="rack-btn" id="tile1"></button>
     <button class="rack-btn" id="tile2"></button>
     <button class="rack-btn" id="tile3"></button>
@@ -334,8 +334,15 @@
     <button class="rack-btn" id="tile7"></button>
     <!-- <button class="rack-btn" id="tile8">_</button> -->
     <!-- <button class="rack-btn" id="sendIt">></button> -->
-    <button onclick="showLettersCollection(1)">A</button>
+    <button class="menuitem" onclick="showLettersCollection(1)">A</button>
 
+  </div>
+
+  <div id="bookmarks" style="position:absolute;top:110px;left:10px;">
+    <button title="Toggle tool buttons." onclick="toggleMenu()">☷</button>
+    <button class="menuitem" title="Move to next bookmark if any are set." onclick="nextBookmark()">➡</button>
+    <button class="menuitem" title="Add Bookmark to your location." onclick="addBookmark()">★</button>
+    <button class="menuitem" title="Remove current Bookmark of your location." onclick="removeBookmark()">☆</button>
   </div>
 
   <div id="scrabbleRackb">
@@ -346,11 +353,12 @@
     <button class="rack-btns" id="tile5b">*</button>
     <button class="rack-btns" id="tile6b">*</button>
     <button class="rack-btns" id="tile7b">*</button> -->
-    <button onclick="makeZoom(-.125)">-</button>
-    <button class="waterButton rack-btns2" id="homeIt">Home</button>
-    <button class="waterButton rack-btns2" id="cancelIt">Cancel</button>
-    <button class="waterButton rack-btns2" id="sendIt">Submit</button>
-    <button onclick="makeZoom(+.125)">+</button>
+
+    <button class="menuitem" title="Zoom out" onclick="makeZoom(-.125)">🔍➖</button>
+    <button style='font-size:10px' class="waterButton rack-btns2" id="homeIt">🛖Home</button>
+    <button style='font-size:10px' class="waterButton rack-btns2" id="cancelIt">❌Cancel</button>
+    <button style='font-size:10px' class="waterButton rack-btns2" id="sendIt">✅Submit</button>
+    <button class="menuitem" title="Zoom in" onclick="makeZoom(+.125)">🔍➕</button>
 
   </div>
 
@@ -445,6 +453,12 @@
   </div>
 
   <script>
+
+    let isMenu = true;
+
+    let bookmarks = [];
+
+    let currentB = 0;
 
     let currentLetters = localStorage.getItem("current_letters");
 
@@ -971,7 +985,7 @@
     }
 
 
-    let delayUntilResetButton = 150000;
+    let delayUntilResetButton = 5000;
 
     setTimeout(() => {
       document.getElementById('eraseIt').style.display = "inline-block";
@@ -2223,6 +2237,11 @@
 
       if (data) {
         users.set(data.data.myName, { ...data, dateTime: data?.data?.dateTime || data?.dateTime || Date.now(), nickname: data?.data?.myName, room: data.data.myRoom, playerCol: data.data.playerCol, playerRow: data.data.playerRow });
+
+        let cplayerX = data.data.playerCol * TILE - cameraX;
+        let cplayerY = data.data.playerRow * TILE - cameraY;
+
+        createRipple(cplayerX, cplayerY);
       }
 
       let names = [];
@@ -2320,6 +2339,11 @@
       }
 
       updatePlayerPosition({ playerCol, playerRow, myName, myRoom, yourScore });
+
+      let cplayerX = playerCol * TILE - cameraX;
+      let cplayerY = playerRow * TILE - cameraY;
+
+      // createRipple(cplayerX, cplayerY);
 
       // visible world bounds (top-left and bottom-right in world coordinates)
       const visibleLeft = cameraX;
@@ -3270,9 +3294,60 @@
       showToast(htmlList, "info");
     }
 
+    function showBookmarksMessages() {
+      showToast("You have " + JSON.stringify(bookmarks.length) + " saved bookmarks.");
+      showToast("Click '@' to add one.<br> Click '^' to remove one.<br> Click '~' to move between bookmarks.", "info", 15000);
+    }
+
+    function addBookmark() {
+      bookmarks.push(`${playerCol}, ${playerRow}`);
+      showToast("Bookmark set at position (" + `${playerCol}, ${playerRow}` + ")");
+      showBookmarksMessages();
+    }
+
+    function removeBookmark() {
+      let tempA = [];
+      for (let i = 0; i < bookmarks.length; i++) {
+        if (i != currentB) {
+          tempA.push(bookmarks[i]);
+        }
+      }
+      currentB--;
+      if (currentB < 0) { currentB = 0; }
+      bookmarks = [...tempA];
+      showBookmarksMessages();
+    }
+
+    function toggleMenu() {
+      isMenu = !isMenu;
+      let items = document.getElementsByClassName('menuitem');
+
+      for (let i = 0; i < items.length; i++) {
+        items[i].style.display = isMenu ? 'inline-block' : 'none';
+      }
+    }
+
+    function nextBookmark() {
+      showBookmarksMessages();;
+      currentB++;
+      if (currentB >= bookmarks.length) {
+        currentB = 0;
+      }
+      let theB = bookmarks[currentB];
+      if (theB) {
+        [playerCol, playerRow] = theB.split(",").map(s => parseInt(s.trim()));
+        navigateView(playerCol, playerRow);
+        keepPlayerVisible();
+        // showToast(theB, "info");
+      }
+    }
+
     // Key down → mark as pressed
     window.addEventListener("keydown", (e) => {
 
+      if (e.key == "`" || e.key == '~') {
+        nextBookmark();
+      }
       // console.log(e.key);
 
       // playSound('toggle_off.wav');
@@ -3610,6 +3685,105 @@
     let off3 = 180;
     let freq = 10;
 
+
+    // Global array to store active ripples
+    const ripples = [];
+
+    // Function to create a new ripple at (x, y)
+    function createRipple(x, y, color = '0,150,255') {
+      ripples.push({
+        x,
+        y,
+        radius: 0,
+        alpha: 1,
+        lineWidth: 5,
+        color
+      });
+    }
+
+    // Draw and update all ripples
+    function drawRipples(ctx) {
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = `rgba(${r.color},${r.alpha})`;
+        ctx.lineWidth = r.lineWidth;
+        ctx.stroke();
+
+        // Update ripple
+        r.radius += 12 + Math.random() * 2;   // slightly varied speed
+        r.alpha -= 0.0015;                // fade out
+        r.lineWidth = Math.max(0.5, r.lineWidth - 0.02); // thin as it fades
+
+        // Remove ripple if fully faded
+        if (r.alpha <= 0) ripples.splice(i, 1);
+      }
+    }
+
+
+    // Global array to store active ripples
+    const ripples2 = [];
+
+    // Function to create a new ripple at (x, y)
+    function createRipple2(x, y) {
+      ripples.push({ x, y, radius: 0, alpha: 1 });
+    }
+
+    // Draw and update ripples
+    function drawRipples2(ctx) {
+      // Clear canvas if needed
+      // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = `rgba(0, 150, 255, ${r.alpha})`;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        // Update ripple
+        r.radius += 10;       // speed of expansion
+        r.alpha -= 0.005;     // fade out
+
+        // Remove ripple if fully faded
+        if (r.alpha <= 0) ripples.splice(i, 1);
+      }
+    }
+
+
+    // const waves = [
+    //   { amplitude: 20, wavelength: 100, speed: 0.02, phase: 0, color: 'rgba(0, 100, 255, 0.5)' },
+    //   { amplitude: 10, wavelength: 50, speed: 0.04, phase: 0, color: 'rgba(0, 150, 255, 0.3)' },
+    // ];
+
+    // function drawWaves(ctx, width, height) {
+    //   ctx.clearRect(0, 0, width, height);
+
+    //   waves.forEach(wave => {
+    //     ctx.beginPath();
+    //     ctx.moveTo(0, height / 2);
+
+    //     for (let x = 0; x <= width; x++) {
+    //       const y = height / 2 + wave.amplitude * Math.sin((x / wave.wavelength) * 2 * Math.PI + wave.phase);
+    //       ctx.lineTo(x, y);
+    //     }
+
+    //     ctx.lineTo(width, height);
+    //     ctx.lineTo(0, height);
+    //     ctx.closePath();
+
+    //     ctx.fillStyle = wave.color;
+    //     ctx.fill();
+
+    //     // Update phase for animation
+    //     wave.phase += wave.speed;
+    //   });
+    // }
+
     function draw() {
 
       ctx.fillStyle = 'black';
@@ -3740,6 +3914,7 @@
         }
       }
 
+      drawRipples(ctx);
 
       // proposed tiles
       for (let y = startY; y < endY; y++) {
@@ -3776,6 +3951,7 @@
 
         let cplayerX = u.playerCol * TILE - cameraX;
         let cplayerY = u.playerRow * TILE - cameraY;
+
 
         let nickname = u?.nickname || "Unknown";
 
@@ -3907,12 +4083,7 @@
       }
     }
 
-
-
-
-
-
-
+    toggleMenu();
 
   </script>
 </body>
