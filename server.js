@@ -417,8 +417,8 @@ let certificate;// = fs.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchai
 // }
 
 try {
-  privateKey = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com/privkey.pem");
-  certificate = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com/fullchain.pem");
+  privateKey = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com-0001/privkey.pem");
+  certificate = fsSync.readFileSync("/etc/letsencrypt/live/pasciak.com-0001/fullchain.pem");
 
   server = https.createServer({ key: privateKey, cert: certificate }, app);
 } catch (err) {
