@@ -1184,8 +1184,6 @@
       return value;
     }
 
-
-
     let gravityCount = getAndSetLocal('gravityCount', 1);//1;
     let crimeCount = getAndSetLocal('crimeCount', 1);//1;
     let shockCount = getAndSetLocal('shockCount', 3);//3;
@@ -1792,8 +1790,8 @@
         toggleEnableWaves();
         break;
       default:
-        boardColsMagnitude = 5;
-        boardRowsMagnitude = 5;
+        boardColsMagnitude = 36;
+        boardRowsMagnitude = 25;
         toggleEnableWaves();
         toggleEnableWaves();
         break;
@@ -1802,6 +1800,7 @@
     localStorage.setItem("myName", myName);
     localStorage.setItem("myRoom", myRoom);
 
+    bookmarks = loadBookmarks();
 
     switch (mode) {
       case "production":
@@ -3301,11 +3300,12 @@
 
     function showBookmarksMessages() {
       showToast("You have " + JSON.stringify(bookmarks.length) + " saved bookmarks.");
-      showToast("Click '@' to add one.<br> Click '^' to remove one.<br> Click '~' to move between bookmarks.", "info", 9999);
+      // showToast("Click '@' to add one.<br> Click '^' to remove one.<br> Click '~' to move between bookmarks.", "info", 9999);
     }
 
     function addBookmark() {
       bookmarks.push(`${playerCol}, ${playerRow}`);
+      saveBookmarks();
       showToast("Bookmark set at position (" + `${playerCol}, ${playerRow}` + ")");
       showBookmarksMessages();
     }
@@ -3320,6 +3320,7 @@
       currentB--;
       if (currentB < 0) { currentB = 0; }
       bookmarks = [...tempA];
+      saveBookmarks();
       showBookmarksMessages();
     }
 
@@ -3332,8 +3333,27 @@
       }
     }
 
+    function saveBookmarks() {
+      localStorage.setItem("bookmarks-" + myRoom, JSON.stringify(bookmarks));
+      return bookmarks;
+    }
+
+    function loadBookmarks() {
+      let b = localStorage.getItem("bookmarks-" + myRoom);
+      let newBookmarks = [];
+      if (b) {
+        try {
+          newBookmarks = JSON.parse(b);
+        } catch {
+          newBookmarks = [];
+        }
+      }
+      return newBookmarks;
+    }
+
     function nextBookmark() {
-      showBookmarksMessages();;
+      // showBookmarksMessages();
+      if (!bookmarks) { bookmarks = []; }
       currentB++;
       if (currentB >= bookmarks.length) {
         currentB = 0;
@@ -3344,6 +3364,8 @@
         navigateView(playerCol, playerRow);
         keepPlayerVisible();
         // showToast(theB, "info");
+      } else {
+        showToast("You don't have any saved bookmarks in this wave room.", "error");
       }
     }
 
