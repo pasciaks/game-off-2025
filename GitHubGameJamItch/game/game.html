@@ -3213,6 +3213,8 @@
 
     function makeZoom(i) {
       zoom += i;
+      if (zoom < .1) { zoom -= i; }
+      if (zoom > 2) { zoom -= i; }
       playerCenter();
     }
 
