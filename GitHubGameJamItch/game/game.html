@@ -324,7 +324,7 @@
   <!-- Scrabble rack -->
   <div id="scrabbleRack">
 
-    <button class="menuitem" onclick="showLettersCollection(0)">#</button>
+    <button title="Show letter back sorted by counts." class="menuitem" onclick="showLettersCollection(0)">#</button>
     <button class="rack-btn" id="tile1"></button>
     <button class="rack-btn" id="tile2"></button>
     <button class="rack-btn" id="tile3"></button>
@@ -334,7 +334,8 @@
     <button class="rack-btn" id="tile7"></button>
     <!-- <button class="rack-btn" id="tile8">_</button> -->
     <!-- <button class="rack-btn" id="sendIt">></button> -->
-    <button class="menuitem" onclick="showLettersCollection(1)">A</button>
+    <button title="Show letter back sorted by letter." class="menuitem" onclick="showLettersCollection(1)">A</button>
+    <button title="Show longest words this session." class="menuitem" onclick="showLongestWords()">!</button>
 
   </div>
 
@@ -456,6 +457,8 @@
   </div>
 
   <script>
+
+    let allwordsthissession = [];
 
     let isMenu = true;
 
@@ -1971,6 +1974,19 @@
       showToast("Floating words only allowed during high tide!", "error", 9999);
     });
 
+    socket.on("word_results", (data) => {
+      console.log({ myName, myRoom, data });
+      let aa = data?.theBonusWords;
+      let whoFoundIt = data?.whoAmI || '';
+
+      aa.forEach((a) => {
+        showToast(whoFoundIt + " placed the word '" + a + "'", "warning");
+        // showToast(a, "warning");
+        allwordsthissession.push({ "who": whoFoundIt, "word": a });
+        console.log(allwordsthissession);
+      })
+    })
+
     socket.on("word_result", (data) => {
 
       console.log(data);
@@ -2185,6 +2201,25 @@
         console.error("error:", e);
       }
     });
+
+    function sortByWordLengthDesc(arr) {
+      return arr.sort((a, b) => b.word.length - a.word.length);
+    }
+
+    function showLongestWords() {
+
+      if (allwordsthissession.length <= 0) {
+        showToast("No words have been placed yet in this session.", "error");
+        return;
+      }
+
+      let sorted = sortByWordLengthDesc(allwordsthissession);
+
+      allwordsthissession.forEach((w) => {
+        showToast(`${w.who} placed '${w.word}'`, "info");
+      });
+
+    }
 
     function startWatchingName(name) {
       watchingName = name;

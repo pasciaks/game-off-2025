@@ -1013,6 +1013,8 @@ io.on("connection", (socket) => {
 
     socket.emit("word_result", { wasInvalid, sendTiles, theBonusWordTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
 
+    io.to(theRoom).emit('word_results', { whoAmI, whereAmI, wasInvalid, sendTiles, theBonusWordTiles, newBrain, newShock, newGravity, newCrime, tempWordScore, bonusWords, theBonusWords, wasBackwards, wasEnglish, wasSpanish, wasGerman, wasForwardEnglishHz, wasForwardSpanishHz, wasForwardGermanHz, wasForwardEnglishVt, wasForwardSpanishVt, wasForwardGermanVt });
+
     if (!wasInvalid) {
       let random = Math.floor(Math.random() * 5)
       if (random == 0) { socket.emit("is_microWave", { wasInvalid, sendTiles, newBrain, newShock, newGravity, newCrime, tempWordScore }); }
