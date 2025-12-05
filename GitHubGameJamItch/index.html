@@ -64,14 +64,14 @@
     #game {
       text-align: center;
       position: absolute;
-      left: 20px;
-      right: 20px;
-      top: 20px;
-      bottom: 20px;
-      border: 2px solid red;
+      left: 40px;
+      right: 40px;
+      top: 40px;
+      bottom: 40px;
+      /* border: 2px solid red; */
       color: white;
       display: none;
-      background-color: rgba(25, 98, 115, .85);
+      background-color: transparent;
       overflow: hidden;
     }
 
@@ -249,19 +249,21 @@
 
     /* LEFT – rotate -90°, so row order maps to vertical top→bottom */
     .left {
-      left: 40px;
+      left: 20px;
       top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
+      transform: translateY(-75%) rotate(-90deg);
       flex-direction: row;
+      display: none;
       /* logo left, play right → rotates to logo top, play bottom */
     }
 
     /* RIGHT – rotate +90°, need reversed order so logo ends up on top */
     .right {
-      right: 40px;
+      right: 20px;
       top: 50%;
-      transform: translateY(-50%) rotate(90deg);
+      transform: translateY(-75%) rotate(90deg);
       flex-direction: row-reverse;
+
       /* logo right, play left → rotates to logo top */
     }
 
@@ -279,11 +281,12 @@
       background-size: auto; */
     }
 
-    #game {
-      background-image: url("tile.png");
+    /* #game { */
+    /* background-image: url("tile.png");
       background-repeat: repeat;
       background-size: auto;
-    }
+      opacity: .2; */
+    /* } */
   </style>
 </head>
 
@@ -373,23 +376,23 @@
     <div>
       <div class="side top">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
 
       </div>
 
       <div class="side bottom">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
       </div>
 
       <div class="side left">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
       </div>
 
       <div class="side right">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
       </div>
     </div>
 
