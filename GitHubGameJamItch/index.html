@@ -249,19 +249,21 @@
 
     /* LEFT – rotate -90°, so row order maps to vertical top→bottom */
     .left {
-      left: 20px;
+      left: 50%;
+      ;
       top: 50%;
-      transform: translateY(-75%) rotate(-90deg);
+      transform: translateY(-50%) rotate(-90deg);
       flex-direction: row;
-      display: none;
+
       /* logo left, play right → rotates to logo top, play bottom */
     }
 
     /* RIGHT – rotate +90°, need reversed order so logo ends up on top */
     .right {
-      right: 20px;
+      /* right: 20px; */
+      right: 50%;
       top: 50%;
-      transform: translateY(-75%) rotate(90deg);
+      transform: translateY(-50%) rotate(90deg);
       flex-direction: row-reverse;
 
       /* logo right, play left → rotates to logo top */
@@ -376,23 +378,23 @@
     <div>
       <div class="side top">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
 
       </div>
 
       <div class="side bottom">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
       </div>
 
       <div class="side left">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
       </div>
 
       <div class="side right">
         <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><img src="play.png" /></button>
+        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
       </div>
     </div>
 
@@ -474,7 +476,7 @@
     const SPEED = 150;           // expansion speed (px/sec)
     const WAVELENGTH = 5;     // distance between waves (larger = fewer)
     const GLOW = 0;            // shadow blur for glow
-    const SPAWN_INTERVAL = 220; // time between new waves (ms)
+    const SPAWN_INTERVAL = 1750; // time between new waves (ms)
     const ROTATION_SPEED = 0.025; // radians/sec rotation of opening
 
     let waves = [];
@@ -506,11 +508,11 @@
       });
     }
 
-    createWave();
+    // createWave();
 
     setTimeout(() => {
       showBox();
-    }, 750);
+    }, 250);
 
     function invokeGame(url) {
       let v = document.getElementById('waveWordsSelect').value;
@@ -610,7 +612,7 @@
 
     let isPaused = false;
 
-    setInterval(createWave, SPAWN_INTERVAL);
+    // setInterval(createWave, SPAWN_INTERVAL);
 
     function animate(now) {
 
