@@ -224,6 +224,66 @@
       padding: 5px;
       margin: 5px;
     }
+
+    .side {
+      position: absolute;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* TOP – logo above play */
+    .top {
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column;
+    }
+
+    /* BOTTOM – same stacking, then rotated */
+    .bottom {
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      flex-direction: column;
+    }
+
+    /* LEFT – rotate -90°, so row order maps to vertical top→bottom */
+    .left {
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      flex-direction: row;
+      /* logo left, play right → rotates to logo top, play bottom */
+    }
+
+    /* RIGHT – rotate +90°, need reversed order so logo ends up on top */
+    .right {
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      flex-direction: row-reverse;
+      /* logo right, play left → rotates to logo top */
+    }
+
+    img {
+      width: 150px;
+      height: auto;
+      display: inline-block;
+    }
+
+    body {
+      margin: 0;
+      position: relative;
+      /* background-image: url("tile.png");
+      background-repeat: repeat;
+      background-size: auto; */
+    }
+
+    #game {
+      background-image: url("tile.png");
+      background-repeat: repeat;
+      background-size: auto;
+    }
   </style>
 </head>
 
@@ -231,9 +291,27 @@
 
   <div id="game">
 
-    <a href="menu.html"><img src='game/logo.png' style="width:50%" /></a> <img
+    <!-- <a href="menu.html"><img src='game/logo.png' style="width:50%;margin-top:10%" /></a> <img
       style="width:50px;border-radius: 10px;background-color: lightblue; box-shadow: 5px 5px 15px rgba(0,0,0,0.3);"
-      src="https://img.itch.zone/aW1nLzIyMDY3NzY2LnBuZw==/200x158%23/KtEy0v.png" />
+      src="https://img.itch.zone/aW1nLzIyMDY3NzY2LnBuZw==/200x158%23/KtEy0v.png" /> -->
+
+    <!-- <div style="
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:50vh;
+  margin:0;
+"> -->
+    <!-- <a href="menu.html">
+        <img src='game/logo.png' style="width:50%; margin-bottom:20px;" />
+      </a> -->
+
+    <!-- <img style="width:50px; border-radius:10px; background-color:lightblue;
+           box-shadow:5px 5px 15px rgba(0,0,0,0.3);"
+        src="https://img.itch.zone/aW1nLzIyMDY3NzY2LnBuZw==/200x158%23/KtEy0v.png" /> -->
+    <!-- </div> -->
+
 
 
     <!-- <button
@@ -279,7 +357,7 @@
 
     <div class="game-container" id="gameLinks"></div>
 
-    <button onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="play.png" /></button>
+    <!-- <button onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="play.png" /></button> -->
 
     <!-- <button onclick="window.location='menu.html'"><img style="margin:20px;width:100px" src="desktop.png" /></button> -->
 
@@ -293,10 +371,32 @@
       onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="smarttv.png" /></button> -->
 
     <div>
+      <div class="side top">
+        <!-- <img src="logo.png" alt="logo"> -->
+        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
 
-      <p style="color:gold;">The assets included in this repository are not for redistribution.</p>
+      </div>
 
-      <ul style="list-style: none;margin:0;padding:0;">
+      <div class="side bottom">
+        <!-- <img src="logo.png" alt="logo"> -->
+        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+      </div>
+
+      <div class="side left">
+        <!-- <img src="logo.png" alt="logo"> -->
+        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+      </div>
+
+      <div class="side right">
+        <!-- <img src="logo.png" alt="logo"> -->
+        <button onclick="window.open('menu.html')"><img src="play.png" /></button>
+      </div>
+    </div>
+
+    <div>
+
+
+      <ul style="display:none;list-style: none;margin:0;padding:0;">
         <li onclick="openLink(this)">https://screamingbrainstudios.itch.io/2d-word-game-pack</li>
         <li onclick="openLink(this)">https://www.freescrabbledictionary.com/</li>
         <li onclick="openLink(this)">https://freepd.com/</li>

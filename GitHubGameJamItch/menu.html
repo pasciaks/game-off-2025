@@ -115,7 +115,7 @@
     .game-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
+      gap: 5px;
       width: 90%;
       max-width: 800px;
       margin: 0 auto;
@@ -144,7 +144,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 15px;
+      padding: 5px;
       background: #f0e6d2;
       /* light card color */
       color: #4879b4;
@@ -191,12 +191,12 @@
       button,
       .game-container a {
         font-size: 0.9rem;
-        padding: 8px 10px;
+        padding: 4px 5px;
       }
 
       .game-container {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: 8px;
+        gap: 4px;
       }
 
       #game {
@@ -221,9 +221,12 @@
     <button
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button>
 
-    <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button>
-    <button title="Open for mobile phone friendly view that enables portrait mode."
-      onclick="window.open('index.html')">📲</button>
+    <br>
+
+    <button title="Custom game mode" onclick="window.open('maker.html')">✏️ Custom Game </button>
+
+    <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
+      onclick="window.open('index.html')">📲</button> -->
 
     <a href="index.html">
       <div id="randomTitle"></div>
@@ -232,6 +235,7 @@
 
 
     <div>
+      <p>Bonus Word List</p>
       <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
                background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
         <option
@@ -380,24 +384,29 @@
     const container = document.getElementById('gameLinks');
     for (let i = 1; i <= 11; i++) {
       const btn = document.createElement('button');
-      btn.textContent = `Wave ${i}`;
-      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
-      btn.style.margin = '5px';
-      btn.style.padding = '10px 15px';
-      btn.style.fontSize = '16px';
-      btn.style.borderRadius = '8px';
-      btn.style.cursor = 'pointer';
-      if (i == 11) {
-        btn.textContent = "Private Game";
-      }
-      if (cat && words) {
-        if (i == 10) {
-          btn.textContent = "Custom Game " + cat;
-        }
-      }
-      container.appendChild(btn);
 
+      // Build the label
+      let label = `Wave ${i}`;
+      if (i === 11) label = "Private Game";
+      if (cat && words && i === 10) label = "Custom Game " + cat;
+
+      // Set the inside of the button: image + text
+      btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"> ${label}`;
+
+      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
+      btn.style.margin = '2px';
+      btn.style.padding = '3px 5px';
+      btn.style.fontSize = '12px';
+      btn.style.borderRadius = '4px';
+      btn.style.cursor = 'pointer';
+      btn.style.color = 'black';
+      btn.style.display = 'flex';
+      btn.style.alignItems = 'center';
+      btn.style.gap = '4px';
+
+      container.appendChild(btn);
     }
+
 
     // function invokeGame(url) {
     //   let v = document.getElementById('waveWordsSelect').value;

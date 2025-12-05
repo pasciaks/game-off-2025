@@ -2058,6 +2058,19 @@
 
           data.theBonusWords.forEach((w) => {
             w = w.trim();
+            //if (data?.wasBackwards) { w = reverseWord(w) }
+            if (waveslistEle.innerText.indexOf(" " + w + " ") > -1) {
+              showToast("( +$25 ) Bonus word found => " + w, "info");
+              waveslistEle.title = waveslistEle?.title?.replace(" " + w + " ", " 〰️ ");
+              waveslistEle.innerText = waveslistEle?.innerText?.replace(" " + w + " ", " 〰️ ");
+              yourScore += 25;
+              socket.emit("bonusWordFound", { myRoom, myName, bonusWord: w })
+              checkForEndOfBonus();
+            } else {
+              //showToast("( $5 ) Bonus word again => " + w, "info");
+              //yourScore += 5;
+            }
+
             if (data?.wasBackwards) { w = reverseWord(w) }
             if (waveslistEle.innerText.indexOf(" " + w + " ") > -1) {
               showToast("( +$25 ) Bonus word found => " + w, "info");
@@ -2070,6 +2083,9 @@
               //showToast("( $5 ) Bonus word again => " + w, "info");
               //yourScore += 5;
             }
+
+
+
           });
 
         }
