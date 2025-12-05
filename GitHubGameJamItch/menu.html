@@ -218,7 +218,7 @@
 
     <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
-    <button
+    <button title="GitHub readme and about information."
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button>
 
 
@@ -393,6 +393,10 @@
 
       // Set the inside of the button: image + text
       btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"><br>${label}`;
+
+      if (i >= 5 && i <= 9) {
+        btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"><br><span>Waves Enabled</span><br>${label}`;
+      }
 
       btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
       btn.style.margin = '2px';
