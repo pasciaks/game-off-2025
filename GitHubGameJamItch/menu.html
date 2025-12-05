@@ -221,9 +221,8 @@
     <button
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button>
 
-    <br>
 
-    <button title="Custom game mode" onclick="window.open('maker.html')">✏️ Custom Game </button>
+    <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button>
 
     <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
       onclick="window.open('index.html')">📲</button> -->
@@ -235,9 +234,11 @@
 
 
     <div>
-      <p>Bonus Word List</p>
-      <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
+      <!-- <p>Bonus Word List</p> -->
+      <select id="waveWordsSelect" style="display:none;padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
                background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
+        <option selected value=" SCRABBLE SCRAMBLE LOST WORDS ">
+          🐾 Animals</option>
         <option
           value=" Dog Cat Horse Cow Pig Sheep Goat Elephant Lion Tiger Bear Monkey Rabbit Mouse Deer Fox Wolf Chicken Duck Goose Turkey Crow Pigeon Sparrow Eagle Owl Parrot Penguin Flamingo Goldfish Salmon Tuna Trout Shark Clownfish Catfish Snake Lizard Crocodile Alligator Turtle Chameleon Frog Toad Salamander Newt Butterfly Bee Ant Spider Fly Mosquito Beetle Worm Snail Crab ">
           🐾 Animals</option>
@@ -250,7 +251,7 @@
         <!-- <option value="cloud">☁️ Cloud</option>
         <option value="rain">🌧️ Rain</option>
         <option value="snow">❄️ Snow</option> -->
-        <option selected
+        <option
           value=" ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ">
           🌊 Waves</option>
       </select> <span class="menuText"></span>
@@ -391,7 +392,7 @@
       if (cat && words && i === 10) label = "Custom Game " + cat;
 
       // Set the inside of the button: image + text
-      btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"> ${label}`;
+      btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"><br>${label}`;
 
       btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
       btn.style.margin = '2px';
@@ -400,7 +401,7 @@
       btn.style.borderRadius = '4px';
       btn.style.cursor = 'pointer';
       btn.style.color = 'black';
-      btn.style.display = 'flex';
+      // btn.style.display = 'flex';
       btn.style.alignItems = 'center';
       btn.style.gap = '4px';
 
