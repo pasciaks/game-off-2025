@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/png" href="./game/player.png">
+  <link rel="icon" type="image/png" href="./play.png">
   <title>Scrabble Scramble</title>
   <style>
     html,
@@ -64,14 +64,14 @@
     #game {
       text-align: center;
       position: absolute;
-      left: 40px;
-      right: 40px;
-      top: 40px;
-      bottom: 40px;
+      left: 20px;
+      right: 20px;
+      top: 20px;
+      bottom: 20px;
       /* border: 2px solid red; */
       color: white;
       display: none;
-      background-color: transparent;
+      /* background-color: rgba(25, 98, 115, .85); */
       overflow: hidden;
     }
 
@@ -79,7 +79,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #0ee1ec;
+      /* background: #0ee1ec; */
       /* Tan background */
       display: flex;
       flex-direction: column;
@@ -99,7 +99,7 @@
       padding: 1px 2px;
       border: none;
       border-radius: 8px;
-      background-color: transparent;
+      background-color: #aed1dd;
       color: rgb(95, 76, 204);
       font-size: 1rem;
       cursor: pointer;
@@ -108,14 +108,14 @@
     }
 
     button:hover {
-      background-color: transparent;
-      transform: scale(1.35);
+      background-color: #31a9a7;
+      transform: scale(1.05);
     }
 
     .game-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
+      gap: 5px;
       width: 90%;
       max-width: 800px;
       margin: 0 auto;
@@ -144,7 +144,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 15px;
+      padding: 5px;
       background: #f0e6d2;
       /* light card color */
       color: #4879b4;
@@ -191,12 +191,12 @@
       button,
       .game-container a {
         font-size: 0.9rem;
-        padding: 8px 10px;
+        padding: 4px 5px;
       }
 
       .game-container {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: 8px;
+        gap: 4px;
       }
 
       #game {
@@ -209,86 +209,6 @@
       font: 12px courier;
       color: white;
     }
-
-    li {
-      display: inline-flex;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    li:hover {
-      color: gold;
-    }
-
-    li {
-      padding: 5px;
-      margin: 5px;
-    }
-
-    .side {
-      position: absolute;
-      display: flex;
-      gap: 20px;
-    }
-
-    /* TOP – logo above play */
-    .top {
-      top: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      flex-direction: column;
-    }
-
-    /* BOTTOM – same stacking, then rotated */
-    .bottom {
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%) rotate(180deg);
-      flex-direction: column;
-    }
-
-    /* LEFT – rotate -90°, so row order maps to vertical top→bottom */
-    .left {
-      left: 50%;
-      ;
-      top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
-      flex-direction: row;
-
-      /* logo left, play right → rotates to logo top, play bottom */
-    }
-
-    /* RIGHT – rotate +90°, need reversed order so logo ends up on top */
-    .right {
-      /* right: 20px; */
-      right: 50%;
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
-      flex-direction: row-reverse;
-
-      /* logo right, play left → rotates to logo top */
-    }
-
-    img {
-      width: 150px;
-      height: auto;
-      display: inline-block;
-    }
-
-    body {
-      margin: 0;
-      position: relative;
-      /* background-image: url("tile.png");
-      background-repeat: repeat;
-      background-size: auto; */
-    }
-
-    /* #game { */
-    /* background-image: url("tile.png");
-      background-repeat: repeat;
-      background-size: auto;
-      opacity: .2; */
-    /* } */
   </style>
 </head>
 
@@ -296,45 +216,31 @@
 
   <div id="game">
 
-    <!-- <a href="menu.html"><img src='game/logo.png' style="width:50%;margin-top:10%" /></a> <img
-      style="width:50px;border-radius: 10px;background-color: lightblue; box-shadow: 5px 5px 15px rgba(0,0,0,0.3);"
-      src="https://img.itch.zone/aW1nLzIyMDY3NzY2LnBuZw==/200x158%23/KtEy0v.png" /> -->
+    <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
-    <!-- <div style="
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  height:50vh;
-  margin:0;
-"> -->
-    <!-- <a href="menu.html">
-        <img src='game/logo.png' style="width:50%; margin-bottom:20px;" />
-      </a> -->
-
-    <!-- <img style="width:50px; border-radius:10px; background-color:lightblue;
-           box-shadow:5px 5px 15px rgba(0,0,0,0.3);"
-        src="https://img.itch.zone/aW1nLzIyMDY3NzY2LnBuZw==/200x158%23/KtEy0v.png" /> -->
-    <!-- </div> -->
-
-
-
-    <!-- <button
+    <!-- <button title="GitHub readme and about information."
       onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button> -->
 
-    <!-- <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button> -->
+
+    <br><button title="Custom game mode" onclick="window.open('maker.html')">Custom Game ✏️</button> &nbsp; <button
+      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About
+      ❓</button>
 
     <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
       onclick="window.open('index.html')">📲</button> -->
 
     <a href="index.html">
-      <div id="randomTitle"></div>
+      <p id="randomTitle"></p>
     </a>
 
 
-    <div style="display:none;">
-      <select id="waveWordsSelect" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
+
+    <div>
+      <!-- <p>Bonus Word List</p> -->
+      <select id="waveWordsSelect" style="display:none;padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; 
                background: #f8f8f8; font-size: 16px; font-family: sans-serif;">
+        <option selected value=" SCRABBLE SCRAMBLE LOST WORDS ">
+          🐾 Animals</option>
         <option
           value=" Dog Cat Horse Cow Pig Sheep Goat Elephant Lion Tiger Bear Monkey Rabbit Mouse Deer Fox Wolf Chicken Duck Goose Turkey Crow Pigeon Sparrow Eagle Owl Parrot Penguin Flamingo Goldfish Salmon Tuna Trout Shark Clownfish Catfish Snake Lizard Crocodile Alligator Turtle Chameleon Frog Toad Salamander Newt Butterfly Bee Ant Spider Fly Mosquito Beetle Worm Snail Crab ">
           🐾 Animals</option>
@@ -347,11 +253,12 @@
         <!-- <option value="cloud">☁️ Cloud</option>
         <option value="rain">🌧️ Rain</option>
         <option value="snow">❄️ Snow</option> -->
-        <option selected
+        <option
           value=" ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ">
           🌊 Waves</option>
       </select> <span class="menuText"></span>
-      <br>
+
+
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
         title="Random Player Name and reset saved scores." onclick="updateRandomName();">🎲 <span
           class="menuText"></span></button><span id="playerName"></span>
@@ -362,65 +269,11 @@
 
     <div class="game-container" id="gameLinks"></div>
 
-    <!-- <button onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="play.png" /></button> -->
-
-    <!-- <button onclick="window.location='menu.html'"><img style="margin:20px;width:100px" src="desktop.png" /></button> -->
-
-    <!-- <button onclick="window.location='menu.html'"><img style="margin:20px;width:100px"
-        src="iphone-landscape.png" /></button> -->
-
-    <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
-      onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="iphone-portrait.png" /></button> -->
-
-    <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
-      onclick="window.open('menu.html')"><img style="margin:20px;width:100px" src="smarttv.png" /></button> -->
-
-    <div>
-      <div class="side top">
-        <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
-
-      </div>
-
-      <div class="side bottom">
-        <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
-      </div>
-
-      <div class="side left">
-        <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
-      </div>
-
-      <div class="side right">
-        <!-- <img src="logo.png" alt="logo"> -->
-        <button onclick="window.open('menu.html')"><img src='title.png' /><br><img src="play.png" /></button>
-      </div>
-    </div>
-
-    <div>
-
-
-      <ul style="display:none;list-style: none;margin:0;padding:0;">
-        <li onclick="openLink(this)">https://screamingbrainstudios.itch.io/2d-word-game-pack</li>
-        <li onclick="openLink(this)">https://www.freescrabbledictionary.com/</li>
-        <li onclick="openLink(this)">https://freepd.com/</li>
-        <li onclick="openLink(this)">https://cooltext.com/</li>
-        <li onclick="openLink(this)">https://freesvg.org/</li>
-        <li onclick="openLink(this)">https://ci.itch.io/400-sounds-pack</li>
-        <li onclick="openLink(this)">https://bdragon1727.itch.io/72-cute-pixel-character</li>
-      </ul>
-    </div>
-
   </div>
 
   <canvas id="canvas"></canvas>
 
   <script>
-
-    function openLink(el) {
-      window.open(el.innerText);
-    }
 
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\\[\\]]/g, '\\$&');
@@ -476,7 +329,7 @@
     const SPEED = 150;           // expansion speed (px/sec)
     const WAVELENGTH = 5;     // distance between waves (larger = fewer)
     const GLOW = 0;            // shadow blur for glow
-    const SPAWN_INTERVAL = 1750; // time between new waves (ms)
+    const SPAWN_INTERVAL = 60000; // time between new waves (ms)
     const ROTATION_SPEED = 0.025; // radians/sec rotation of opening
 
     let waves = [];
@@ -512,7 +365,7 @@
 
     setTimeout(() => {
       showBox();
-    }, 250);
+    }, 50);
 
     function invokeGame(url) {
       let v = document.getElementById('waveWordsSelect').value;
@@ -535,24 +388,33 @@
     const container = document.getElementById('gameLinks');
     for (let i = 1; i <= 11; i++) {
       const btn = document.createElement('button');
-      btn.textContent = `Wave ${i}`;
-      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
-      btn.style.margin = '5px';
-      btn.style.padding = '10px 15px';
-      btn.style.fontSize = '16px';
-      btn.style.borderRadius = '8px';
-      btn.style.cursor = 'pointer';
-      if (i == 11) {
-        btn.textContent = "Private Game";
-      }
-      if (cat && words) {
-        if (i == 10) {
-          btn.textContent = "Custom Game " + cat;
-        }
-      }
-      //container.appendChild(btn);
 
+      // Build the label
+      let label = `Wave ${i}`;
+      if (i === 11) label = "Private Game";
+      if (cat && words && i === 10) label = "Custom Game " + cat;
+
+      // Set the inside of the button: image + text
+      btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"><br>${label}`;
+
+      if (i >= 5 && i <= 9) {
+        btn.innerHTML = `<img src="play.png" style="width:62px; height:12px; vertical-align:middle; margin-right:4px;"><br><span>Waves Enabled</span><br>${label}`;
+      }
+
+      btn.onclick = () => invokeGame(`game/game.html?room=room${i}`);
+      btn.style.margin = '2px';
+      btn.style.padding = '3px 5px';
+      btn.style.fontSize = '12px';
+      btn.style.borderRadius = '4px';
+      btn.style.cursor = 'pointer';
+      btn.style.color = 'black';
+      // btn.style.display = 'flex';
+      btn.style.alignItems = 'center';
+      btn.style.gap = '4px';
+
+      container.appendChild(btn);
     }
+
 
     // function invokeGame(url) {
     //   let v = document.getElementById('waveWordsSelect').value;
@@ -606,13 +468,11 @@
       document.getElementById("playerName").innerText = myName;
     }
 
-
-
     let old;
 
     let isPaused = false;
 
-    // setInterval(createWave, SPAWN_INTERVAL);
+    setInterval(createWave, SPAWN_INTERVAL);
 
     function animate(now) {
 
@@ -637,7 +497,7 @@
         if (radius < 0) continue;
 
         const alpha = 1 - radius / maxRadius;
-        ctx.lineWidth = 2 + 1.5 * alpha;
+        ctx.lineWidth = 0 + 1.5 * alpha;
         ctx.strokeStyle = `hsla(${wave.hue}, 80%, 70%, ${alpha * 0.9})`;
 
         // slowly rotate the opening over time
@@ -645,6 +505,9 @@
 
         const start = rotatedGapAngle + wave.gapSize / 2;
         const end = rotatedGapAngle - wave.gapSize / 2 + Math.PI * 2;
+
+        // wave.offX = 0;
+        // wave.offY = 0;
 
         ctx.beginPath();
         ctx.arc(center.x + (.5 - wave.offX) * 350, center.y + (.5 - wave.offY) * 350, radius, start, end);

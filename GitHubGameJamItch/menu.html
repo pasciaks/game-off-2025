@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/png" href="./game/player.png">
+  <link rel="icon" type="image/png" href="./play.png">
   <title>Scrabble Scramble</title>
   <style>
     html,
@@ -68,10 +68,10 @@
       right: 20px;
       top: 20px;
       bottom: 20px;
-      border: 2px solid red;
+      /* border: 2px solid red; */
       color: white;
       display: none;
-      background-color: rgba(25, 98, 115, .85);
+      /* background-color: rgba(25, 98, 115, .85); */
       overflow: hidden;
     }
 
@@ -79,7 +79,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background: #0ee1ec;
+      /* background: #0ee1ec; */
       /* Tan background */
       display: flex;
       flex-direction: column;
@@ -218,17 +218,19 @@
 
     <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
-    <button title="GitHub readme and about information."
-      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button>
+    <!-- <button title="GitHub readme and about information."
+      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">ℹ️</button> -->
 
 
-    <button title="Custom game mode" onclick="window.open('maker.html')">✏️</button>
+    <br><button title="Custom game mode" onclick="window.open('maker.html')">Custom Game ✏️</button> &nbsp; <button
+      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About
+      ❓</button>
 
     <!-- <button title="Open for mobile phone friendly view that enables portrait mode."
       onclick="window.open('index.html')">📲</button> -->
 
     <a href="index.html">
-      <div id="randomTitle"></div>
+      <p id="randomTitle"></p>
     </a>
 
 
@@ -255,7 +257,8 @@
           value=" ABYSS AMPLITUDE BAY BLUE BREAKER BRINE CASCADE COASTLINE CORAL CREST CURRENT CURL CYCLONE DEEP DRIFT DRIFTWOOD EBB ECHO EMOTION FLOOD FLOW FLUCTUATE FLUCTUATION FLUID FOAM FREQUENCY FROTH GLIDE GUST HORIZON HUM INTERFERENCE KELP LAGOON MAELSTROM MEANDER MODULATION MONSOON MOMENTUM MOVEMENT OCEAN OSCILLATE OSCILLATION PEARL PHASE PROPAGATION PULSE RADIATION REEF RESONANCE RIPPLE ROLL SALT SEA SHELL SIGNAL SLIDE SPECTRUM SPLASH SPLASHDOWN STORM STATIC SURF SURGE SWAY SWEEP SWELL TEMPEST TIDAL TIDE TONE TREND TROUGH TRANSMISSION TRANSMIT TSUNAMI UNDULATE VIBE VIBRATION WASH WAVE WAVELENGTH WAVY WHIRLPOOL ">
           🌊 Waves</option>
       </select> <span class="menuText"></span>
-      <br>
+
+
       <button style="font:26px 'Segoe UI Emoji', sans-serif;background-color:transparent;"
         title="Random Player Name and reset saved scores." onclick="updateRandomName();">🎲 <span
           class="menuText"></span></button><span id="playerName"></span>
@@ -326,7 +329,7 @@
     const SPEED = 150;           // expansion speed (px/sec)
     const WAVELENGTH = 5;     // distance between waves (larger = fewer)
     const GLOW = 0;            // shadow blur for glow
-    const SPAWN_INTERVAL = 220; // time between new waves (ms)
+    const SPAWN_INTERVAL = 60000; // time between new waves (ms)
     const ROTATION_SPEED = 0.025; // radians/sec rotation of opening
 
     let waves = [];
@@ -358,11 +361,11 @@
       });
     }
 
-    createWave();
+    // createWave();
 
     setTimeout(() => {
       showBox();
-    }, 750);
+    }, 50);
 
     function invokeGame(url) {
       let v = document.getElementById('waveWordsSelect').value;
@@ -465,8 +468,6 @@
       document.getElementById("playerName").innerText = myName;
     }
 
-
-
     let old;
 
     let isPaused = false;
@@ -496,7 +497,7 @@
         if (radius < 0) continue;
 
         const alpha = 1 - radius / maxRadius;
-        ctx.lineWidth = 2 + 1.5 * alpha;
+        ctx.lineWidth = 0 + 1.5 * alpha;
         ctx.strokeStyle = `hsla(${wave.hue}, 80%, 70%, ${alpha * 0.9})`;
 
         // slowly rotate the opening over time
@@ -504,6 +505,9 @@
 
         const start = rotatedGapAngle + wave.gapSize / 2;
         const end = rotatedGapAngle - wave.gapSize / 2 + Math.PI * 2;
+
+        // wave.offX = 0;
+        // wave.offY = 0;
 
         ctx.beginPath();
         ctx.arc(center.x + (.5 - wave.offX) * 350, center.y + (.5 - wave.offY) * 350, radius, start, end);

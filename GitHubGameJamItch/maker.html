@@ -68,10 +68,10 @@
       right: 20px;
       top: 20px;
       bottom: 20px;
-      border: 2px solid red;
+      /* border: 2px solid red; */
       color: white;
       display: none;
-      background-color: rgba(25, 98, 115, .85);
+      /* background-color: rgba(25, 98, 115, .85); */
       overflow: hidden;
     }
 
@@ -218,8 +218,9 @@
 
     <a href="index.html"><img src='game/logo.png' style="height:50px;width:200px;" /></a>
 
-    <button
-      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About</button>
+    <br><button title="Custom game mode" onclick="window.open('maker.html')">Custom Game ✏️</button> &nbsp; <button
+      onclick="window.open('https://github.com/pasciaks/game-off-2025?tab=readme-ov-file#scrabble-scramble')">About
+      ❓</button>
 
     <p style="display:none;"><span id="playerName"></span></p>
 
@@ -360,7 +361,7 @@
     const SPEED = 150;           // expansion speed (px/sec)
     const WAVELENGTH = 5;     // distance between waves (larger = fewer)
     const GLOW = 0;            // shadow blur for glow
-    const SPAWN_INTERVAL = 220; // time between new waves (ms)
+    const SPAWN_INTERVAL = 60000; // time between new waves (ms)
     const ROTATION_SPEED = 0.025; // radians/sec rotation of opening
 
     let waves = [];
@@ -392,11 +393,11 @@
       });
     }
 
-    createWave();
+    // createWave();
 
     setTimeout(() => {
       showBox();
-    }, 750);
+    }, 50);
 
     function invokeGame(url) {
       let v = document.getElementById('waveWordsSelect').value;
